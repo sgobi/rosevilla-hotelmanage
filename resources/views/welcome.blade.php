@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rose Villa Heritage Homes</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="font-sans text-rose-text antialiased bg-white">
+
+    <!-- Header -->
+    <header class="absolute top-0 left-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-white font-serif text-2xl tracking-widest uppercase hover:text-rose-gold transition">
+                        Rose Villa
+                    </a>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-10">
+                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Home</a>
+                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">About</a>
+                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Suites</a>
+                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Experiences</a>
+                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Contact</a>
+                </nav>
+
+                <!-- Mobile Menu Button (Hamburger) -->
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Rose Villa Heritage Home" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/30"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-1 text-center px-4">
+            <h1 class="font-serif text-5xl md:text-7xl text-white mb-6 drop-shadow-lg tracking-wide uppercase">
+                Rose Villa
+            </h1>
+            <p class="text-white text-lg md:text-xl font-light tracking-widest uppercase mb-8">
+                Experience the Extraordinary in Jaffna
+            </p>
+            <a href="#" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-accent px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
+                Explore Our Heritage
+            </a>
+        </div>
+    </div>
+
+    <!-- About / Welcome Section -->
+    <section class="py-20 md:py-32 bg-rose-primary">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-8 uppercase tracking-wide">
+                Wander & Explore
+            </h2>
+            <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
+            <p class="text-lg leading-relaxed text-gray-600 mb-8 font-light">
+                Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.
+            </p>
+            <p class="text-lg leading-relaxed text-gray-600 font-light">
+                Discover the rich history, vibrant culture, and warm hospitality that define our heritage.
+            </p>
+        </div>
+    </section>
+
+    <!-- Features Section (Grid) -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Feature 1 -->
+                <div class="text-center group cursor-pointer">
+                    <div class="overflow-hidden mb-6 h-64 relative">
+                         <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury Suites" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
+                    </div>
+                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Luxury Suites</h3>
+                    <p class="text-gray-500 text-sm">Comfort meets tradition in our designed rooms.</p>
+                </div>
+                 <!-- Feature 2 -->
+                 <div class="text-center group cursor-pointer">
+                    <div class="overflow-hidden mb-6 h-64 relative">
+                         <img src="https://images.unsplash.com/photo-1596178060841-5a9d8d1H1c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dining" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <!-- Note: Image URL might need fixing, using a valid placeholder -->
+                         <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dining" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 absolute inset-0">
+                         <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
+                    </div>
+                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Exquisite Dining</h3>
+                    <p class="text-gray-500 text-sm">Savor authentic local flavors.</p>
+                </div>
+                 <!-- Feature 3 -->
+                 <div class="text-center group cursor-pointer">
+                    <div class="overflow-hidden mb-6 h-64 relative">
+                         <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Gardens" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
+                    </div>
+                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Serene Gardens</h3>
+                    <p class="text-gray-500 text-sm">Relax in our lush, private courtyards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rose-accent text-white py-16 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Col 1 -->
+                <div>
+                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Rose Villa</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        A heritage home in Jaffna offering a unique blend of history, culture, and luxury living.
+                    </p>
+                </div>
+                 <!-- Col 2 -->
+                 <div>
+                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Navigation</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="hover:text-white transition">The Villa</a></li>
+                        <li><a href="#" class="hover:text-white transition">Suites</a></li>
+                        <li><a href="#" class="hover:text-white transition">Gallery</a></li>
+                    </ul>
+                </div>
+                 <!-- Col 3 -->
+                 <div>
+                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Contact</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li>123 Heritage Lane, Jaffna</li>
+                        <li>+94 77 123 4567</li>
+                        <li>info@rosevilla.com</li>
+                    </ul>
+                </div>
+                 <!-- Col 4 -->
+                 <div>
+                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i> FB</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i> IG</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i> TW</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500 uppercase tracking-widest">
+                &copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
