@@ -144,13 +144,22 @@
                             <!-- Room Gallery Thumbnails -->
                             @if(!empty($room->gallery_urls))
                                 <div class="mt-8 pt-6 border-t border-gray-100">
-                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-3 font-semibold">Gallery</p>
-                                    <div class="flex flex-wrap justify-center gap-2">
-                                        @foreach($room->gallery_urls as $gurl)
-                                            <div class="group/thumb relative h-12 w-12 overflow-hidden rounded shadow-sm border border-gray-100">
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-3 font-semibold">Gallery ({{ count($room->gallery_urls) }} Photos)</p>
+                                    <div class="grid grid-cols-4 gap-3">
+                                        @foreach($room->gallery_urls as $index => $gurl)
+                                            <div class="group/thumb relative h-20 overflow-hidden rounded-lg shadow-md border-2 border-gray-100 hover:border-rose-gold transition-all duration-300 cursor-pointer"
+                                                 onclick="openLightbox('{{ $room->id }}', {{ $index }})">
                                                 <img src="{{ str_starts_with($gurl, 'http') ? $gurl : asset('storage/' . $gurl) }}" 
-                                                     class="h-full w-full object-cover cursor-pointer hover:scale-110 transition duration-300"
-                                                     onclick="window.open(this.src, '_blank')">
+                                                     class="h-full w-full object-cover transform group-hover/thumb:scale-110 transition duration-500"
+                                                     alt="Gallery image {{ $index + 1 }}">
+                                                <!-- Hover Overlay -->
+                                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2">
+                                                    <span class="text-white text-[10px] font-semibold uppercase tracking-wider">View</span>
+                                                </div>
+                                                <!-- Image Counter Badge -->
+                                                <div class="absolute top-1 right-1 bg-rose-accent/90 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold">
+                                                    {{ $index + 1 }}
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -345,5 +354,143 @@
             </div>
         </div>
     </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 bg-black/95 z-50 hidden items-center justify-center p-4 transition-opacity duration-300">
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-rose-gold transition-colors z-10 group">
+            <svg class="w-8 h-8 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <!-- Previous Button -->
+        <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-rose-gold transition-colors z-10 group">
+            <svg class="w-10 h-10 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+
+        <!-- Next Button -->
+        <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-rose-gold transition-colors z-10 group">
+            <svg class="w-10 h-10 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        <!-- Image Container -->
+        <div class="max-w-6xl max-h-[90vh] w-full h-full flex flex-col items-center justify-center">
+            <img id="lightboxImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+            
+            <!-- Image Info -->
+            <div class="mt-4 text-center">
+                <p id="lightboxCounter" class="text-white text-sm uppercase tracking-wider"></p>
+                <p id="lightboxTitle" class="text-rose-gold text-xs uppercase tracking-widest mt-1"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery data structure
+        const galleryData = {
+            @foreach($rooms as $room)
+                '{{ $room->id }}': {
+                    title: '{{ $room->title }}',
+                    images: [
+                        @foreach($room->gallery_urls ?? [] as $gurl)
+                            '{{ str_starts_with($gurl, "http") ? $gurl : asset("storage/" . $gurl) }}',
+                        @endforeach
+                    ]
+                },
+            @endforeach
+        };
+
+        let currentRoomId = null;
+        let currentImageIndex = 0;
+
+        function openLightbox(roomId, imageIndex) {
+            currentRoomId = roomId;
+            currentImageIndex = imageIndex;
+            updateLightboxImage();
+            
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            
+            // Fade in animation
+            setTimeout(() => {
+                lightbox.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.opacity = '0';
+            
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        function navigateLightbox(direction) {
+            if (!currentRoomId) return;
+            
+            const images = galleryData[currentRoomId].images;
+            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+            updateLightboxImage();
+        }
+
+        function updateLightboxImage() {
+            if (!currentRoomId) return;
+            
+            const roomData = galleryData[currentRoomId];
+            const images = roomData.images;
+            
+            const lightboxImage = document.getElementById('lightboxImage');
+            const lightboxCounter = document.getElementById('lightboxCounter');
+            const lightboxTitle = document.getElementById('lightboxTitle');
+            
+            // Fade out
+            lightboxImage.style.opacity = '0';
+            
+            setTimeout(() => {
+                lightboxImage.src = images[currentImageIndex];
+                lightboxCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+                lightboxTitle.textContent = roomData.title;
+                
+                // Fade in
+                lightboxImage.style.opacity = '1';
+            }, 150);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('hidden')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    navigateLightbox(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateLightbox(1);
+                }
+            }
+        });
+
+        // Click outside to close
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+
+        // Smooth image transitions
+        document.getElementById('lightboxImage').style.transition = 'opacity 0.15s ease-in-out';
+    </script>
 </body>
 </html>
