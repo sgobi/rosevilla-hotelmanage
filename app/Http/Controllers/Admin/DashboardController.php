@@ -25,6 +25,34 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard', compact('stats', 'recentReservations'));
+        $notifications = auth()->user()->unreadNotifications;
+
+        return view('dashboard', compact('stats', 'recentReservations', 'notifications'));
+    }
+
+    public function markAllRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function markAsRead($id)
+    {
+        $notification = auth()->user()->unreadNotifications()->where('id', $id)->first();
+        
+        if ($notification) {
+            $notification->markAsRead();
+            
+            // Redirect to the specific reservation row
+            return redirect($notification->data['action_url'] . '#reservation-' . $notification->data['reservation_id']);
+        }
+        
+        return back();
+    }
+
+    public function fetchNotifications()
+    {
+        $notifications = auth()->user()->unreadNotifications;
+        return view('partials.notifications', compact('notifications'));
     }
 }

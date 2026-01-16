@@ -18,27 +18,46 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
-                        {{ __('Reservations') }}
-                    </x-nav-link>
-                    @if(auth()->user()?->role === 'admin')
+                    
+                    @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                        <x-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
+                            {{ __('Reservations') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isAdmin())
                         <x-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')">
                             {{ __('Rooms') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
                             {{ __('Gallery') }}
                         </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
                         <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                             {{ __('Reviews') }}
                         </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isAdmin())
                         <x-nav-link :href="route('admin.landmarks.index')" :active="request()->routeIs('admin.landmarks.*')">
                             {{ __('Nearby Visits') }}
                         </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
                         <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                             {{ __('Sales & Reports') }}
                         </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isAdmin())
                         <x-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')">
                             {{ __('Content') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Users') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -49,7 +68,7 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div>{{ Auth::user()->name }} <small class="text-gray-400">({{ ucfirst(Auth::user()->role) }})</small></div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -99,27 +118,46 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
-                {{ __('Reservations') }}
-            </x-responsive-nav-link>
-            @if(auth()->user()?->role === 'admin')
+            
+            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
+                    {{ __('Reservations') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')">
                     {{ __('Rooms') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
                     {{ __('Gallery') }}
                 </x-responsive-nav-link>
+            @endif
+            
+            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                     {{ __('Reviews') }}
                 </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.landmarks.index')" :active="request()->routeIs('admin.landmarks.*')">
                     {{ __('Nearby Visits') }}
                 </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
                 <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                     {{ __('Sales & Reports') }}
                 </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')">
                     {{ __('Content') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    {{ __('Users') }}
                 </x-responsive-nav-link>
             @endif
         </div>

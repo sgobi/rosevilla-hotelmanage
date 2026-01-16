@@ -7,6 +7,25 @@
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <!-- Notifications -->
+            <div id="notifications-container">
+                @include('partials.notifications')
+            </div>
+
+            <script>
+                setInterval(function() {
+                    fetch('{{ route('notifications.fetch') }}')
+                        .then(response => response.text())
+                        .then(html => {
+                            if (html.trim() !== '') {
+                                document.getElementById('notifications-container').innerHTML = html;
+                            } else {
+                                document.getElementById('notifications-container').innerHTML = '';
+                            }
+                        });
+                }, 5000); // Check every 5 seconds
+            </script>
+
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="p-5 bg-white shadow rounded-xl border border-gray-100">
                     <p class="text-sm text-gray-500">Rooms & Suites</p>

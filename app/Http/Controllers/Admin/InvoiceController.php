@@ -11,6 +11,31 @@ class InvoiceController extends Controller
 {
     public function show(Reservation $reservation)
     {
+        // Enforce approved status for invoice access
+        if ($reservation->status !== 'approved') {
+            abort(403, 'Invoices can only be viewed for approved reservations.');
+        }
+
+        $user = auth()->user();
+
+        // Admin can always view
+        if ($user->isAdmin() || $user->isAccountant()) { // Assuming accountant also has unrestricted access or read-only
+            // Pass
+        } elseif ($user->isStaff()) {
+            // Staff restrictions
+            if ($reservation->invoice_print_count > 0 && $reservation->invoice_reprint_status !== 'approved') {
+                abort(403, 'Invoice already printed. Request Admin approval for reprint.');
+            }
+
+            // Increment count
+            $reservation->increment('invoice_print_count');
+
+            // Consume approval if used
+            if ($reservation->invoice_reprint_status === 'approved') {
+                $reservation->update(['invoice_reprint_status' => 'none']);
+            }
+        }
+
         $content = ContentSetting::pluck('value', 'key');
         
         // Calculate nights logic for display if needed

@@ -19,6 +19,11 @@ class Reservation extends Model
         'message',
         'status',
         'total_price',
+        'discount_percentage',
+        'discount_status',
+        'discount_approved_by',
+        'invoice_print_count',
+        'invoice_reprint_status',
     ];
 
     protected $casts = [
@@ -26,7 +31,21 @@ class Reservation extends Model
         'check_out' => 'date',
         'guests' => 'integer',
         'total_price' => 'decimal:2',
+        'discount_percentage' => 'decimal:2',
     ];
+
+    public function getFinalPriceAttribute()
+    {
+        if ($this->discount_status === 'approved' && $this->discount_percentage > 0) {
+            return $this->total_price * (1 - ($this->discount_percentage / 100));
+        }
+        return $this->total_price;
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'discount_approved_by');
+    }
 
     protected static function booted()
     {

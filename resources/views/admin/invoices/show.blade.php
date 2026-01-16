@@ -210,6 +210,20 @@
                     <span class="font-medium">Subtotal</span>
                     <span class="font-semibold">LKR {{ number_format($reservation->total_price, 2) }}</span>
                 </div>
+                
+                @if($reservation->discount_status === 'approved' && $reservation->discount_percentage > 0)
+                    @php
+                        $discountAmount = $reservation->total_price * ($reservation->discount_percentage / 100);
+                        $finalPrice = $reservation->total_price - $discountAmount;
+                    @endphp
+                    <div class="flex justify-between py-3 border-b border-gray-200 text-green-700 bg-green-50 px-2 rounded-md my-1">
+                        <span class="font-medium">Discount ({{ $reservation->discount_percentage }}%)</span>
+                        <span class="font-semibold">- LKR {{ number_format($discountAmount, 2) }}</span>
+                    </div>
+                @else
+                    @php $finalPrice = $reservation->total_price; @endphp
+                @endif
+
                 <div class="flex justify-between py-3 border-b border-gray-200 text-gray-700">
                     <span class="font-medium">Taxes (0%)</span>
                     <span class="font-semibold">LKR 0.00</span>
@@ -217,7 +231,7 @@
                 <div class="total-highlight mt-4">
                     <div class="flex justify-between items-center">
                         <span class="text-xl font-bold">Total Amount</span>
-                        <span class="text-3xl font-bold">LKR {{ number_format($reservation->total_price, 2) }}</span>
+                        <span class="text-3xl font-bold">LKR {{ number_format($finalPrice, 2) }}</span>
                     </div>
                 </div>
             </div>

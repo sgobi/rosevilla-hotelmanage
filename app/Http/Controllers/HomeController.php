@@ -60,7 +60,11 @@ class HomeController extends Controller
 
         $data['status'] = 'pending';
 
-        Reservation::create($data);
+        $reservation = Reservation::create($data);
+
+        // Notify Admins, Staff, and Accountants
+        $users = \App\Models\User::whereIn('role', ['admin', 'staff', 'accountant'])->get();
+        \Illuminate\Support\Facades\Notification::send($users, new \App\Notifications\NewReservationRequest($reservation));
 
         return back()->with('success', 'Thank you. Your reservation request has been received. Our team will confirm shortly.');
     }

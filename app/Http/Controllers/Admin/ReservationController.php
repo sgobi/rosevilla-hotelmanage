@@ -55,13 +55,105 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-        $data = $request->validate([
-            'status' => ['required', 'in:pending,approved,cancelled'],
-        ]);
+        // 1. Handle Status Update
+        if ($request->has('status')) {
+            $data = $request->validate([
+                'status' => ['required', 'in:pending,approved,cancelled'],
+            ]);
+            $reservation->update($data);
+        }
 
-        $reservation->update($data);
+        // 2. Handle Discount Suggestion (Staff/Admin)
+        if ($request->has('discount_percentage')) {
+            $data = $request->validate([
+                'discount_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
+            ]);
+            
+            // If it's a new suggestion or update, set status to pending approval
+            $reservation->update([
+                'discount_percentage' => $data['discount_percentage'],
+                'discount_status' => 'pending', 
+                'discount_approved_by' => null,
+            ]);
 
-        return back()->with('success', 'Reservation status updated.');
+            // Notify all Admins
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\DiscountSuggested([
+                'reservation_id' => $reservation->id,
+                'discount_percentage' => $data['discount_percentage'],
+                'guest_name' => $reservation->guest_name,
+            ]));
+            
+            return back()->with('success', 'Discount suggested. Waiting for Admin approval.');
+        }
+
+        // 3. Handle Discount Approval (Admin Only)
+        if ($request->has('discount_action') && auth()->user()->isAdmin()) {
+            if ($request->discount_action === 'approve') {
+                $reservation->update([
+                    'discount_status' => 'approved',
+                    'discount_approved_by' => auth()->id(),
+                ]);
+
+                // Notify all Staff
+                $staff = \App\Models\User::where('role', 'staff')->get();
+                \Illuminate\Support\Facades\Notification::send($staff, new \App\Notifications\DiscountDecision([
+                    'reservation_id' => $reservation->id,
+                    'status' => 'approved',
+                    'guest_name' => $reservation->guest_name,
+                ]));
+
+                return back()->with('success', 'Discount approved.');
+            } elseif ($request->discount_action === 'reject') {
+                $reservation->update([
+                    'discount_status' => 'rejected',
+                    'discount_approved_by' => auth()->id(),
+                ]);
+
+                // Notify all Staff
+                $staff = \App\Models\User::where('role', 'staff')->get();
+                \Illuminate\Support\Facades\Notification::send($staff, new \App\Notifications\DiscountDecision([
+                    'reservation_id' => $reservation->id,
+                    'status' => 'rejected',
+                    'guest_name' => $reservation->guest_name,
+                ]));
+
+                return back()->with('success', 'Discount rejected.');
+            }
+        }
+
+        // 4. Handle Invoice Reprint Request (Staff/Admin)
+        if ($request->has('reprint_action')) {
+            $action = $request->reprint_action;
+
+            if ($action === 'request') {
+                $reservation->update(['invoice_reprint_status' => 'requested']);
+                
+                // Notify Admins
+                $admins = \App\Models\User::where('role', 'admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\DiscountSuggested([
+                    'reservation_id' => $reservation->id,
+                    'discount_percentage' => 0, // Reuse
+                    'guest_name' => $reservation->guest_name,
+                    'message' => 'Reprint requested for ' . $reservation->guest_name,
+                    'type' => 'reprint_request'
+                ])); // Using existing notification class for simplicity, ideally create new
+                
+                return back()->with('success', 'Reprint requested.');
+            }
+
+            if (auth()->user()->isAdmin()) {
+                if ($action === 'approve') {
+                    $reservation->update(['invoice_reprint_status' => 'approved']);
+                    return back()->with('success', 'Reprint approved.');
+                } elseif ($action === 'reject') {
+                    $reservation->update(['invoice_reprint_status' => 'rejected']);
+                    return back()->with('success', 'Reprint rejected.');
+                }
+            }
+        }
+
+        return back()->with('success', 'Reservation updated.');
     }
 
     /**
