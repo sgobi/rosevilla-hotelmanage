@@ -74,7 +74,7 @@
                                 <form action="{{ route('admin.gallery.destroy', $item) }}" method="POST" onsubmit="return confirm('Delete this image?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="text-red-600 hover:underline text-sm">Delete</button>
+                                    <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
                                 </form>
                             </div>
                         </div>

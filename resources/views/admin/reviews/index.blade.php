@@ -73,7 +73,7 @@
                                 <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Delete this review?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="text-red-600 hover:underline text-sm">Delete</button>
+                                    <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
                                 </form>
                             </div>
                         </div>

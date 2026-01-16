@@ -50,9 +50,27 @@ class DashboardController extends Controller
         return back();
     }
 
-    public function fetchNotifications()
+    public function fetchNotifications(\Illuminate\Http\Request $request)
     {
         $notifications = auth()->user()->unreadNotifications;
-        return view('partials.notifications', compact('notifications'));
+        
+        if ($request->ajax()) {
+            return view('partials.notifications', compact('notifications'));
+        }
+
+        $stats = [
+            'rooms' => Room::count(),
+            'reservations_pending' => Reservation::where('status', 'pending')->count(),
+            'reservations_total' => Reservation::count(),
+            'reviews' => Review::count(),
+            'gallery' => GalleryImage::count(),
+        ];
+
+        $recentReservations = Reservation::with('room')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('dashboard', compact('stats', 'recentReservations', 'notifications'));
     }
 }
