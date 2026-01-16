@@ -26,7 +26,7 @@
                                 <th class="px-6 py-3">Guests</th>
                                 <th class="px-6 py-3">Room</th>
                                 <th class="px-6 py-3">Status</th>
-                                <th class="px-6 py-3"></th>
+                                <th class="px-6 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -41,164 +41,116 @@
                                     </td>
                                     <td class="px-6 py-3 text-gray-700">{{ $reservation->guests }}</td>
                                     <td class="px-6 py-3 text-gray-700">{{ $reservation->room->title ?? 'Any' }}</td>
-                                    <td class="px-6 py-3">
-                                        <!-- Status Management -->
-                                        @php 
-                                            $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); 
-                                        @endphp
-                                        
-                                        @if($reservation->status === 'pending' || $isAdmin)
-                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex items-center gap-2 mb-3">
-                                                @csrf
-                                                @method('PUT')
-                                                <select name="status" class="border rounded px-2 py-1 text-xs">
-                                                    @foreach(['pending','approved','cancelled'] as $status)
-                                                        <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <button class="text-indigo-600 text-xs uppercase font-semibold">Update</button>
-                                            </form>
-                                        @endif
-
-                                        @if($reservation->status !== 'pending')
-                                            <div class="mb-3 space-y-1">
-                                                <div>
-                                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                                        @if($reservation->status === 'approved') bg-green-100 text-green-700
-                                                        @else bg-red-100 text-red-700 @endif">
-                                                        {{ ucfirst($reservation->status) }}
-                                                    </span>
-                                                </div>
-                                                @if($reservation->discount_status === 'approved')
-                                                    <div class="text-[10px] text-green-600 font-bold uppercase">
-                                                        ✓ {{ $reservation->discount_percentage }}% Discount Applied
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        @endif
-
-                                        <!-- Discount Management -->
-                                        @if(($reservation->status === 'pending' || $isAdmin) && ($reservation->discount_status === 'none' || $reservation->discount_status === 'pending' || ($isAdmin && $reservation->status === 'approved')))
-                                            <div class="border-t border-gray-100 pt-2">
-                                                @if($reservation->discount_status === 'pending')
-                                                    <div class="bg-yellow-50 p-2 rounded text-xs border border-yellow-100 mb-2">
-                                                        <span class="font-bold text-yellow-700">Discount Request: {{ $reservation->discount_percentage }}%</span>
-                                                        @if($isAdmin)
-                                                            <div class="mt-2 flex gap-2">
-                                                                <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
-                                                                    @csrf @method('PUT')
-                                                                    <input type="hidden" name="discount_action" value="approve">
-                                                                    <button class="text-green-600 hover:text-green-800 font-bold uppercase">Approve</button>
-                                                                </form>
-                                                                <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
-                                                                    @csrf @method('PUT')
-                                                                    <input type="hidden" name="discount_action" value="reject">
-                                                                    <button class="text-red-600 hover:text-red-800 font-bold uppercase">Reject</button>
-                                                                </form>
-                                                            </div>
-                                                        @else
-                                                            <p class="text-gray-500 italic mt-1">Waiting for Admin approval</p>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                <!-- Form to Suggest/Update Discount -->
-                                                @if($reservation->discount_status === 'none' || $isAdmin)
-                                                    <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex items-center gap-2">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <input type="number" name="discount_percentage" min="0" max="100" value="{{ $reservation->discount_percentage }}" placeholder="%" class="w-16 border rounded px-2 py-1 text-xs" required>
-                                                        <button class="text-rose-600 text-xs uppercase font-semibold" title="{{ $isAdmin ? 'Update Discount' : 'Suggest Discount' }}">
-                                                            {{ $isAdmin ? 'Update' : 'Suggest' }}
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        @endif
-
-                                        <!-- Invoice / Reprint Logic -->
-                                        @if($reservation->status === 'approved')
-                                            <div class="mt-3">
-                                                @php
-                                                    $canPrint = false;
-                                                    $isStaff = auth()->user()->isStaff();
-                                                    $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant();
-                                                    
-                                                    if ($isAdmin) {
-                                                        $canPrint = true;
-                                                    } elseif ($isStaff) {
-                                                        if ($reservation->invoice_print_count === 0 || $reservation->invoice_reprint_status === 'approved') {
-                                                            $canPrint = true;
-                                                        }
-                                                    }
+                                    <td class="px-6 py-3 text-right" x-data="{ editingStatus: false }">
+                                        <div class="flex flex-col items-end gap-3">
+                                            <!-- Status Display -->
+                                            <div class="flex items-center gap-2">
+                                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                                    @if($reservation->status === 'approved') bg-green-100 text-green-700
+                                                    @elseif($reservation->status === 'cancelled') bg-red-100 text-red-700
+                                                    @else bg-amber-100 text-amber-700 @endif">
+                                                    {{ ucfirst($reservation->status) }}
+                                                </span>
+                                                
+                                                @php 
+                                                    $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); 
                                                 @endphp
+                                                
+                                                @if($isAdmin || $reservation->status === 'pending')
+                                                    <button @click="editingStatus = !editingStatus" class="text-indigo-600 hover:text-indigo-900 text-xs font-bold uppercase">
+                                                        Edit
+                                                    </button>
+                                                @endif
+                                            </div>
 
-                                                @if($canPrint)
-                                                    <a href="{{ route('admin.invoices.show', $reservation) }}" 
-                                                       target="_blank" 
-                                                       @if($isStaff) onclick="setTimeout(() => { this.style.display='none'; document.getElementById('reprint-req-{{ $reservation->id }}').style.display='block'; }, 100)" @endif
-                                                       class="text-gray-500 hover:text-gray-800 text-sm flex items-center gap-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 001.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
-                                                        </svg>
-                                                        Download Invoice
-                                                    </a>
-                                                    {{-- Hidden placeholder for after print --}}
-                                                    <div id="reprint-req-{{ $reservation->id }}" style="display:none;">
-                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
+                                            @if($reservation->discount_status === 'approved')
+                                                <div class="text-[10px] text-green-600 font-bold uppercase">
+                                                    ✓ {{ $reservation->discount_percentage }}% Discount Applied
+                                                </div>
+                                            @endif
+
+                                            <!-- Status Update Form (Toggled) -->
+                                            <template x-if="editingStatus">
+                                                <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-100 shadow-sm animate-fade-in">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <select name="status" class="border rounded px-2 py-1 text-xs bg-white">
+                                                        @foreach(['pending','approved','cancelled'] as $status)
+                                                            <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <button class="bg-indigo-600 text-white px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-indigo-700 transition">Update</button>
+                                                    <button type="button" @click="editingStatus = false" class="text-gray-400 hover:text-gray-600">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                    </button>
+                                                </form>
+                                            </template>
+
+                                            <!-- Discount Management -->
+                                            @if(($reservation->status === 'pending' || $isAdmin) && ($reservation->discount_status === 'none' || $reservation->discount_status === 'pending' || ($isAdmin && $reservation->status === 'approved')))
+                                                <div class="flex flex-col items-end gap-2 w-full max-w-[200px]">
+                                                    @if($reservation->discount_status === 'pending')
+                                                        <div class="w-full bg-yellow-50 p-2 rounded text-[10px] border border-yellow-100">
+                                                            <div class="font-bold text-yellow-700">Request: {{ $reservation->discount_percentage }}%</div>
+                                                            @if($isAdmin)
+                                                                <div class="mt-2 flex justify-end gap-3">
+                                                                    <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="inline">
+                                                                        @csrf @method('PUT')
+                                                                        <input type="hidden" name="discount_action" value="approve">
+                                                                        <button class="text-green-600 hover:text-green-800 font-bold uppercase">Approve</button>
+                                                                    </form>
+                                                                    <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="inline">
+                                                                        @csrf @method('PUT')
+                                                                        <input type="hidden" name="discount_action" value="reject">
+                                                                        <button class="text-red-600 hover:text-red-800 font-bold uppercase">Reject</button>
+                                                                    </form>
+                                                                </div>
+                                                            @else
+                                                                <p class="text-gray-400 italic mt-1">Pending approval</p>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+
+                                                    @if($reservation->discount_status === 'none' || $isAdmin)
+                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex items-center gap-2">
                                                             @csrf @method('PUT')
-                                                            <input type="hidden" name="reprint_action" value="request">
-                                                            <button class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-1">
-                                                                Request Reprint
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                @elseif($isStaff)
-                                                    @if($reservation->invoice_reprint_status === 'requested')
-                                                        <span class="text-xs text-amber-600 font-medium flex items-center gap-1">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 animate-pulse"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                            Reprint Pending
-                                                        </span>
-                                                    @else
-                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
-                                                            @csrf @method('PUT')
-                                                            <input type="hidden" name="reprint_action" value="request">
-                                                            <button class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-1">
-                                                                Request Reprint
+                                                            <input type="number" name="discount_percentage" min="0" max="100" value="{{ $reservation->discount_percentage }}" placeholder="%" class="w-12 border rounded px-2 py-1 text-[10px]">
+                                                            <button class="text-rose-600 text-[10px] uppercase font-bold hover:text-rose-800">
+                                                                {{ $isAdmin ? 'Update Discount' : 'Suggest Discount' }}
                                                             </button>
                                                         </form>
                                                     @endif
+                                                </div>
+                                            @endif
+
+                                            <!-- Invoice / Deletion -->
+                                            <div class="flex items-center gap-4 border-t border-gray-100 pt-3 w-full justify-end">
+                                                @if($reservation->status === 'approved')
+                                                    @php
+                                                        $canPrint = false;
+                                                        $isStaff = auth()->user()->isStaff();
+                                                        if ($isAdmin) $canPrint = true;
+                                                        elseif ($isStaff) {
+                                                            if ($reservation->invoice_print_count === 0 || $reservation->invoice_reprint_status === 'approved') $canPrint = true;
+                                                        }
+                                                    @endphp
+
+                                                    @if($canPrint)
+                                                        <a href="{{ route('admin.invoices.show', $reservation) }}" target="_blank" class="text-gray-500 hover:text-gray-800 text-xs flex items-center gap-1">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                                            Invoice
+                                                        </a>
+                                                    @endif
                                                 @endif
 
-                                                <!-- Admin Actions for Reprint -->
-                                                @if($isAdmin && $reservation->invoice_reprint_status === 'requested')
-                                                    <div class="mt-2 text-xs bg-red-50 p-2 rounded border border-red-100">
-                                                        <p class="font-bold text-red-800 mb-1">Reprint Requested</p>
-                                                        <div class="flex gap-2">
-                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
-                                                                @csrf @method('PUT')
-                                                                <input type="hidden" name="reprint_action" value="approve">
-                                                                <button class="text-green-600 font-bold uppercase hover:text-green-800">Approve</button>
-                                                            </form>
-                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
-                                                                @csrf @method('PUT')
-                                                                <input type="hidden" name="reprint_action" value="reject">
-                                                                <button class="text-red-600 font-bold uppercase hover:text-red-800">Reject</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
+                                                @if($reservation->status === 'pending' || $isAdmin)
+                                                    <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" onsubmit="return confirm('Delete this reservation?');" class="inline">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900 text-xs font-bold uppercase transition">Delete</button>
+                                                    </form>
                                                 @endif
                                             </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-3 text-right">
-                                        @if($reservation->status === 'pending' || $isAdmin)
-                                            <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" onsubmit="return confirm('Delete this reservation?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
-                                            </form>
-                                        @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

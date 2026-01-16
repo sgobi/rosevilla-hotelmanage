@@ -14,7 +14,11 @@
 
             <script>
                 setInterval(function() {
-                    fetch('{{ route('notifications.fetch') }}')
+                    fetch('{{ route('notifications.fetch') }}', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
                         .then(response => response.text())
                         .then(html => {
                             if (html.trim() !== '') {
