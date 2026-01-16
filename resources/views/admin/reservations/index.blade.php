@@ -42,7 +42,6 @@
                                     <td class="px-6 py-3 text-gray-700">{{ $reservation->guests }}</td>
                                     <td class="px-6 py-3 text-gray-700">{{ $reservation->room->title ?? 'Any' }}</td>
                                     <td class="px-6 py-3">
-                                    <td class="px-6 py-3">
                                         <!-- Status Management -->
                                         @php 
                                             $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); 

@@ -22,7 +22,7 @@
     @endphp
 
     <!-- Header -->
-    <header class="absolute top-0 left-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
+    <header x-data="{ mobileMenuOpen: false }" class="absolute top-0 left-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <!-- Logo -->
@@ -43,12 +43,53 @@
 
                 <!-- Mobile Menu Button (Hamburger) -->
                 <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
                         <span class="sr-only">Open main menu</span>
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path :class="mobileMenuOpen ? 'inline-flex' : 'hidden'" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-300" 
+             x-transition:enter-start="opacity-0 translate-x-full" 
+             x-transition:enter-end="opacity-100 translate-x-0" 
+             x-transition:leave="transition ease-in duration-200" 
+             x-transition:leave-start="opacity-100 translate-x-0" 
+             x-transition:leave-end="opacity-0 translate-x-full"
+             class="fixed inset-0 z-50 bg-rose-accent flex flex-col"
+             style="display: none;">
+            
+            <!-- Mobile Menu Header -->
+            <div class="flex justify-between items-center px-6 py-6 border-b border-white/10">
+                <img src="https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Screenshot-2024-08-05-174751-removebg-preview1.png" alt="Rose Villa Logo" class="h-12 w-auto">
+                <button @click="mobileMenuOpen = false" type="button" class="text-white hover:text-rose-gold transition">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Links -->
+            <div class="flex-1 px-6 py-12 flex flex-col justify-center space-y-8 text-center">
+                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">About</a>
+                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Suites</a>
+                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Experiences</a>
+                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Gallery</a>
+                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Footer -->
+            <div class="px-6 py-10 border-t border-white/10 text-center">
+                <p class="text-rose-gold text-xs uppercase tracking-widest mb-4">Heritage & Luxury</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="text-white/60 hover:text-white transition text-xs uppercase tracking-widest">FB</a>
+                    <a href="#" class="text-white/60 hover:text-white transition text-xs uppercase tracking-widest">IG</a>
                 </div>
             </div>
         </div>
