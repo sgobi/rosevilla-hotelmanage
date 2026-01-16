@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ReservationController extends Controller
 {
@@ -159,8 +160,16 @@ class ReservationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Reservation $reservation)
+    public function destroy(Request $request, Reservation $reservation)
     {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
         $reservation->delete();
 
         return back()->with('success', 'Reservation deleted.');
