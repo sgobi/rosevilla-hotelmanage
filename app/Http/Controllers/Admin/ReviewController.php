@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -73,8 +74,16 @@ class ReviewController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Review $review)
+    public function destroy(Request $request, Review $review)
     {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
         $review->delete();
 
         return back()->with('success', 'Review removed.');

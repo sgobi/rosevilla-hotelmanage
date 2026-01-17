@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GalleryImage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
@@ -81,8 +82,16 @@ class GalleryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GalleryImage $gallery)
+    public function destroy(Request $request, GalleryImage $gallery)
     {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
         $gallery->delete();
 
         return back()->with('success', 'Gallery image removed.');

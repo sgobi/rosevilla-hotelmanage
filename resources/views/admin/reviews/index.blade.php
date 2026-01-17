@@ -70,11 +70,70 @@
                                     {{ $review->is_published ? 'Published' : 'Hidden' }}
                                 </span>
                                 <a href="{{ route('admin.reviews.edit', $review) }}" class="text-indigo-600 hover:underline text-sm">Edit</a>
-                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Delete this review?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
-                                </form>
+                                <div x-data="{ confirming: false }">
+                                    <button @click="confirming = true" class="text-red-600 hover:underline text-sm">Delete</button>
+                                    
+                                    <!-- Modal Backdrop -->
+                                    <template x-teleport="body">
+                                        <div x-show="confirming" 
+                                             x-transition:enter="transition ease-out duration-300"
+                                             x-transition:enter-start="opacity-0"
+                                             x-transition:enter-end="opacity-100"
+                                             x-transition:leave="transition ease-in duration-200"
+                                             x-transition:leave-start="opacity-100"
+                                             x-transition:leave-end="opacity-0"
+                                             class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                                            
+                                            <!-- Modal Content -->
+                                            <div @click.away="confirming = false"
+                                                 x-show="confirming"
+                                                 x-transition:enter="transition ease-out duration-300"
+                                                 x-transition:enter-start="opacity-0 scale-95"
+                                                 x-transition:enter-end="opacity-100 scale-100"
+                                                 x-transition:leave="transition ease-in duration-200"
+                                                 x-transition:leave-start="opacity-100 scale-100"
+                                                 x-transition:leave-end="opacity-0 scale-95"
+                                                 class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 w-full max-w-md text-left">
+                                                
+                                                <div class="flex items-center gap-4 mb-6">
+                                                    <div class="p-3 bg-red-100 rounded-full text-red-600">
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                    </div>
+                                                    <div>
+                                                        <h3 class="text-xl font-bold text-gray-900">Confirm Review Deletion</h3>
+                                                        <p class="text-sm text-gray-500">Deleting review from <strong>{{ $review->guest_name }}</strong> is permanent.</p>
+                                                    </div>
+                                                </div>
+
+                                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="space-y-6">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    
+                                                    <div>
+                                                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Administrator Password</label>
+                                                        <input type="password" name="password" required 
+                                                               class="w-full border-gray-200 rounded-xl text-sm bg-gray-50 focus:ring-4 focus:ring-red-100 focus:border-red-500 py-3 px-4 transition-all"
+                                                               placeholder="Confirm with your password">
+                                                        @error('password')
+                                                            <p class="text-xs text-red-600 font-semibold mt-2">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="flex items-center gap-3 pt-2">
+                                                        <button type="button" @click="confirming = false"
+                                                                class="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors">
+                                                            Cancel
+                                                        </button>
+                                                        <button type="submit" 
+                                                                class="flex-2 px-8 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition shadow-lg shadow-red-200">
+                                                            Permanently Delete
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     @endforeach

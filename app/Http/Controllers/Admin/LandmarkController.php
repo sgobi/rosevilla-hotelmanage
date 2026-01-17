@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Landmark;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class LandmarkController extends Controller
@@ -73,8 +74,16 @@ class LandmarkController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Landmark $landmark)
+    public function destroy(Request $request, Landmark $landmark)
     {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
         $landmark->delete();
 
         return back()->with('success', 'Landmark removed.');
