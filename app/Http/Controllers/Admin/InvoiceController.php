@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ContentSetting;
 use App\Models\Reservation;
+use App\Models\EventBooking;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -43,5 +44,37 @@ class InvoiceController extends Controller
         $nights = $nights > 0 ? $nights : 1;
 
         return view('admin.invoices.show', compact('reservation', 'content', 'nights'));
+    }
+
+    public function showEvent(EventBooking $event)
+    {
+        // Enforce approved status for invoice access
+        if ($event->status !== 'approved') {
+            abort(403, 'Invoices can only be viewed for approved event bookings.');
+        }
+
+        $user = auth()->user();
+
+        // Admin can always view
+        if ($user->isAdmin() || $user->isAccountant()) {
+            // Pass
+        } elseif ($user->isStaff()) {
+            // Staff restrictions
+            if ($event->invoice_print_count > 0 && $event->invoice_reprint_status !== 'approved') {
+                abort(403, 'Invoice already printed. Request Admin approval for reprint.');
+            }
+
+            // Increment count
+            $event->increment('invoice_print_count');
+
+            // Consume approval if used
+            if ($event->invoice_reprint_status === 'approved') {
+                $event->update(['invoice_reprint_status' => 'none']);
+            }
+        }
+
+        $content = ContentSetting::pluck('value', 'key');
+        
+        return view('admin.events.invoice', compact('event', 'content'));
     }
 }

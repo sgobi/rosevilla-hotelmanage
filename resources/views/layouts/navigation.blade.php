@@ -23,6 +23,9 @@
                         <x-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
                             {{ __('Reservations') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.events.index')" :active="request()->routeIs('admin.events.*')">
+                            {{ __('Event Bookings') }}
+                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isAdmin())

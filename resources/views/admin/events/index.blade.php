@@ -1,0 +1,328 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Event Bookings
+            </h2>
+            <div class="flex gap-4">
+                <a href="{{ route('admin.events.calendar') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+                    View Calendar
+                </a>
+                <a href="{{ route('admin.events.create') }}" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">
+                    New Booking
+                </a>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if(session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <div class="bg-white shadow rounded-xl border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800">All Event Bookings</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="text-xs uppercase text-gray-500 bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Customer</th>
+                                <th class="px-6 py-3">Event Details</th>
+                                <th class="px-6 py-3">Date & Time</th>
+                                <th class="px-6 py-3">Guests</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($bookings as $booking)
+                                <tr id="event-{{ $booking->id }}" 
+                                    class="transition-colors hover:bg-gray-50 scroll-mt-20" 
+                                    :class="editing ? 'bg-gray-50 relative z-50' : ''"
+                                    x-data="{ editing: false }">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-gray-800">{{ $booking->customer_name }}</p>
+                                        <p class="text-gray-500 text-xs">{{ $booking->customer_email }} • {{ $booking->customer_phone }}</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                                            {{ $booking->event_type }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-700">
+                                        <div class="font-medium">{{ $booking->event_date->format('M d, Y') }}</div>
+                                        <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('h:i A') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-700">{{ $booking->guests }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border inline-block w-max
+                                                @if($booking->conflict_status === 'requested') bg-rose-50 text-rose-700 border-rose-100
+                                                @elseif($booking->status === 'approved') bg-emerald-50 text-emerald-700 border-emerald-100
+                                                @elseif($booking->status === 'cancelled' || $booking->status === 'rejected') bg-rose-50 text-rose-700 border-rose-100
+                                                @else bg-amber-50 text-amber-700 border-amber-100 @endif">
+                                                @if($booking->conflict_status === 'requested')
+                                                    Conflict Pending
+                                                @else
+                                                    {{ $booking->status }}
+                                                @endif
+                                            </span>
+                                            @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
+                                                <span class="text-[9px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-1.5 rounded w-max">
+                                                    {{ $booking->discount_percentage }}% OFF
+                                                </span>
+                                            @elseif($booking->discount_status === 'pending')
+                                                <span class="text-[9px] text-amber-600 font-bold mt-1 bg-amber-50 px-1.5 rounded w-max uppercase italic">
+                                                    {{ $booking->discount_percentage }}% Pending
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex justify-end items-center gap-3">
+                                            {{-- Invoice & Management --}}
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative">
+                                                @if($booking->status === 'approved')
+                                                    @php
+                                                        $canPrint = auth()->user()->isAdmin() || 
+                                                                   ($booking->invoice_print_count == 0 || $booking->invoice_reprint_status === 'approved');
+                                                    @endphp
+
+                                                    @if($canPrint)
+                                                        <a href="{{ route('admin.events.invoice', $booking) }}" target="_blank" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Print Invoice">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                                        </a>
+                                                    @endif
+                                                @endif
+
+                                                <button @click="editing = !editing" 
+                                                        :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
+                                                        class="p-2 rounded-lg transition-all" title="Manage Booking">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                </button>
+
+                                                {{-- Management Modal --}}
+                                                <div x-show="editing" @click.away="editing = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                                     class="bg-white border border-gray-200 rounded-2xl p-6 shadow-2xl text-left w-96 absolute right-0 top-full mt-2 z-[1000] ring-1 ring-black ring-opacity-5 max-h-[80vh] overflow-y-auto" style="display: none;">
+                                                    <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
+                                                        <div>
+                                                            <h4 class="text-sm font-bold text-gray-900">Manage Event</h4>
+                                                            <p class="text-[10px] text-gray-500 mt-0.5">Update status or discounts</p>
+                                                        </div>
+                                                        <button @click="editing = false" class="text-gray-400 hover:text-gray-600 bg-gray-50 p-1 rounded-md transition-colors">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="space-y-5">
+                                                        {{-- Admin Status Update --}}
+                                                        @if(auth()->user()->isAdmin())
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
+                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex gap-2">
+                                                                    @csrf @method('PATCH')
+                                                                    <select name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                                        @foreach(['pending','approved','rejected','cancelled'] as $status)
+                                                                            <option value="{{ $status }}" @selected($booking->status === $status)>{{ ucfirst($status) }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
+                                                                </form>
+                                                            </div>
+                                                        @endif
+
+                                                        {{-- Conflict Management --}}
+                                                        @if($booking->conflict_status !== 'none' && $booking->status !== 'cancelled')
+                                                            <div class="mb-5 pb-5 border-b border-gray-100">
+                                                                <label class="block text-xs font-bold text-rose-500 uppercase mb-3 tracking-wider flex items-center gap-2">
+                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                    Conflict Management
+                                                                </label>
+
+                                                                @if($booking->conflict_status === 'requested')
+                                                                    <div class="bg-rose-50 rounded-xl p-3 mb-3 border border-rose-100">
+                                                                        <p class="text-xs text-rose-800 font-bold mb-2">Overbooking Requested</p>
+                                                                        @if(auth()->user()->isAdmin())
+                                                                            <div class="flex gap-2">
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="conflict_action" value="approve">
+                                                                                    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm" style="background-color: #4F46E5; color: white;">Approve Override</button>
+                                                                                </form>
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="conflict_action" value="reject">
+                                                                                    <button class="w-full bg-white text-gray-600 border border-gray-200 py-2 rounded-lg text-xs font-bold hover:bg-gray-50 transition">Reject</button>
+                                                                                </form>
+                                                                            </div>
+                                                                        @else
+                                                                            <span class="text-[10px] uppercase font-bold text-rose-400">Waiting for Admin</span>
+                                                                        @endif
+                                                                    </div>
+                                                                @elseif($booking->conflict_status === 'approved')
+                                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                        Override Approved
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+
+                                                        {{-- Discount Management --}}
+                                                            <div class="mb-5">
+                                                                <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">Discount Management</label>
+
+                                                                @if($booking->discount_percentage > 0)
+                                                                    <div class="mb-3">
+                                                                        @if($booking->discount_status === 'approved')
+                                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                                Approved
+                                                                            </span>
+                                                                        @elseif($booking->discount_status === 'rejected')
+                                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100">
+                                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                                Rejected
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100">
+                                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                                                Pending Approval
+                                                                            </span>
+                                                                        @endif
+
+                                                                        @if($booking->discount_status === 'pending' && auth()->user()->isAdmin())
+                                                                            <div class="mt-2 flex gap-2 relative z-10">
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="discount_action" value="approve">
+                                                                                    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 uppercase transition-colors shadow-sm shadow-indigo-200 flex items-center justify-center gap-1">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                                        Approve
+                                                                                    </button>
+                                                                                </form>
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="discount_action" value="reject">
+                                                                                    <button class="w-full bg-white text-rose-500 border border-rose-100 py-2 rounded-lg text-xs font-bold hover:bg-rose-50 uppercase transition-colors flex items-center justify-center gap-1">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                                        Reject
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
+
+                                                                @if($booking->status === 'pending')
+                                                                    <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex gap-2 items-center">
+                                                                        @csrf @method('PATCH')
+                                                                        <div class="relative flex-1 group">
+                                                                            <input type="number" name="discount_percentage" min="0" max="100" value="{{ $booking->discount_percentage }}" class="w-full border-gray-200 rounded-xl text-xs bg-gray-50 focus:bg-white pl-3 pr-8 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-bold text-gray-700 placeholder-gray-400" placeholder="0">
+                                                                            <span class="absolute right-3 top-2.5 text-xs font-bold text-gray-400 group-hover:text-indigo-400 transition-colors">%</span>
+                                                                        </div>
+                                                                        
+                                                                        <button class="bg-indigo-600 text-white border border-transparent px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200">
+                                                                            {{ auth()->user()->isAdmin() ? 'Set' : 'Suggest' }}
+                                                                        </button>
+                                                                    </form>
+                                                                    @if($booking->discount_amount > 0)
+                                                                        <p class="text-[10px] text-emerald-600 font-bold mt-2 text-right">
+                                                                            Discount: {{ number_format($booking->discount_amount, 2) }}
+                                                                        </p>
+                                                                    @endif
+                                                                @endif
+                                                            </div>
+
+                                                        {{-- Reprint Control --}}
+                                                        @if($booking->status === 'approved')
+                                                            <div class="pt-5 border-t border-gray-100">
+                                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-widest">Invoice Printing</label>
+                                                                
+                                                                @if($booking->invoice_reprint_status === 'requested')
+                                                                    <div class="bg-orange-50 rounded-xl p-3 border border-orange-100 shadow-sm relative overflow-hidden">
+                                                                        <div class="flex items-center gap-2 mb-3">
+                                                                            <div class="p-1.5 bg-orange-100 text-orange-600 rounded-lg">
+                                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                            </div>
+                                                                            <p class="text-xs font-bold text-orange-800 uppercase tracking-wide">Reprint Requested</p>
+                                                                        </div>
+
+                                                                        @if(auth()->user()->isAdmin())
+                                                                            <div class="flex gap-2">
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="reprint_action" value="approve">
+                                                                                    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 flex items-center justify-center gap-1">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                                        Approve
+                                                                                    </button>
+                                                                                </form>
+                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
+                                                                                    @csrf @method('PATCH')
+                                                                                    <input type="hidden" name="reprint_action" value="reject">
+                                                                                    <button class="w-full bg-white text-rose-500 border border-rose-100 py-2 rounded-lg text-xs font-bold hover:bg-rose-50 transition flex items-center justify-center gap-1">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                                        Reject
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        @else
+                                                                            <div class="text-xs text-orange-600 font-medium italic bg-orange-100/50 p-2 rounded-lg text-center">
+                                                                                Waiting for Admin approval...
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    @elseif($booking->invoice_print_count > 0 && $booking->invoice_reprint_status !== 'approved' && !auth()->user()->isAdmin())
+                                                                        <form action="{{ route('admin.events.update', $booking) }}" method="POST">
+                                                                            @csrf @method('PATCH')
+                                                                            <input type="hidden" name="reprint_action" value="request">
+                                                                            <button type="submit" class="w-full bg-gray-50 text-gray-600 border border-gray-200 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2 group">
+                                                                                <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                                                Request Reprint
+                                                                            </button>
+                                                                        </form>
+                                                                    @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-1">
+                                                <a href="{{ route('admin.events.edit', $booking) }}" class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit Info">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                </a>
+                                                
+                                                <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" onsubmit="return confirm('Permanently delete this event?')">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                        <div class="flex flex-col items-center gap-2">
+                                            <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <p>No event bookings found.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

@@ -43,8 +43,16 @@ class DashboardController extends Controller
         if ($notification) {
             $notification->markAsRead();
             
-            // Redirect to the specific reservation row
-            return redirect($notification->data['action_url'] . '#reservation-' . $notification->data['reservation_id']);
+            $url = $notification->data['action_url'] ?? route('dashboard');
+            
+            // Try to append hash for specific row highlighting if ID exists
+            if (isset($notification->data['reservation_id'])) {
+                $url .= '#reservation-' . $notification->data['reservation_id'];
+            } elseif (isset($notification->data['booking_id'])) {
+                $url .= '#event-' . $notification->data['booking_id'];
+            }
+            
+            return redirect($url);
         }
         
         return back();

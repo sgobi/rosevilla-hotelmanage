@@ -30,22 +30,29 @@
         <!-- Sales Table -->
         <table class="w-full text-sm text-left mb-8">
             <thead>
-                <tr class="border-b border-gray-300">
+                <tr class="border-b border-gray-300 uppercase text-xs text-gray-500">
                     <th class="py-2">Date</th>
-                    <th class="py-2">Reservation ID</th>
-                    <th class="py-2">Guest Name</th>
-                    <th class="py-2">Room</th>
+                    <th class="py-2">Type</th>
+                    <th class="py-2">Client / ID</th>
+                    <th class="py-2">Description</th>
                     <th class="py-2 text-right">Amount (LKR)</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($sales as $sale)
-                    <tr class="border-b border-gray-100">
+                    <tr class="border-b border-gray-100 italic">
                         <td class="py-3">{{ $sale->created_at->format('M d, Y') }}</td>
-                        <td class="py-3">#{{ $sale->id }}</td>
-                        <td class="py-3 font-medium">{{ $sale->guest_name }}</td>
-                        <td class="py-3">{{ $sale->room->title ?? '-' }}</td>
-                        <td class="py-3 text-right">
+                        <td class="py-3 font-bold text-[10px] uppercase">
+                            <span class="{{ $sale->report_type === 'Room' ? 'text-blue-600' : 'text-purple-600' }}">
+                                {{ $sale->report_type }}
+                            </span>
+                        </td>
+                        <td class="py-3">
+                            <div class="font-medium">{{ $sale->report_name }}</div>
+                            <div class="text-[10px] text-gray-400">#{{ $sale->id }}</div>
+                        </td>
+                        <td class="py-3">{{ $sale->report_desc }}</td>
+                        <td class="py-3 text-right font-semibold">
                             {{ number_format($sale->total_price, 2) }}
                         </td>
                     </tr>

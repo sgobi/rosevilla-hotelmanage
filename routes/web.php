@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\EventBookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -28,12 +29,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Staff & Admin
         Route::middleware('role:admin,staff')->group(function () {
             Route::resource('reservations', ReservationController::class)->only(['index', 'update', 'destroy']);
+            Route::resource('events', EventBookingController::class);
+            Route::get('events-calendar', [EventBookingController::class, 'calendar'])->name('events.calendar');
+            Route::get('api/events', [EventBookingController::class, 'apiEvents'])->name('events.api');
             Route::resource('reviews', ReviewController::class)->except(['show']);
         });
 
         // Admin, Accountant, & Staff (Invoices)
         Route::middleware('role:admin,accountant,staff')->group(function () {
             Route::get('invoices/{reservation}', [InvoiceController::class, 'show'])->name('invoices.show');
+            Route::get('event-invoices/{event}', [InvoiceController::class, 'showEvent'])->name('events.invoice');
         });
 
         // Accountant & Admin (Reports)

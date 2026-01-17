@@ -14,26 +14,42 @@
         </div>
         <div class="divide-y divide-gray-100">
             @foreach($notifications as $notification)
+                @php
+                    $data = $notification->data;
+                    $type = $data['type'] ?? 'info';
+                    $subtype = $data['subtype'] ?? '';
+                    $status = $data['status'] ?? '';
+                @endphp
                 <div class="px-6 py-4 flex items-start justify-between hover:bg-gray-50 transition">
                     <div class="flex gap-3">
                         <div class="mt-1">
-                            @if($notification->data['type'] === 'suggestion')
-                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-bold">Offer</span>
+                            @if($type === 'discount_suggestion' || $subtype === 'discount')
+                                <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-bold">Discount</span>
+                            @elseif($type === 'reprint_request' || $subtype === 'reprint')
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold">Reprint</span>
+                            @elseif($subtype === 'conflict')
+                                <span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-bold">Conflict</span>
+                            @elseif($status === 'approved')
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">Approved</span>
+                            @elseif($status === 'rejected')
+                                <span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-bold">Rejected</span>
                             @else
                                 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">Update</span>
                             @endif
                         </div>
                         <div>
-                            <p class="text-gray-900 font-medium">{{ $notification->data['message'] }}</p>
+                            <p class="text-gray-900 font-medium">{{ $data['message'] ?? 'Notification' }}</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('notifications.read', $notification->id) }}" class="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
-                        View
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </a>
+                    @if(isset($data['action_url']))
+                        <a href="{{ route('notifications.read', $notification->id) }}" class="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
+                            View
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </a>
+                    @endif
                 </div>
             @endforeach
         </div>
