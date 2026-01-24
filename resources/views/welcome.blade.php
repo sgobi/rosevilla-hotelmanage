@@ -16,28 +16,36 @@
 <body class="font-sans text-rose-text antialiased bg-white">
 
     <!-- Header -->
-    <header class="absolute top-0 left-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
+    <header x-data="{ scrolled: false, mobileMenuOpen: false }" 
+            @scroll.window="scrolled = (window.pageYOffset > 50)"
+            :class="{ 'bg-rose-primary shadow-lg': scrolled, 'bg-gradient-to-b from-black/80 to-transparent': !scrolled }"
+            class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
+            <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
-                    <a href="#" class="text-white font-serif text-2xl tracking-widest uppercase hover:text-rose-gold transition">
+                    <a href="#" class="text-white font-serif text-2xl tracking-widest uppercase hover:text-rose-accent transition">
                         Rose Villa
                     </a>
                 </div>
                 
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-10">
-                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Home</a>
-                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">About</a>
-                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Suites</a>
-                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Experiences</a>
-                    <a href="#" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Contact</a>
+                <nav class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Home</a>
+                    <a href="#about" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">The Villa</a>
+                    <a href="#suites" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Suites</a>
+                    <a href="#experiences" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Experiences</a>
+                    <a href="#contact" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Contact</a>
+                    
+                    <!-- Book Now Button -->
+                    <a href="#book-now" class="ml-4 bg-rose-accent hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-6 py-3 tracking-widest transition duration-300">
+                        Book Your Stay
+                    </a>
                 </nav>
 
-                <!-- Mobile Menu Button (Hamburger) -->
+                <!-- Mobile Menu Button -->
                 <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
                         <span class="sr-only">Open main menu</span>
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -46,10 +54,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             @click.away="mobileMenuOpen = false"
+             class="md:hidden bg-rose-primary border-t border-rose-800">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Home</a>
+                <a href="#about" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">The Villa</a>
+                <a href="#suites" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Suites</a>
+                <a href="#experiences" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Experiences</a>
+                <a href="#contact" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Contact</a>
+            </div>
+        </div>
     </header>
 
     <!-- Hero Section -->
-    <div class="relative h-screen flex items-center justify-center overflow-hidden">
+    <div id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
         <!-- Background Image -->
         <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Rose Villa Heritage Home" class="w-full h-full object-cover">
@@ -64,16 +91,42 @@
             <p class="text-white text-lg md:text-xl font-light tracking-widest uppercase mb-8">
                 Experience the Extraordinary in Jaffna
             </p>
-            <a href="#" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-accent px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
+            <a href="#suites" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-primary px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
                 Explore Our Heritage
             </a>
+
+            <!-- Booking Widget -->
+            <div class="mt-12 bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20 shadow-2xl max-w-4xl mx-auto hidden md:block">
+                <form action="#" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-xs uppercase tracking-wider mb-1">Check In</label>
+                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                    </div>
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-xs uppercase tracking-wider mb-1">Check Out</label>
+                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                    </div>
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-xs uppercase tracking-wider mb-1">Guests</label>
+                        <select class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                            <option>1 Guest</option>
+                            <option>2 Guests</option>
+                            <option>3 Guests</option>
+                            <option>4+ Guests</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-rose-accent hover:bg-white hover:text-rose-primary text-white text-sm font-bold uppercase px-8 py-2 h-[38px] tracking-widest transition duration-300 shadow-md">
+                        Search
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- About / Welcome Section -->
-    <section class="py-20 md:py-32 bg-rose-primary">
+    <section id="about" class="py-20 md:py-32 bg-white text-rose-dark">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-8 uppercase tracking-wide">
+            <h2 class="font-serif text-3xl md:text-4xl text-rose-primary mb-8 uppercase tracking-wide">
                 Wander & Explore
             </h2>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
@@ -87,7 +140,7 @@
     </section>
 
     <!-- Features Section (Grid) -->
-    <section class="py-16 bg-gray-50">
+    <section id="experiences" class="py-16 bg-rose-light">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 <!-- Feature 1 -->
@@ -124,7 +177,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-rose-accent text-white py-16 border-t border-gray-800">
+    <footer id="contact" class="bg-rose-dark text-white py-16 border-t border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
                 <!-- Col 1 -->

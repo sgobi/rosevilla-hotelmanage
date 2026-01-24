@@ -121,6 +121,13 @@ class EventBookingController extends Controller
             $msg = 'Event booking created successfully. Admin notified for approval.';
         }
 
+        // Send WhatsApp to Customer
+        try {
+            $booking->notify(new \App\Notifications\WhatsAppBookingConfirmed($booking, 'event'));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+        }
+
         return redirect()->route('admin.events.index')->with('success', $msg);
     }
 
@@ -145,10 +152,10 @@ class EventBookingController extends Controller
      */
     public function update(Request $request, EventBooking $event)
     {
-        // 1. Handle Status Update (Admin Only)
+        // 1. Handle Status Update (Admin and Staff)
         if ($request->has('status')) {
-            if (!auth()->user()->isAdmin()) {
-                abort(403, 'Only administrators can approve or reject event bookings.');
+            if (!in_array(auth()->user()->role, ['admin', 'staff'])) {
+                abort(403, 'Only administrators and staff can update booking status.');
             }
             $request->validate(['status' => 'required|in:pending,approved,rejected,cancelled']);
             $event->update(['status' => $request->status]);

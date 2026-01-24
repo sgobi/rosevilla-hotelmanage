@@ -1,14 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Event Bookings
             </h2>
-            <div class="flex gap-4">
-                <a href="{{ route('admin.events.calendar') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.events.calendar') }}" class="inline-flex items-center justify-center bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     View Calendar
                 </a>
-                <a href="{{ route('admin.events.create') }}" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">
+                <a href="{{ route('admin.events.create') }}" class="inline-flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     New Booking
                 </a>
             </div>
@@ -121,7 +123,7 @@
 
                                                     <div class="space-y-5">
                                                         {{-- Admin Status Update --}}
-                                                        @if(auth()->user()->isAdmin())
+                                                        @if((auth()->user()->isAdmin() || auth()->user()->isStaff()) && $booking->conflict_status !== 'requested')
                                                             <div>
                                                                 <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
                                                                 <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex gap-2">
@@ -220,22 +222,24 @@
                                                                 @endif
 
                                                                 @if($booking->status === 'pending')
-                                                                    <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex gap-2 items-center">
+                                                                    <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex flex-col gap-3">
                                                                         @csrf @method('PATCH')
-                                                                        <div class="relative flex-1 group">
-                                                                            <input type="number" name="discount_percentage" min="0" max="100" value="{{ $booking->discount_percentage }}" class="w-full border-gray-200 rounded-xl text-xs bg-gray-50 focus:bg-white pl-3 pr-8 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-bold text-gray-700 placeholder-gray-400" placeholder="0">
-                                                                            <span class="absolute right-3 top-2.5 text-xs font-bold text-gray-400 group-hover:text-indigo-400 transition-colors">%</span>
+                                                                        <div class="relative w-full group">
+                                                                            <input type="number" name="discount_percentage" min="0" max="100" value="{{ $booking->discount_percentage }}" class="w-full border-gray-300 rounded-xl text-sm bg-white focus:bg-white pl-3 pr-8 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-bold text-gray-900 shadow-sm" placeholder="Enter %">
+                                                                            <span class="absolute right-3 top-2.5 text-xs font-bold text-gray-500 pointer-events-none">%</span>
                                                                         </div>
                                                                         
-                                                                        <button class="bg-indigo-600 text-white border border-transparent px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200">
-                                                                            {{ auth()->user()->isAdmin() ? 'Set' : 'Suggest' }}
+                                                                        @if($booking->discount_amount > 0)
+                                                                            <div class="bg-emerald-50 rounded-lg p-2 text-center border border-emerald-100">
+                                                                                <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Discount Amount</p>
+                                                                                <p class="text-sm text-emerald-700 font-bold">{{ number_format($booking->discount_amount, 2) }}</p>
+                                                                            </div>
+                                                                        @endif
+
+                                                                        <button class="w-full bg-indigo-600 text-white border border-transparent px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200">
+                                                                            {{ auth()->user()->isAdmin() ? 'Set Discount' : 'Suggest Discount' }}
                                                                         </button>
                                                                     </form>
-                                                                    @if($booking->discount_amount > 0)
-                                                                        <p class="text-[10px] text-emerald-600 font-bold mt-2 text-right">
-                                                                            Discount: {{ number_format($booking->discount_amount, 2) }}
-                                                                        </p>
-                                                                    @endif
                                                                 @endif
                                                             </div>
 

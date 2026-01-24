@@ -22,28 +22,40 @@
     @endphp
 
     <!-- Header -->
-    <header x-data="{ mobileMenuOpen: false }" class="absolute top-0 left-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
+    <header x-data="{ scrolled: false, mobileMenuOpen: false }" 
+            @scroll.window="scrolled = (window.pageYOffset > 50)"
+            :class="{ 'bg-rose-primary shadow-lg py-4': scrolled, 'bg-gradient-to-b from-black/80 to-transparent py-6': !scrolled }"
+            class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
+            <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
                     <a href="{{ route('home') }}" class="block">
-                        <img src="https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Screenshot-2024-08-05-174751-removebg-preview1.png" alt="Rose Villa Logo" class="h-16 w-auto hover:opacity-90 transition">
+                         <img src="https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Screenshot-2024-08-05-174751-removebg-preview1.png" 
+                              alt="Rose Villa Logo" 
+                              class="transition-all duration-300"
+                              :class="scrolled ? 'h-12' : 'h-16'">
                     </a>
                 </div>
                 
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-10">
-                    <a href="#about" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">About</a>
-                    <a href="#rooms" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Suites</a>
-                    <a href="#experiences" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Experiences</a>
-                    <a href="#gallery" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Gallery</a>
-                    <a href="#contact" class="text-white hover:text-rose-gold uppercase text-sm tracking-wider font-semibold transition">Contact</a>
+                <nav class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">About</a>
+                    <a href="#rooms" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Suites</a>
+                    <a href="#events" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Events</a>
+                    <a href="#experiences" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Experiences</a>
+                    <a href="#gallery" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Gallery</a>
+                    <a href="#contact" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Contact</a>
+                    
+                    <!-- Book Now Button -->
+                    <a href="#reservation" class="ml-4 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-6 py-3 tracking-widest transition duration-300 shadow-md">
+                        Book Your Stay
+                    </a>
                 </nav>
 
-                <!-- Mobile Menu Button (Hamburger) -->
+                <!-- Mobile Menu Button -->
                 <div class="-mr-2 flex items-center md:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-rose-gold transition">
                         <span class="sr-only">Open main menu</span>
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -59,60 +71,89 @@
              x-transition:enter="transition ease-out duration-300" 
              x-transition:enter-start="opacity-0 translate-x-full" 
              x-transition:enter-end="opacity-100 translate-x-0" 
-             x-transition:leave="transition ease-in duration-200" 
-             x-transition:leave-start="opacity-100 translate-x-0" 
-             x-transition:leave-end="opacity-0 translate-x-full"
-             class="fixed inset-0 z-50 bg-rose-accent flex flex-col"
-             style="display: none;">
+             style="display: none;"
+             class="fixed inset-0 z-50 bg-rose-primary/95 backdrop-blur-xl flex flex-col">
             
-            <!-- Mobile Menu Header -->
             <div class="flex justify-between items-center px-6 py-6 border-b border-white/10">
-                <img src="https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Screenshot-2024-08-05-174751-removebg-preview1.png" alt="Rose Villa Logo" class="h-12 w-auto">
-                <button @click="mobileMenuOpen = false" type="button" class="text-white hover:text-rose-gold transition">
+                <span class="text-white font-serif text-xl uppercase tracking-widest">Menu</span>
+                <button @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <!-- Mobile Menu Links -->
-            <div class="flex-1 px-6 py-12 flex flex-col justify-center space-y-8 text-center">
-                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">About</a>
-                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Suites</a>
-                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Experiences</a>
-                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Gallery</a>
-                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.2em] font-serif transition">Contact</a>
-            </div>
-
-            <!-- Mobile Menu Footer -->
-            <div class="px-6 py-10 border-t border-white/10 text-center">
-                <p class="text-rose-gold text-xs uppercase tracking-widest mb-4">Heritage & Luxury</p>
-                <div class="flex justify-center space-x-6">
-                    <a href="#" class="text-white/60 hover:text-white transition text-xs uppercase tracking-widest">FB</a>
-                    <a href="#" class="text-white/60 hover:text-white transition text-xs uppercase tracking-widest">IG</a>
-                </div>
+            <div class="flex-1 px-6 py-12 flex flex-col justify-center space-y-6 text-center">
+                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">About</a>
+                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Suites</a>
+                <a href="#events" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Events</a>
+                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Experiences</a>
+                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Gallery</a>
+                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Contact</a>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <div class="relative h-screen flex items-center justify-center overflow-hidden">
+    <div class="relative h-screen flex items-center justify-center overflow-hidden bg-black">
         <!-- Background Image -->
         <div class="absolute inset-0 z-0">
-            <img src="{{ $heroImage }}" alt="Rose Villa Heritage Home" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-black/30"></div>
+            <img src="{{ $heroImage }}" alt="Rose Villa Heritage Home" class="w-full h-full object-cover opacity-100 animate-ken-burns">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
         </div>
 
         <!-- Hero Content -->
-        <div class="relative z-1 text-center px-4">
-            <h1 class="font-serif text-5xl md:text-7xl text-white mb-6 drop-shadow-lg tracking-wide uppercase">
+        <div class="relative z-1 text-center px-4 max-w-5xl mx-auto mt-16">
+            <h1 class="font-serif text-5xl md:text-8xl text-white mb-6 drop-shadow-2xl tracking-tight uppercase leading-none opacity-0 animate-fade-in-up" 
+                style="animation-delay: 0.3s; animation-fill-mode: forwards;">
                 {{ $heroTitle }}
             </h1>
-            <p class="text-white text-lg md:text-xl font-light tracking-widest uppercase mb-8">
+            <div class="w-24 h-1 bg-rose-gold mx-auto mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.6s; animation-fill-mode: forwards;"></div>
+            <p class="text-gray-100 text-lg md:text-2xl font-light tracking-wide mb-10 opacity-0 animate-fade-in-up" 
+               style="animation-delay: 0.8s; animation-fill-mode: forwards;">
                 {{ $heroSubtitle }}
             </p>
-            <a href="#rooms" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-accent px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
-                Explore Our Heritage
+            <div class="opacity-0 animate-fade-in-up" style="animation-delay: 1s; animation-fill-mode: forwards;">
+                <a href="#rooms" class="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold text-white uppercase tracking-[0.2em] transition-all duration-300 border border-white hover:bg-white hover:text-rose-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-gold">
+                    <span class="absolute inset-0 w-full h-full bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                    <span class="relative">Explore Collection</span>
+                </a>
+            </div>
+
+            <!-- Booking Widget -->
+            <div class="mt-16 bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20 shadow-2xl hidden md:block opacity-0 animate-fade-in-up" 
+                 style="animation-delay: 1.2s; animation-fill-mode: forwards;">
+                <form action="#reservation" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Check In</label>
+                        <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
+                    </div>
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Check Out</label>
+                        <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
+                    </div>
+                    <div class="flex-1 text-left">
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Guests</label>
+                        <select class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
+                            <option>1 Guest</option>
+                            <option>2 Guests</option>
+                            <option>3 Guests</option>
+                            <option>4+ Guests</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-8 h-10 tracking-widest transition duration-300 shadow-md">
+                        Search Availability
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#about" class="text-white/70 hover:text-rose-gold transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
             </a>
         </div>
     </div>
@@ -120,28 +161,36 @@
     <!-- About Section -->
     <section id="about" class="py-20 md:py-32 bg-rose-primary">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-8 uppercase tracking-wide">
+            <h2 class="font-serif text-3xl md:text-4xl text-white mb-8 uppercase tracking-wide">
                 Wander & Explore
             </h2>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
-            <p class="text-lg leading-relaxed text-gray-600 mb-8 font-light">
+            <p class="text-lg leading-relaxed text-white/90 mb-8 font-light">
                 {{ $content['about_text'] ?? "Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance." }}
             </p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 text-sm uppercase tracking-wider text-rose-accent">
-                <div class="flex flex-col items-center">
-                    <span class="text-rose-gold text-2xl mb-2">✦</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-sm uppercase tracking-wider text-white">
+                <div class="flex flex-col items-center group">
+                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
                     <span>Heritage Living</span>
                 </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-rose-gold text-2xl mb-2">✦</span>
+                <div class="flex flex-col items-center group">
+                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
+                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
                     <span>Authentic Cuisine</span>
                 </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-rose-gold text-2xl mb-2">✦</span>
+                <div class="flex flex-col items-center group">
+                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
+                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
                     <span>Lush Gardens</span>
                 </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-rose-gold text-2xl mb-2">✦</span>
+                <div class="flex flex-col items-center group">
+                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
+                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
                     <span>Curated Tours</span>
                 </div>
             </div>
@@ -149,71 +198,173 @@
     </section>
 
     <!-- Rooms Section -->
-    <section id="rooms" class="py-20 bg-gray-50">
+    <section id="rooms" class="py-24 bg-[#f8f5f2] overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Our Suites</h2>
-                <p class="text-gray-500 font-light">Experience comfort in our historically preserved chambers</p>
+            <div class="text-center mb-20">
+                <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">Sanctuary</span>
+                <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">Our Suites</h2>
+                <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto">Experience comfort in our historically preserved chambers, where every detail tells a story of the past.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="space-y-24">
                 @foreach($rooms as $room)
-                    <div class="bg-white group cursor-pointer shadow-sm hover:shadow-xl transition duration-500">
-                        <div class="overflow-hidden h-80 relative">
-                             <img src="{{ str_starts_with($room->featured_image, 'http') ? $room->featured_image : asset('storage/' . $room->featured_image) }}" alt="{{ $room->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                        </div>
-                        <div class="p-8 text-center">
-                            <h3 class="font-serif text-2xl text-rose-accent uppercase mb-3">{{ $room->title }}</h3>
-                            <p class="text-xs font-bold text-rose-gold tracking-widest uppercase mb-4">
-                                Sleeps {{ $room->capacity }} • {{ $room->bed_type }}
-                            </p>
-                            <p class="text-gray-500 text-sm mb-6 leading-relaxed">{{ Str::limit($room->description, 100) }}</p>
-                                <span class="text-rose-accent text-lg">LKR {{ number_format($room->price_per_night, 0) }}<span class="text-xs text-gray-400"> per day</span></span>
+                    <div class="group relative bg-white shadow-xl overflow-hidden round-sm">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                            <!-- Image Column -->
+                            <div class="relative h-96 lg:h-auto overflow-hidden {{ $loop->even ? 'lg:order-2' : '' }}">
+                                <img src="{{ str_starts_with($room->featured_image, 'http') ? $room->featured_image : asset('storage/' . $room->featured_image) }}" 
+                                     alt="{{ $room->title }}" 
+                                     class="w-full h-full object-cover transform group-hover:scale-110 transition duration-1000 ease-in-out">
+                                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition duration-500"></div>
                             </div>
-                            <div class="mt-8 text-center">
-                                <a href="#reservation" onclick="document.getElementById('room_id').value='{{ $room->id }}'" class="inline-block border border-rose-accent text-rose-accent hover:bg-rose-accent hover:text-white px-6 py-2 text-xs uppercase tracking-widest transition duration-300">
-                                    Book This Suite
-                                </a>
-                            </div>
-                            <div class="mt-6 flex flex-wrap justify-center gap-2">
-                                @foreach(($room->amenities ?? []) as $amenity)
-                                    <span class="text-[10px] uppercase border border-gray-200 px-2 py-1 text-gray-400 tracking-wider">{{ $amenity }}</span>
-                                @endforeach
-                            </div>
-
-                            <!-- Room Gallery Thumbnails -->
-                            @if(!empty($room->gallery_urls))
-                                <div class="mt-8 pt-6 border-t border-gray-100">
-                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-3 font-semibold">Gallery ({{ count($room->gallery_urls) }} Photos)</p>
-                                    <div class="grid grid-cols-4 gap-3">
-                                        @foreach($room->gallery_urls as $index => $gurl)
-                                            <div class="group/thumb relative h-20 overflow-hidden rounded-lg shadow-md border-2 border-gray-100 hover:border-rose-gold transition-all duration-300 cursor-pointer"
-                                                 onclick="openLightbox('{{ $room->id }}', {{ $index }})">
-                                                <img src="{{ str_starts_with($gurl, 'http') ? $gurl : asset('storage/' . $gurl) }}" 
-                                                     class="h-full w-full object-cover transform group-hover/thumb:scale-110 transition duration-500"
-                                                     alt="Gallery image {{ $index + 1 }}">
-                                                <!-- Hover Overlay -->
-                                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2">
-                                                    <span class="text-white text-[10px] font-semibold uppercase tracking-wider">View</span>
-                                                </div>
-                                                <!-- Image Counter Badge -->
-                                                <div class="absolute top-1 right-1 bg-rose-accent/90 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold">
-                                                    {{ $index + 1 }}
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                            
+                            <!-- Content Column -->
+                            <div class="p-10 md:p-16 flex flex-col justify-center text-center lg:text-left relative {{ $loop->even ? 'lg:order-1' : '' }}">
+                                <!-- Decorative Elements -->
+                                <div class="hidden lg:block absolute top-10 {{ $loop->even ? 'right-10' : 'left-10' }} text-6xl text-gray-100 font-serif -z-10 select-none">
+                                    0{{ $loop->iteration }}
                                 </div>
-                            @endif
+
+                                <div class="mb-6">
+                                    <span class="inline-block py-1 px-3 border border-rose-gold/30 text-rose-gold text-[10px] uppercase tracking-widest font-semibold mb-4">
+                                        Sleeps {{ $room->capacity }}
+                                    </span>
+                                    <h3 class="font-serif text-3xl md:text-4xl text-rose-accent uppercase mb-2">{{ $room->title }}</h3>
+                                    <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ $room->bed_type }}</p>
+                                </div>
+                                
+                                <p class="text-gray-600 text-sm leading-8 font-light mb-8 lg:pr-8">
+                                    {{ Str::limit($room->description, 200) }}
+                                </p>
+                                
+                                <div class="flex flex-col lg:flex-row items-center lg:items-center gap-6 mt-auto">
+                                    <div class="text-center lg:text-left">
+                                        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Starting from</p>
+                                        <p class="text-2xl font-serif text-rose-accent">LKR {{ number_format($room->price_per_night, 0) }}</p>
+                                    </div>
+                                    
+                                    <div class="flex-grow"></div>
+
+                                    <a href="#reservation" onclick="document.getElementById('room_id').value='{{ $room->id }}'" 
+                                       class="inline-block bg-rose-accent text-white border border-rose-accent px-8 py-3 text-xs uppercase tracking-[0.15em] hover:bg-white hover:text-rose-accent transition duration-300">
+                                        Book Now
+                                    </a>
+                                </div>
+
+                                <!-- Amenities Preview -->
+                                <div class="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center lg:justify-start gap-4 text-gray-400 text-xs uppercase tracking-wider">
+                                    @foreach(collect($room->amenities)->take(3) as $amenity)
+                                        <span class="flex items-center gap-2">
+                                            <span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ $amenity }}
+                                        </span>
+                                    @endforeach
+                                    @if(count($room->amenities ?? []) > 3)
+                                        <span class="text-rose-gold">+{{ count($room->amenities) - 3 }} more</span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
 
+    <!-- Smooth Transition Spacer -->
+    <div class="w-full bg-gradient-to-b from-[#f8f5f2] to-white" style="height: 12rem;"></div>
+
+    <!-- Events Section -->
+    <section id="events" class="pb-24 bg-white relative z-10" style="padding-top: 3rem;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-widest leading-tight">
+                    Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style
+                </h2>
+                <div class="w-24 h-1 bg-rose-gold mx-auto mb-8"></div>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 font-light leading-relaxed">
+                    From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Card 1: Weddings -->
+                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="{{ asset('images/wedding_event_rosevilla.png') }}" alt="Weddings at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-10">
+                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
+                             <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        </div>
+                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Weddings</h3>
+                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
+                            Say "I do" amidst blooming frangipanis and colonial elegance. We curate intimate unions that become timeless memories.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Corporate -->
+                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
+                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="{{ asset('images/corporate_event_rosevilla.png') }}" alt="Corporate Events at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-10">
+                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
+                             <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Corporate</h3>
+                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
+                            Inspire your team in a sanctuary of calm. Our spaces are tailored for focused leadership retreats and strategy sessions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Private Dining -->
+                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
+                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="{{ asset('images/private_dining_rosevilla.png') }}" alt="Private Dining at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-10">
+                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-17v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4a1 1 0 011-1h2a1 1 0 011 1z"/></svg>
+                        </div>
+                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Private Dining</h3>
+                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
+                            Experience curated culinary journeys under the stars. Authentic Jaffna flavors served with our signature grace.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="#contact" class="inline-block bg-rose-accent text-white hover:bg-rose-primary px-10 py-4 text-sm font-bold uppercase tracking-widest transition duration-300 shadow-lg hover:shadow-xl">
+                    Plan Your Event
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Gallery Preview Section -->
-    <section id="gallery" class="py-20 bg-rose-primary">
+    <section id="gallery" class="py-20 bg-[#f8f5f2]">
          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Glimpses of Rose Villa</h2>
@@ -258,7 +409,7 @@
     </section>
 
     <!-- Reservation Section -->
-    <section id="reservation" class="py-20 bg-rose-primary/30">
+    <section id="reservation" class="py-24 bg-[#f8f5f2]">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Reserve Your Sanctuary</h2>
@@ -272,42 +423,43 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-xl p-8 md:p-12 border-t-4 border-rose-gold relative">
-                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-6">
+            <div class="bg-white shadow-2xl p-10 md:p-14 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rose-accent via-rose-gold to-rose-accent"></div>
+                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-8">
                     @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Guest Details -->
                         <div class="col-span-1 md:col-span-2">
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Full Name</label>
-                             <input type="text" name="guest_name" required class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50" placeholder="e.g. John Doe">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Full Name</label>
+                             <input type="text" name="guest_name" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="e.g. John Doe">
                              @error('guest_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
                         
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Email Address</label>
-                             <input type="email" name="email" required class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50" placeholder="john@example.com">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Email Address</label>
+                             <input type="email" name="email" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="john@example.com">
                              @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Phone Number</label>
-                             <input type="text" name="phone" class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50" placeholder="+94 ...">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Phone Number</label>
+                             <input type="text" name="phone" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="+94 ...">
                         </div>
 
                         <!-- Stay Details -->
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Check-in Date</label>
-                             <input type="date" name="check_in" required class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Check-in Date</label>
+                             <input type="date" name="check_in" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                         </div>
 
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Check-out Date</label>
-                             <input type="date" name="check_out" required class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Check-out Date</label>
+                             <input type="date" name="check_out" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                         </div>
 
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Preferred Suite</label>
-                             <select name="room_id" id="room_id" class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Preferred Suite</label>
+                             <select name="room_id" id="room_id" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                                  <option value="">-- Select a Suite --</option>
                                  @foreach($rooms as $r)
                                      <option value="{{ $r->id }}">{{ $r->title }} (LKR {{ number_format($r->price_per_night) }})</option>
@@ -316,8 +468,8 @@
                         </div>
 
                         <div>
-                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Guests</label>
-                             <select name="guests" required class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50">
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Guests</label>
+                             <select name="guests" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                                  @foreach(range(1, 8) as $i)
                                      <option value="{{ $i }}">{{ $i }} Guest{{ $i > 1 ? 's' : '' }}</option>
                                  @endforeach
@@ -326,20 +478,69 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Special Requests or Questions</label>
-                        <textarea name="message" rows="4" class="w-full border-gray-200 focus:border-rose-gold focus:ring-rose-gold bg-gray-50" placeholder="Dietary restrictions, arrival times, etc..."></textarea>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Special Requests</label>
+                        <textarea name="message" rows="3" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="Dietary restrictions, arrival times, etc..."></textarea>
                     </div>
 
-                    <div class="text-center pt-4">
-                        <button type="submit" class="bg-rose-accent text-white hover:bg-rose-800 transition px-12 py-4 uppercase tracking-widest text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <div class="text-center pt-8">
+                        <button type="submit" class="bg-rose-accent text-white hover:bg-white hover:text-rose-accent border border-rose-accent transition px-12 py-4 uppercase tracking-[0.2em] text-xs font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-300">
                             Request Reservation
                         </button>
-                        <p class="mt-4 text-xs text-gray-400">Our team will contact you shortly to confirm your booking.</p>
+                        <p class="mt-6 text-[10px] text-gray-400 uppercase tracking-widest">Our Concierge will contact you to confirm</p>
                     </div>
                 </form>
             </div>
         </div>
+    <!-- Nearest Places Section -->
+    @if(isset($landmarks) && $landmarks->count() > 0)
+    <section id="experiences" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">Explore</span>
+                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">Nearest Places</h2>
+                <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
+                <p class="text-gray-500 font-light max-w-2xl mx-auto">Discover the rich heritage and vibrant culture of Jaffna, just moments from our doorstep.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @foreach($landmarks as $landmark)
+                    <a href="{{ $landmark->map_link ?? '#' }}" target="_blank" rel="noopener noreferrer" class="group relative h-80 overflow-hidden rounded-sm shadow-lg cursor-pointer block hover:shadow-2xl transition-shadow duration-300">
+                        <img src="{{ str_starts_with($landmark->image_url, 'http') ? $landmark->image_url : asset('storage/' . $landmark->image_url) }}" 
+                             alt="{{ $landmark->title }}" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition duration-1000 ease-in-out">
+                        
+                        <!-- Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-300">
+                             <div class="absolute bottom-6 left-6 text-left">
+                                <span class="inline-block px-2 py-1 border border-white/30 text-white/80 text-[10px] uppercase tracking-widest mb-2 backdrop-blur-sm">
+                                    {{ $landmark->distance ?? 'Nearby' }}
+                                </span>
+                                <h3 class="font-serif text-xl text-white uppercase tracking-widest group-hover:text-rose-gold transition-colors">{{ $landmark->title }}</h3>
+                                @if($landmark->description)
+                                    <p class="text-gray-300 text-xs mt-2 line-clamp-2">{{ $landmark->description }}</p>
+                                @endif
+                                
+                                <!-- Map Icon Indicator -->
+                                @if($landmark->map_link)
+                                    <div class="mt-3 flex items-center gap-2 text-rose-gold text-xs">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span class="uppercase tracking-wider">View on Map</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
     </section>
+    @else
+        <!-- Fallback if no landmarks -->
+        <div class="hidden"></div>
+    @endif
 
     <!-- Location Section -->
     <section id="location" class="py-20 bg-gray-50">
@@ -357,40 +558,76 @@
     </section>
 
     <!-- Contact & Footer -->
-    <footer id="contact" class="bg-rose-accent text-white pt-20 pb-10">
+    <footer id="contact" class="bg-[#1a1a1a] text-white pt-24 pb-12 border-t border-rose-gold/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 border-b border-gray-700 pb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                 <!-- Brand -->
-                <div class="text-center md:text-left">
-                    <h3 class="font-serif text-2xl text-white mb-4 uppercase tracking-widest">Rose Villa</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
-                        A heritage home in Jaffna offering a unique blend of history, culture, and luxury living.
+                <div class="space-y-6">
+                    <h3 class="font-serif text-3xl text-white uppercase tracking-widest">Rose Villa</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                        A sanctuary of heritage and luxury in the heart of Jaffna. Experience the timeless charm of our colonial home.
                     </p>
-                </div>
-                
-                <!-- Contact Info -->
-                <div class="text-center">
-                    <h4 class="font-serif text-lg text-rose-gold mb-6 uppercase tracking-widest">Contact Us</h4>
-                    <p class="text-gray-400 text-sm mb-2">{{ $content['contact_address'] ?? '123 Heritage Lane, Jaffna' }}</p>
-                    <p class="text-gray-400 text-sm mb-2">{{ $content['contact_phone'] ?? '+94 77 123 4567' }}</p>
-                    <p class="text-gray-400 text-sm">{{ $content['contact_email'] ?? 'info@rosevilla.com' }}</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white transition duration-300">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white transition duration-300">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.072 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.225-.149-4.771-1.664-4.919-4.919-.059-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Social/Links -->
-                <div class="text-center md:text-right">
-                    <h4 class="font-serif text-lg text-rose-gold mb-6 uppercase tracking-widest">Follow</h4>
-                    <div class="flex justify-center md:justify-end space-x-6 text-gray-400">
-                        <a href="#" class="hover:text-white transition uppercase text-xs tracking-wider">Facebook</a>
-                        <a href="#" class="hover:text-white transition uppercase text-xs tracking-wider">Instagram</a>
-                    </div>
+                <!-- Navigation -->
+                <div>
+                     <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">Explore</h4>
+                     <ul class="space-y-4 text-sm text-gray-400 font-light">
+                        <li><a href="#about" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> About Us</a></li>
+                        <li><a href="#rooms" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Our Suites</a></li>
+                        <li><a href="#experiences" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Experiences</a></li>
+                        <li><a href="#gallery" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Gallery</a></li>
+                     </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">Contact</h4>
+                    <ul class="space-y-4 text-sm text-gray-400 font-light">
+                        <li class="flex items-start gap-3">
+                            <span class="text-rose-gold mt-1">📍</span>
+                            <span>{{ $content['contact_address'] ?? '123 Heritage Lane, Jaffna' }}</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="text-rose-gold">📞</span>
+                            <span>{{ $content['contact_phone'] ?? '+94 77 123 4567' }}</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="text-rose-gold">✉️</span>
+                            <span>{{ $content['contact_email'] ?? 'info@rosevilla.com' }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">Newsletter</h4>
+                    <p class="text-gray-400 text-sm mb-6 font-light">Subscribe to receive exclusive offers and news from Rose Villa.</p>
+                    <form action="#" class="space-y-3">
+                        <input type="email" placeholder="Your Email Address" class="w-full bg-white/5 border border-white/10 text-white text-sm px-4 py-3 focus:outline-none focus:border-rose-gold focus:ring-1 focus:ring-rose-gold transition">
+                        <button type="submit" class="w-full bg-rose-gold text-white text-xs uppercase font-bold tracking-widest px-4 py-3 hover:bg-white hover:text-rose-primary transition duration-300">
+                            Subscribe
+                        </button>
+                    </form>
                 </div>
             </div>
             
-            <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 uppercase tracking-widest">
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest">
                 <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.</p>
-                <div class="flex space-x-6 mt-4 md:mt-0">
+                <div class="flex space-x-8 mt-4 md:mt-0">
                     <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Terms & Conditions</a>
+                    <a href="#" class="hover:text-white transition">Sitemap</a>
                 </div>
             </div>
         </div>

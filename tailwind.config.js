@@ -16,10 +16,11 @@ export default {
                 serif: ['Alegreya SC', 'serif'],
             },
             colors: {
-                'rose-primary': '#FFFFFF',
-                'rose-text': '#545454',
-                'rose-accent': '#2A2A2A',
-                'rose-gold': '#C5A059', // Added a likely accent color based on "heritage" theme usually having gold/brown
+                'rose-primary': '#7d4281', // Cinnamon Purple inspired
+                'rose-text': '#2A2A2A',
+                'rose-accent': '#C5A059', // Gold for accents
+                'rose-dark': '#1a1a1a', // Deep charcoal for footers/text
+                'rose-light': '#f9f9f9', // Off-white for backgrounds
             }
         },
     },
