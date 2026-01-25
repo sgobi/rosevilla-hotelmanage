@@ -59,13 +59,13 @@
                             {{ number_format($sale->total_price, 2) }}
                         </td>
                         <td class="py-3 text-right text-emerald-700">
-                            -{{ number_format($sale->report_discount, 2) }}
+                            - LKR {{ number_format($sale->report_discount, 2) }}
                         </td>
                         <td class="py-3 text-right text-rose-700">
-                            +{{ number_format($sale->tax_amount, 2) }}
+                            + LKR {{ number_format($sale->tax_amount, 2) }}
                         </td>
                         <td class="py-3 text-right font-bold">
-                            {{ number_format($sale->final_price, 2) }}
+                            LKR {{ number_format($sale->final_price, 2) }}
                         </td>
                     </tr>
                 @empty
@@ -75,21 +75,17 @@
                 @endforelse
             </tbody>
             <tfoot>
-                <tr class="border-t-2 border-gray-400">
-                    <td colspan="4" class="py-2 text-right pr-4 font-semibold">Total Gross Booking Value</td>
-                    <td class="py-2 text-right font-semibold">LKR {{ number_format($totalSubtotal, 2) }}</td>
+                <tr class="border-t-2 border-gray-400 font-semibold text-gray-900">
+                    <td colspan="4" class="py-4 text-right pr-4 uppercase text-[10px] tracking-widest text-gray-500">Global Totals</td>
+                    <td class="py-4 text-right">LKR {{ number_format($totalSubtotal, 2) }}</td>
+                    <td class="py-4 text-right text-emerald-700">- LKR {{ number_format($totalDiscount, 2) }}</td>
+                    <td class="py-4 text-right text-rose-700">+ LKR {{ number_format($totalTax, 2) }}</td>
+                    <td class="py-4 text-right font-bold bg-gray-50 border-double border-b-4 border-gray-800">LKR {{ number_format($totalNet, 2) }}</td>
                 </tr>
-                <tr>
-                    <td colspan="4" class="py-2 text-right pr-4 text-emerald-700 font-semibold">Total Discounts Given</td>
-                    <td class="py-2 text-right text-emerald-700 font-semibold">- LKR {{ number_format($totalDiscount, 2) }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="py-2 text-right pr-4 text-rose-700 font-semibold">Total Tax Collected</td>
-                    <td class="py-2 text-right text-rose-700 font-semibold">+ LKR {{ number_format($totalTax, 2) }}</td>
-                </tr>
-                <tr class="border-t-4 border-double border-gray-800 font-bold text-xl bg-gray-50">
-                    <td colspan="4" class="py-4 text-right pr-4 uppercase tracking-wider">Net Sales Revenue</td>
-                    <td class="py-4 text-right">LKR {{ number_format($totalNet, 2) }}</td>
+                <tr class="no-print border-t border-gray-100">
+                    <td colspan="8" class="py-8 text-center">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest font-black">End of Sales Report</p>
+                    </td>
                 </tr>
             </tfoot>
         </table>

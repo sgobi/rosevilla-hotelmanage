@@ -19,35 +19,35 @@ class ReportController extends Controller
         $resQuery = Reservation::where('status', 'approved');
         $eventQuery = EventBooking::where('status', 'approved');
 
-        $today = $resQuery->clone()->whereDate('created_at', Carbon::today())->sum('total_price') +
-                 $eventQuery->clone()->whereDate('created_at', Carbon::today())->get()->sum('final_price');
+        // Helper to sum final_price from a query (requires get() because final_price is an accessor)
+        $sumFinal = function($query) {
+            return $query->get()->sum('final_price');
+        };
+
+        $today = $sumFinal($resQuery->clone()->whereDate('created_at', Carbon::today())) +
+                 $sumFinal($eventQuery->clone()->whereDate('created_at', Carbon::today()));
         
-        $week = ($resQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total_price')) +
-                ($eventQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get()->sum('final_price'));
+        $week = $sumFinal($resQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])) +
+                $sumFinal($eventQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]));
 
-        $month = ($resQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)->sum('total_price')) +
-                 ($eventQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)->get()->sum('final_price'));
+        $month = $sumFinal($resQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)) +
+                 $sumFinal($eventQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year));
 
-        $year = ($resQuery->clone()->whereYear('created_at', Carbon::now()->year)->sum('total_price')) +
-                ($eventQuery->clone()->whereYear('created_at', Carbon::now()->year)->get()->sum('final_price'));
+        $year = $sumFinal($resQuery->clone()->whereYear('created_at', Carbon::now()->year)) +
+                $sumFinal($eventQuery->clone()->whereYear('created_at', Carbon::now()->year));
 
         // Recent sales list (merged and sorted)
         $reservations = $resQuery->clone()->get()->map(function($item) {
             $item->type = 'Room';
             $item->display_name = $item->guest_name;
-            $item->email = $item->email;
-            $item->address = $item->address;
             $item->details = $item->room->title ?? '-';
-            $item->discount_amount = ($item->total_price * ($item->discount_status === 'approved' ? $item->discount_percentage : 0)) / 100;
             return $item;
         });
         $events = $eventQuery->clone()->get()->map(function($item) {
             $item->type = 'Event';
             $item->display_name = $item->customer_name;
-            $item->email = $item->email;
+            $item->email = $item->customer_email; // EventBooking uses customer_email
             $item->details = $item->event_type; 
-            // For events, we override total_price to be the subtotal for report consistency
-            // but final_price is the net.
             return $item;
         });
 
@@ -59,11 +59,13 @@ class ReportController extends Controller
             $search = strtolower($search);
             $allSales = $allSales->filter(function($sale) use ($search) {
                 return str_contains(strtolower($sale->display_name), $search) ||
-                       str_contains(strtolower($sale->email), $search) ||
+                       str_contains(strtolower($sale->email ?? ''), $search) ||
                        str_contains(strtolower($sale->address ?? ''), $search) ||
                        str_contains(strtolower($sale->type), $search) ||
                        str_contains(strtolower($sale->details), $search) ||
-                       str_contains((string)$sale->total_price, $search);
+                       str_contains((string)$sale->total_price, $search) ||
+                       str_contains((string)$sale->final_price, $search) ||
+                       str_contains((string)$sale->id, $search);
             });
         }
 
@@ -128,7 +130,7 @@ class ReportController extends Controller
             $item->report_type = 'Room';
             $item->report_name = $item->guest_name;
             $item->report_desc = $item->room->title ?? 'Accommodation';
-            $item->report_discount = ($item->total_price * ($item->discount_status === 'approved' ? $item->discount_percentage : 0)) / 100;
+            $item->report_discount = $item->discount_amount;
             return $item;
         });
         $eventSales = $eventQuery->oldest()->get()->map(function($item) {

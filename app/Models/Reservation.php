@@ -49,6 +49,14 @@ class Reservation extends Model
         return $subtotal + $this->tax_amount;
     }
 
+    public function getDiscountAmountAttribute()
+    {
+        if ($this->discount_status === 'approved' && $this->discount_percentage > 0) {
+            return ($this->total_price * $this->discount_percentage) / 100;
+        }
+        return 0;
+    }
+
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'discount_approved_by');

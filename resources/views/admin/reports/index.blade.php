@@ -206,9 +206,11 @@
                                     <td class="px-8 py-5">
                                         <div class="text-xs font-bold text-gray-600 max-w-[200px] truncate">{{ $sale->details }}</div>
                                     </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">- {{ number_format($sale->discount_amount, 0) }}</div>
-                                        <div class="text-[10px] font-black text-rose-600 uppercase tracking-widest">+ {{ number_format($sale->tax_amount, 0) }}</div>
+                                    <td class="px-8 py-5 text-right text-emerald-600 font-bold">
+                                        LKR {{ number_format($sale->discount_amount, 0) }}
+                                    </td>
+                                    <td class="px-8 py-5 text-right text-rose-600 font-bold">
+                                         LKR {{ number_format($sale->tax_amount, 0) }}
                                     </td>
                                     <td class="px-8 py-5 text-right">
                                         <div class="text-sm font-black text-gray-900 leading-none mb-1">LKR {{ number_format($sale->final_price, 0) }}</div>
@@ -226,7 +228,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">No approved sales to report yet.</td>
+                                    <td colspan="8" class="px-6 py-4 text-center text-gray-500">No approved sales to report yet.</td>
                                 </tr>
                             @endforelse
                         </tbody>
