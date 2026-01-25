@@ -32,6 +32,7 @@ class ContentController extends Controller
             'signature' => ['nullable', 'image', 'max:2048'],
             'logo' => ['nullable', 'image', 'max:2048'],
             'favicon' => ['nullable', 'image', 'max:1024'],
+            'tax_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         // Handle favicon upload

@@ -5,254 +5,212 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ $reservation->id }} - Rose Villa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* A4 Paper Specifications */
         @page {
             size: A4;
-            margin: 0;
+            margin: 15mm;
         }
-        
         body { 
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: #1f2937;
+            background-color: #f3f4f6;
         }
-        
-        .font-display { font-family: 'Playfair Display', serif; }
-        
-        /* A4 dimensions: 210mm × 297mm */
-        .invoice-container {
+        .invoice-page {
+            background: white;
             width: 210mm;
             min-height: 297mm;
-            background: linear-gradient(to bottom, #ffffff 0%, #fefefe 100%);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
             margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        
-        .gradient-header {
-            background: linear-gradient(135deg, #b8860b 0%, #8b4513 50%, #722f37 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 8s ease infinite;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-        
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
         }
-        
-        .corner-ornament {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-style: solid;
-            border-color: #d4af37;
+        th {
+            background-color: #f9fafb;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            font-weight: 600;
         }
-        
-        .corner-tl { top: 0; left: 0; border-width: 3px 0 0 3px; }
-        .corner-tr { top: 0; right: 0; border-width: 3px 3px 0 0; }
-        .corner-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; }
-        .corner-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
-        
-        .rose-accent {
-            background: linear-gradient(135deg, #d4af37 0%, #aa8b56 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #111827;
         }
-        
-        .table-row:hover {
-            background: linear-gradient(90deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.1) 50%, rgba(212, 175, 55, 0.05) 100%);
-            transform: translateX(4px);
-            transition: all 0.3s ease;
+        .header-meta {
+            text-align: center;
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 30px;
         }
-        
-        .print-btn {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+        .section-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
-        
-        .print-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .signature-box {
-            border: 2px solid #d4af37;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.1) 100%);
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-        }
-        
-        .total-highlight {
-            background: linear-gradient(135deg, #d4af37 0%, #aa8b56 100%);
-            color: white;
-            padding: 0.875rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-        
         @media print {
-            .no-print { display: none !important; }
-            
-            body { 
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                background: white !important;
+            body { background: white; }
+            .invoice-page { 
+                box-shadow: none; 
                 margin: 0;
-                padding: 0;
+                width: 100%;
             }
-            
-            .invoice-container {
-                width: 210mm;
-                height: 297mm;
-                box-shadow: none !important;
-                margin: 0;
-                page-break-after: always;
-            }
-            
-            .table-row:hover {
-                transform: none;
-                background: transparent;
-            }
-        }
-        
-        @media screen {
-            body {
-                padding: 20px;
-            }
+            .no-print { display: none; }
         }
     </style>
 </head>
-<body class="min-h-screen">
-    
-    <div class="invoice-container p-12 relative print:p-12">
-        <!-- Corner Ornaments -->
-        <div class="corner-ornament corner-tl no-print"></div>
-        <div class="corner-ornament corner-tr no-print"></div>
-        <div class="corner-ornament corner-bl no-print"></div>
-        <div class="corner-ornament corner-br no-print"></div>
-        
-        <!-- Print Button -->
-        <button onclick="window.print()" class="no-print absolute top-8 right-8 print-btn text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 001.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
-            </svg>
+<body>
+
+    <div class="no-print fixed top-6 right-6 z-50">
+        <button onclick="window.print()" class="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-black transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
             Print Invoice
         </button>
+    </div>
 
-        <!-- Gradient Header -->
-        <div class="gradient-header -mx-12 -mt-12 px-12 pt-12 pb-10 mb-10">
-            <div class="flex justify-between items-start text-white">
-                <div>
-                    <h1 class="font-display text-5xl font-bold mb-2 tracking-wide">Rose Villa</h1>
-                    <p class="text-sm uppercase tracking-[0.3em] opacity-90">Heritage Homes</p>
-                    <div class="mt-5 text-sm opacity-90 space-y-1">
-                        <p>{{ $content['contact_address'] ?? 'Jaffna, Sri Lanka' }}</p>
-                        <p>{{ $content['contact_phone'] ?? '' }}</p>
-                        <p>{{ $content['contact_email'] ?? '' }}</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <h2 class="text-6xl font-display font-bold uppercase tracking-wider mb-3">Invoice</h2>
-                    <div class="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-lg inline-block">
-                        <p class="text-lg font-semibold">#INV-{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}</p>
-                    </div>
-                    <p class="text-sm mt-3 opacity-90">{{ now()->format('F d, Y') }}</p>
+    <div class="invoice-page">
+        {{-- Logo Section --}}
+        @php $logoPath = \App\Models\ContentSetting::getValue('logo_path'); @endphp
+        @if($logoPath)
+            <div class="flex justify-center mb-8">
+                <div class="bg-[#111111] p-6 rounded-2xl shadow-inner">
+                    <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" class="h-20 object-contain">
                 </div>
             </div>
+        @endif
+
+        {{-- Title --}}
+        <h1 class="header-title">Invoice</h1>
+        <div class="header-meta">
+            <strong>Invoice Number:</strong> {{ str_pad($reservation->id, 6, '0', STR_PAD_LEFT) }} | 
+            <strong>Invoice Date:</strong> {{ now()->format('F d, Y') }}
         </div>
 
-        <!-- Bill To -->
-        <div class="mb-10 pb-6 border-b-2 border-gray-200">
-            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 rose-accent">Bill To</h3>
-            <p class="text-2xl font-semibold text-gray-900 mb-2">{{ $reservation->guest_name }}</p>
-            <p class="text-gray-600 text-lg">{{ $reservation->email }}</p>
-            <p class="text-gray-600 text-lg">{{ $reservation->phone }}</p>
-        </div>
-
-        <!-- Line Items -->
-        <table class="w-full mb-10">
+        {{-- Customer Info Table --}}
+        <table>
             <thead>
-                <tr class="border-b-2 border-gray-300">
-                    <th class="text-left py-4 text-xs font-bold text-gray-500 uppercase tracking-[0.15em]">Description</th>
-                    <th class="text-center py-4 text-xs font-bold text-gray-500 uppercase tracking-[0.15em]">Details</th>
-                    <th class="text-right py-4 text-xs font-bold text-gray-500 uppercase tracking-[0.15em]">Amount</th>
+                <tr>
+                    <th class="text-center">Customer Name</th>
+                    <th class="text-center">Customer Address</th>
+                    <th class="text-center">Contact Number</th>
                 </tr>
             </thead>
-            <tbody class="text-gray-700">
-                <tr class="border-b border-gray-100 table-row">
-                    <td class="py-6">
-                        <p class="font-semibold text-gray-900 text-lg mb-1">{{ $reservation->room->title ?? 'Accommodation' }}</p>
-                        <p class="text-sm text-gray-500 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                            </svg>
-                            {{ $reservation->check_in->format('M d') }} - {{ $reservation->check_out->format('M d, Y') }}
-                        </p>
-                    </td>
-                    <td class="py-6 text-center">
-                        <span class="font-medium text-gray-800">Accommodation</span><br>
-                        <span class="text-xs text-gray-400 mt-1 inline-block">Rate: LKR {{ number_format($reservation->room->price_per_night ?? 0, 2) }} per day</span>
-                    </td>
-                    <td class="py-6 text-right font-semibold text-lg text-gray-900">
-                        LKR {{ number_format($reservation->total_price ?? 0, 2) }}
-                    </td>
+            <tbody>
+                <tr>
+                    <td class="text-center font-bold text-lg">{{ $reservation->guest_name }}</td>
+                    <td class="text-center text-gray-600">{{ $reservation->address ?? 'N/A' }}</td>
+                    <td class="text-center font-bold">{{ $reservation->phone }}</td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Totals -->
-        <div class="flex justify-end mb-12">
-            <div class="w-80">
-                <div class="flex justify-between py-3 border-b border-gray-200 text-gray-700">
-                    <span class="font-medium">Subtotal</span>
-                    <span class="font-semibold">LKR {{ number_format($reservation->total_price, 2) }}</span>
-                </div>
+        {{-- Service Breakdown Table --}}
+        <table>
+            <thead>
+                <tr>
+                    <th>Service Description and Charges</th>
+                    <th class="text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $checkIn = \Carbon\Carbon::parse($reservation->check_in);
+                    $checkOut = \Carbon\Carbon::parse($reservation->check_out);
+                    $nights = $checkIn->diffInDays($checkOut);
+                    if($nights < 1) $nights = 1;
+                @endphp
+                <tr>
+                    <td>
+                        <div class="font-bold text-gray-900">Room Accommodation ({{ $nights }} nights)</div>
+                        <div class="text-xs text-gray-500 mt-0.5">{{ $reservation->room->title ?? 'Base Suite' }} &times; {{ $nights }} nights @ LKR {{ number_format($reservation->room->price_per_night ?? 0, 2) }}</div>
+                    </td>
+                    <td class="text-right font-medium">LKR {{ number_format($reservation->total_price, 2) }}</td>
+                </tr>
+                {{-- Dynamic rows can be added here in future --}}
+                <tr class="font-bold bg-gray-50/30">
+                    <td>Subtotal</td>
+                    <td class="text-right">LKR {{ number_format($reservation->total_price, 2) }}</td>
+                </tr>
                 
                 @if($reservation->discount_status === 'approved' && $reservation->discount_percentage > 0)
-                    @php
-                        $discountAmount = $reservation->total_price * ($reservation->discount_percentage / 100);
-                        $finalPrice = $reservation->total_price - $discountAmount;
+                    @php 
+                        $discount = ($reservation->total_price * $reservation->discount_percentage) / 100;
+                        $final = $reservation->total_price - $discount;
                     @endphp
-                    <div class="flex justify-between py-3 border-b border-gray-200 text-green-700 bg-green-50 px-2 rounded-md my-1">
-                        <span class="font-medium">Discount ({{ $reservation->discount_percentage }}%)</span>
-                        <span class="font-semibold">- LKR {{ number_format($discountAmount, 2) }}</span>
-                    </div>
+                    <tr>
+                        <td class="text-emerald-700">Discount ({{ $reservation->discount_percentage }}%)</td>
+                        <td class="text-right text-emerald-700">- LKR {{ number_format($discount, 2) }}</td>
+                    </tr>
                 @else
-                    @php $finalPrice = $reservation->total_price; @endphp
+                    @php $final = $reservation->total_price; @endphp
                 @endif
 
-                <div class="flex justify-between py-3 border-b border-gray-200 text-gray-700">
-                    <span class="font-medium">Taxes (0%)</span>
-                    <span class="font-semibold">LKR 0.00</span>
-                </div>
-                <div class="total-highlight mt-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xl font-bold">Total Amount</span>
-                        <span class="text-3xl font-bold">LKR {{ number_format($finalPrice, 2) }}</span>
+                <tr>
+                    <td>Tax ({{ number_format($reservation->tax_percentage, 1) }}%)</td>
+                    <td class="text-right">LKR {{ number_format($reservation->tax_amount, 2) }}</td>
+                </tr>
+                <tr class="font-bold border-t-2 border-gray-400 bg-gray-50">
+                    <td class="text-lg">Total Amount Due</td>
+                    <td class="text-right text-lg">LKR {{ number_format($final, 2) }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {{-- Payment Information Table --}}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Payment Information</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Payment Method</td>
+                    <td class="font-medium">Direct Transfer / Cash</td>
+                </tr>
+                <tr>
+                    <td>Payment Due</td>
+                    <td class="font-medium">Upon Check-in</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {{-- Terms and Conditions --}}
+        <div class="mt-8">
+            <h4 class="section-title">Terms and Conditions:</h4>
+            <div class="text-sm text-gray-600 space-y-2 leading-relaxed">
+                <p>All prices are subject to change without notice. Payment is due upon arrival. Cancellations must be made 48 hours in advance to avoid charges. For any inquiries, please contact <strong>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage') }}</strong> at <strong>{{ $content['contact_email'] ?? 'info@rosevilla.com' }}</strong>.</p>
+            </div>
+        </div>
+
+        {{-- Signature --}}
+        @if($content['signature_path'] ?? null)
+            <div class="mt-12 flex justify-end">
+                <div class="text-center">
+                    <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 mx-auto mb-2 opacity-90">
+                    <div class="border-t border-gray-300 pt-2 px-8">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Authorized Signature</p>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Signature -->
-        @if($content['signature_path'] ?? null)
-        <div class="flex justify-end mb-10">
-            <div class="signature-box text-center">
-                <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 mx-auto mb-2">
-                <div class="w-56 border-t-2 border-gray-400 pt-2 mx-auto">
-                    <p class="text-xs font-bold text-gray-600 uppercase tracking-[0.2em]">Authorized Signature</p>
-                </div>
-            </div>
-        </div>
         @endif
 
-        <!-- Footer -->
-        <div class="text-center text-sm text-gray-500 pt-8 border-t-2 border-gray-200">
-            <p class="font-display text-lg italic mb-2 text-gray-700">"Thank you for choosing Rose Villa Heritage Homes."</p>
-            <p class="text-gray-600">For inquiries, please contact us at <span class="rose-accent font-semibold">{{ $content['contact_email'] ?? 'info@rosevilla.com' }}</span></p>
+        {{-- Footer Branding --}}
+        <div class="mt-16 pt-8 border-t border-gray-100 text-center text-[10px] text-gray-400 uppercase tracking-widest">
+            Rose Villa Heritage Homes - Jaffna, Sri Lanka
         </div>
     </div>
 

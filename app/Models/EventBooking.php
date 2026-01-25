@@ -18,6 +18,8 @@ class EventBooking extends Model
         'message',
         'status',
         'total_price',
+        'tax_percentage',
+        'tax_amount',
         'invoice_print_count',
         'invoice_reprint_status',
         'discount_percentage',
@@ -32,8 +34,24 @@ class EventBooking extends Model
         'end_time' => 'datetime:H:i',
         'guests' => 'integer',
         'total_price' => 'decimal:2',
+        'tax_percentage' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'discount_percentage' => 'decimal:2',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($booking) {
+            // Apply current tax rate
+            $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
+            $booking->tax_percentage = $taxRate;
+            // Note: total_price for events is usually set manually in admin or during booking logic.
+            // If total_price is already set, calculate tax.
+            if ($booking->total_price > 0) {
+                $booking->tax_amount = ($booking->total_price * $taxRate) / 100;
+            }
+        });
+    }
 
     public function approvedBy()
     {
@@ -51,7 +69,7 @@ class EventBooking extends Model
 
     public function getFinalPriceAttribute()
     {
-        return $this->total_price - $this->discount_amount;
+        return ($this->total_price - $this->discount_amount) + $this->tax_amount;
     }
 
     /**

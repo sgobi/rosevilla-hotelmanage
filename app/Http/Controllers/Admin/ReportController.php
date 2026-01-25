@@ -8,9 +8,12 @@ use App\Models\EventBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Only count 'approved' reservations and event bookings as actual sales
         $resQuery = Reservation::where('status', 'approved');
@@ -29,22 +32,61 @@ class ReportController extends Controller
                 ($eventQuery->clone()->whereYear('created_at', Carbon::now()->year)->get()->sum('final_price'));
 
         // Recent sales list (merged and sorted)
-        $recentReservations = $resQuery->clone()->latest()->take(10)->get()->map(function($item) {
+        $reservations = $resQuery->clone()->get()->map(function($item) {
             $item->type = 'Room';
             $item->display_name = $item->guest_name;
+            $item->email = $item->email;
+            $item->address = $item->address;
+            $item->details = $item->room->title ?? '-';
+            $item->discount_amount = ($item->total_price * ($item->discount_status === 'approved' ? $item->discount_percentage : 0)) / 100;
             return $item;
         });
-        $recentEvents = $eventQuery->clone()->latest()->take(10)->get()->map(function($item) {
+        $events = $eventQuery->clone()->get()->map(function($item) {
             $item->type = 'Event';
             $item->display_name = $item->customer_name;
-            $item->room = (object)['title' => $item->event_type]; // Mock for UI consistency
-            $item->total_price = $item->final_price;
+            $item->email = $item->email;
+            $item->details = $item->event_type; 
+            // For events, we override total_price to be the subtotal for report consistency
+            // but final_price is the net.
             return $item;
         });
 
-        $recentSales = $recentReservations->concat($recentEvents)->sortByDesc('created_at')->take(10);
+        $allSales = $reservations->concat($events);
 
-        return view('admin.reports.index', compact('today', 'week', 'month', 'year', 'recentSales'));
+        // Search Logic
+        $search = $request->get('search');
+        if ($search) {
+            $search = strtolower($search);
+            $allSales = $allSales->filter(function($sale) use ($search) {
+                return str_contains(strtolower($sale->display_name), $search) ||
+                       str_contains(strtolower($sale->email), $search) ||
+                       str_contains(strtolower($sale->address ?? ''), $search) ||
+                       str_contains(strtolower($sale->type), $search) ||
+                       str_contains(strtolower($sale->details), $search) ||
+                       str_contains((string)$sale->total_price, $search);
+            });
+        }
+
+        // Sorting Logic
+        $sortBy = $request->get('sort', 'created_at');
+        $direction = $request->get('direction', 'desc');
+
+        if ($direction === 'desc') {
+            $sortedSales = $allSales->sortByDesc($sortBy == 'client' ? 'display_name' : ($sortBy == 'amount' ? 'final_price' : ($sortBy == 'details' ? 'details' : $sortBy)));
+        } else {
+            $sortedSales = $allSales->sortBy($sortBy == 'client' ? 'display_name' : ($sortBy == 'amount' ? 'final_price' : ($sortBy == 'details' ? 'details' : $sortBy)));
+        }
+
+        // Manual Pagination (10 per page)
+        $perPage = 10;
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
+        $pagedData = $sortedSales->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $recentSales = new LengthAwarePaginator($pagedData, $sortedSales->count(), $perPage, $currentPage, [
+            'path' => Paginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]);
+
+        return view('admin.reports.index', compact('today', 'week', 'month', 'year', 'recentSales', 'sortBy', 'direction', 'search'));
     }
 
     public function print(Request $request)
@@ -86,20 +128,24 @@ class ReportController extends Controller
             $item->report_type = 'Room';
             $item->report_name = $item->guest_name;
             $item->report_desc = $item->room->title ?? 'Accommodation';
+            $item->report_discount = ($item->total_price * ($item->discount_status === 'approved' ? $item->discount_percentage : 0)) / 100;
             return $item;
         });
         $eventSales = $eventQuery->oldest()->get()->map(function($item) {
             $item->report_type = 'Event';
             $item->report_name = $item->customer_name;
             $item->report_desc = $item->event_type;
-            // Ensure revenue column uses final_price
-            $item->total_price = $item->final_price;
+            $item->report_discount = $item->discount_amount;
             return $item;
         });
 
         $sales = $resSales->concat($eventSales)->sortBy('created_at');
-        $total = $sales->sum('total_price');
+        
+        $totalSubtotal = $sales->sum('total_price');
+        $totalTax = $sales->sum('tax_amount');
+        $totalDiscount = $sales->sum('report_discount');
+        $totalNet = $sales->sum('final_price');
 
-        return view('admin.reports.print', compact('sales', 'total', 'title'));
+        return view('admin.reports.print', compact('sales', 'totalSubtotal', 'totalTax', 'totalDiscount', 'totalNet', 'title'));
     }
 }

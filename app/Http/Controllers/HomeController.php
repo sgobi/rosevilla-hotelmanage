@@ -54,6 +54,7 @@ class HomeController extends Controller
         $data = $request->validate([
             'guest_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
+            'address' => ['nullable', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:50'],
             'room_id' => ['nullable', 'exists:rooms,id'],
             'check_in' => ['required', 'date'],

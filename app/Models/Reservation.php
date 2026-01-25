@@ -11,6 +11,7 @@ class Reservation extends Model
         'room_id',
         'guest_name',
         'email',
+        'address',
         'phone',
         'check_in',
         'check_out',
@@ -19,6 +20,8 @@ class Reservation extends Model
         'message',
         'status',
         'total_price',
+        'tax_percentage',
+        'tax_amount',
         'discount_percentage',
         'discount_status',
         'discount_approved_by',
@@ -32,15 +35,18 @@ class Reservation extends Model
         'check_out' => 'date',
         'guests' => 'integer',
         'total_price' => 'decimal:2',
+        'tax_percentage' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'discount_percentage' => 'decimal:2',
     ];
 
     public function getFinalPriceAttribute()
     {
+        $subtotal = $this->total_price;
         if ($this->discount_status === 'approved' && $this->discount_percentage > 0) {
-            return $this->total_price * (1 - ($this->discount_percentage / 100));
+            $subtotal = $this->total_price * (1 - ($this->discount_percentage / 100));
         }
-        return $this->total_price;
+        return $subtotal + $this->tax_amount;
     }
 
     public function approver(): BelongsTo
@@ -59,6 +65,11 @@ class Reservation extends Model
                 $room = Room::find($reservation->room_id);
                 if ($room) {
                     $reservation->total_price = $room->price_per_night * $days;
+                    
+                    // Apply current tax rate
+                    $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
+                    $reservation->tax_percentage = $taxRate;
+                    $reservation->tax_amount = ($reservation->total_price * $taxRate) / 100;
                 }
             }
         });

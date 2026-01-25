@@ -412,88 +412,234 @@
     </section>
 
     <!-- Reservation Section -->
-    <section id="reservation" class="py-24 bg-[#f8f5f2]">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Reserve Your Sanctuary') }}</h2>
-                <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
-                <p class="text-gray-600 font-light">{{ __('Tell us your plans, and we will curate your perfect stay.') }}</p>
+    <section id="reservation" class="py-28 bg-[#fdfaf8] overflow-hidden relative">
+        {{-- Decorative Elements --}}
+        <div class="absolute top-0 left-0 w-64 h-64 bg-rose-gold/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-rose-accent/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-rose-gold text-xs font-bold tracking-[0.4em] uppercase block mb-4">{{ __('Booking Request') }}</span>
+                <h2 class="font-serif text-4xl md:text-6xl text-rose-accent mb-6 uppercase tracking-tight">{{ __('Reserve Your Sanctuary') }}</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto leading-relaxed">
+                    {{ __('Begin your journey to timeless elegance. Share your preferred dates and details, and our concierge will curate your perfect heritage experience.') }}
+                </p>
             </div>
 
             @if(session('success'))
-                <div class="mb-8 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded text-center">
-                    {{ session('success') }}
+                <div class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-emerald-500 shadow-xl p-8 rounded-2xl flex items-center gap-6 animate-fade-in-up">
+                    <div class="shrink-0 w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-sm">{{ __('Inquiry Received') }}</h4>
+                        <p class="text-gray-500 text-sm mt-1">{{ session('success') }}</p>
+                    </div>
                 </div>
             @endif
 
-            <div class="bg-white shadow-2xl p-10 md:p-14 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rose-accent via-rose-gold to-rose-accent"></div>
-                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-8">
+            <div class="bg-white shadow-[0_30px_100px_-20px_rgba(0,0,0,0.1)] rounded-[2.5rem] border border-gray-100 p-6 md:p-12 relative overflow-hidden">
+                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-10" 
+                      x-data="{ 
+                        checkIn: '', 
+                        checkOut: '', 
+                        roomId: '',
+                        guests: 1,
+                        taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
+                        rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
+                        get nights() {
+                            if (!this.checkIn || !this.checkOut) return 0;
+                            const start = new Date(this.checkIn);
+                            const end = new Date(this.checkOut);
+                            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                            return diff > 0 ? diff : 0;
+                        },
+                        get estimatedTotal() {
+                            if (!this.roomId || this.nights === 0) return 0;
+                            const subtotal = this.rooms[this.roomId].price * this.nights;
+                            return subtotal + (subtotal * this.taxRate / 100);
+                        }
+                      }"
+                      @set-room.window="roomId = $event.detail.id; $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
                     @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Guest Details -->
-                        <div class="col-span-1 md:col-span-2">
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Full Name') }}</label>
-                             <input type="text" name="guest_name" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="e.g. John Doe">
-                             @error('guest_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    
+                    {{-- Section 1: Personal Details --}}
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
+                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">01</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Guest Particulars') }}</h3>
+                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('Your contact information') }}</p>
+                            </div>
                         </div>
                         
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Email Address') }}</label>
-                             <input type="email" name="email" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="john@example.com">
-                             @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {{-- Full Name --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Full Name') }}</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    </div>
+                                    <input type="text" name="guest_name" required placeholder="Enter your full name" 
+                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                </div>
+                                @error('guest_name') <p class="text-rose-500 text-[10px] mt-1 uppercase font-bold">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- Email --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Email Address') }}</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+                                    </div>
+                                    <input type="email" name="email" required placeholder="name@example.com" 
+                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                </div>
+                                @error('email') <p class="text-rose-500 text-[10px] mt-1 uppercase font-bold">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- Phone --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Phone Number') }}</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    </div>
+                                    <input type="text" name="phone" placeholder="+94 ..." 
+                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                </div>
+                            </div>
+
+                            {{-- Address --}}
+                            <div class="space-y-2 md:col-span-2 lg:col-span-3">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Home / Billing Address') }}</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    </div>
+                                    <input type="text" name="address" placeholder="Full address for your booking records" 
+                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                </div>
+                            </div>
                         </div>
- 
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Phone Number') }}</label>
-                             <input type="text" name="phone" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="+94 ...">
-                        </div>
- 
-                        <!-- Stay Details -->
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Check-in Date') }}</label>
-                             <input type="date" name="check_in" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
-                        </div>
- 
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Check-out Date') }}</label>
-                             <input type="date" name="check_out" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
-                        </div>
- 
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Preferred Suite') }}</label>
-                             <select name="room_id" id="room_id" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
-                                 <option value="">-- {{ __('Select a Suite') }} --</option>
-                                 @foreach($rooms as $r)
-                                     <option value="{{ $r->id }}">{{ $r->title }} (LKR {{ number_format($r->price_per_night) }})</option>
-                                 @endforeach
-                             </select>
-                        </div>
- 
-                        <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Guests') }}</label>
-                             <select name="guests" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
-                                 @foreach(range(1, 8) as $i)
-                                     <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? __('Guests') : __('Guest') }}</option>
-                                 @endforeach
-                             </select>
-                        </div>
-                    </div>
- 
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Special Requests') }}</label>
-                        <textarea name="message" rows="3" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="Dietary restrictions, arrival times, etc..."></textarea>
                     </div>
 
-                    <div class="text-center pt-8">
-                        <button type="submit" class="bg-rose-accent text-white hover:bg-white hover:text-rose-accent border border-rose-accent transition px-12 py-4 uppercase tracking-[0.2em] text-xs font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-300">
-                            {{ __('Request Reservation') }}
+                    {{-- Section 2: Stay Details --}}
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
+                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">02</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Stay Preferences') }}</h3>
+                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('When would you like to visit?') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {{-- Check In --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Check-In') }}</label>
+                                <input type="date" name="check_in" x-model="checkIn" required 
+                                       :min="new Date().toISOString().split('T')[0]"
+                                       class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                            </div>
+
+                            {{-- Check Out --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Check-Out') }}</label>
+                                <input type="date" name="check_out" x-model="checkOut" required 
+                                       :min="checkIn || new Date().toISOString().split('T')[0]"
+                                       class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                            </div>
+
+                            {{-- Preferred Suite --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Sanctuary Type') }}</label>
+                                <select name="room_id" id="room_id" x-model="roomId" 
+                                        class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                    <option value="">{{ __('Any Available') }}</option>
+                                    @foreach($rooms as $r)
+                                        <option value="{{ $r->id }}">{{ $r->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Guests --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Guests') }}</label>
+                                <select name="guests" x-model="guests" required 
+                                        class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
+                                    @foreach(range(1, 8) as $i)
+                                        <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'Guests' : 'Guest' }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Dynamic Summary Preview --}}
+                        <div x-show="nights > 0 && roomId" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 -translate-y-4"
+                             class="p-6 bg-gradient-to-br from-rose-50 to-white rounded-3xl border border-rose-100 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-accent">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div class="text-center md:text-left">
+                                    <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.2em] mb-0.5">Selected Selection</p>
+                                    <h4 class="font-serif text-xl md:text-2xl text-rose-accent uppercase" x-text="rooms[roomId].title"></h4>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-12">
+                                <div class="text-center">
+                                    <p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Nights</p>
+                                    <p class="text-2xl font-serif text-rose-accent" x-text="nights"></p>
+                                </div>
+                                <div class="text-center bg-white px-6 py-3 rounded-2xl shadow-sm border border-rose-100/50">
+                                    <p class="text-[10px] uppercase font-black text-rose-gold tracking-widest">Approx. Value</p>
+                                    <p class="text-2xl font-serif text-rose-accent">LKR <span x-text="estimatedTotal.toLocaleString()"></span></p>
+                                    <p class="text-[8px] text-gray-400 uppercase font-bold mt-1 tracking-tighter">* Includes {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }}% Tax</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section 3: Special Requests --}}
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
+                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">03</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Curated Experiences') }}</h3>
+                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('Tailor your stay to your needs') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Special Requests & Preferences') }}</label>
+                            <textarea name="message" rows="4" placeholder="Dietary requirements, preferred arrival time, anniversary notes..." 
+                                      class="w-full bg-gray-50 border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all duration-300 p-6 text-gray-700 font-light placeholder-gray-300 italic text-sm"></textarea>
+                        </div>
+                    </div>
+
+                    {{-- Submit Action --}}
+                    <div class="pt-6 flex flex-col items-center">
+                        <button type="submit" class="group relative inline-flex items-center justify-center px-16 py-5 bg-rose-accent text-white rounded-full overflow-hidden shadow-[0_20px_50px_-10px_rgba(138,21,56,0.3)] hover:shadow-[0_25px_60px_-10px_rgba(138,21,56,0.5)] transition-all duration-500 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                                :disabled="!checkIn || !checkOut || nights < 1">
+                            <span class="absolute inset-0 w-full h-full bg-rose-gold transform scale-x-0 group-hover:scale-x-100 transition-transform origin-right duration-500"></span>
+                            <span class="relative font-bold uppercase tracking-[0.3em] text-xs">{{ __('Initiate Reservation Request') }}</span>
+                            <svg class="relative w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
-                        <p class="mt-6 text-[10px] text-gray-400 uppercase tracking-widest">{{ __('Our Concierge will contact you to confirm') }}</p>
+                        <div class="mt-8 flex items-center gap-4 text-[10px] text-gray-400 font-bold uppercase tracking-[0.1em]">
+                            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg> Secure Inquiry</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-rose-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 9.503l7.834-4.603a1.5 1.5 0 011.666 2.508l-8.667 5.1a1.5 1.5 0 01-1.666 0l-8.667-5.1a1.5 1.5 0 011.666-2.508z" clip-rule="evenodd"></path></svg> Response via Email</span>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
+    </section>
+
     <!-- Nearest Places Section -->
     @if(isset($landmarks) && $landmarks->count() > 0)
     <section id="experiences" class="py-24 bg-white">
@@ -555,7 +701,7 @@
             </div>
             
             <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 h-[500px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7864.813254581939!2d80.015534!3d9.731581!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1768293510945!5m2!1sen!2slk" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="{{ $content['map_embed'] ?? 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7864.813254581939!2d80.015534!3d9.731581!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1768293510945!5m2!1sen!2slk' }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>

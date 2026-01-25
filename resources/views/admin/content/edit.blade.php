@@ -42,6 +42,10 @@
                             <input name="events_description" class="w-full border rounded px-3 py-2" value="{{ old('events_description', $content['events_description'] ?? '') }}" placeholder="From intimate heritage weddings to executive retreats...">
                         </label>
                         <label class="text-sm text-gray-700 space-y-1">
+                            <span>Default Tax Percentage (%)</span>
+                            <input type="number" step="0.01" name="tax_percentage" class="w-full border rounded px-3 py-2" value="{{ old('tax_percentage', $content['tax_percentage'] ?? '0') }}">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
                             <span>Contact phone</span>
                             <input name="contact_phone" class="w-full border rounded px-3 py-2" value="{{ old('contact_phone', $content['contact_phone'] ?? '') }}">
                         </label>
