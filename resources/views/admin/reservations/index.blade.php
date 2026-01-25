@@ -30,13 +30,38 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @foreach($reservations as $reservation)
+                                @php
+                                    $hasPendingRequest = $reservation->status_update_requested || 
+                                                         ($reservation->discount_status === 'pending' && auth()->user()->isAdmin()) || 
+                                                         ($reservation->invoice_reprint_status === 'requested');
+                                @endphp
                                 <tr id="reservation-{{ $reservation->id }}" 
-                                    class="scroll-mt-20 transition-colors" 
+                                    class="scroll-mt-20 transition-all border-l-4 {{ $hasPendingRequest ? 'border-amber-400 bg-amber-50/30' : 'border-transparent hover:bg-gray-50' }}" 
                                     :class="editing ? 'bg-indigo-50/20 relative z-50' : ''"
                                     x-data="{ editing: false }">
                                     <td class="px-6 py-3">
                                         <p class="font-semibold text-gray-800">{{ $reservation->guest_name }}</p>
                                         <p class="text-gray-500 text-xs">{{ $reservation->email }} @if($reservation->phone) • {{ $reservation->phone }} @endif</p>
+                                        @if($reservation->message)
+                                            <div class="mt-2 relative" x-data="{ showMessage: false }">
+                                                <button @mouseenter="showMessage = true" @mouseleave="showMessage = false" class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors group cursor-help">
+                                                    <svg class="w-3.5 h-3.5 text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                                    <span class="text-[10px] font-bold uppercase tracking-wide">Special Request</span>
+                                                </button>
+                                                
+                                                <div x-show="showMessage" 
+                                                     x-transition:enter="transition ease-out duration-200"
+                                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                                     x-transition:leave="transition ease-in duration-150"
+                                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                                     class="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-[60] pointer-events-none text-left">
+                                                    <div class="absolute -top-1.5 left-4 w-3 h-3 bg-white border-l border-t border-gray-100 transform rotate-45"></div>
+                                                    <p class="text-xs text-gray-600 leading-relaxed relative z-10">{{ $reservation->message }}</p>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-3 text-gray-700">
                                         {{ optional($reservation->check_in)->format('M d, Y') }} – {{ optional($reservation->check_out)->format('M d, Y') }}
@@ -54,6 +79,12 @@
                                                         @else bg-amber-50 text-amber-700 border-amber-100 @endif">
                                                         {{ $reservation->status }}
                                                     </span>
+                                                    @if($hasPendingRequest)
+                                                        <span class="flex items-center gap-1 text-[9px] text-amber-600 font-bold mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200 animate-pulse">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                            Action Required
+                                                        </span>
+                                                    @endif
                                                     @if($reservation->discount_status === 'approved')
                                                         <span class="text-[9px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-1.5 rounded">
                                                             {{ $reservation->discount_percentage }}% OFF
@@ -80,7 +111,7 @@
                                                         @endif
                                                     @endif
 
-                                                    @if(auth()->user()->isAdmin() || auth()->user()->isAccountant() || $reservation->status === 'pending')
+                                                    @if(auth()->user()->isAdmin() || auth()->user()->isAccountant() || auth()->user()->isStaff())
                                                         <button @click="editing = !editing" 
                                                                 :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
                                                                 class="p-2 rounded-lg transition-all" title="Manage Details">
@@ -106,19 +137,66 @@
                                                 <div class="space-y-5">
                                                     <div>
                                                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
-                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex gap-2">
-                                                            @csrf @method('PUT')
-                                                            <select name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                                                                @foreach(['pending','approved','cancelled'] as $status)
-                                                                    <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
-                                                        </form>
+                                                        
+                                                        @if($reservation->status_update_requested)
+                                                            <div class="bg-amber-50 rounded-xl p-3 border border-amber-100 mb-3 shadow-sm">
+                                                                <div class="flex items-center gap-2 mb-2">
+                                                                    <div class="p-1 bg-amber-100 text-amber-600 rounded-lg">
+                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Status Change Requested</p>
+                                                                        <p class="text-[10px] text-amber-600">to {{ ucfirst($reservation->status_update_requested) }}</p>
+                                                                    </div>
+                                                                </div>
+
+                                                                @if(auth()->user()->isAdmin())
+                                                                    <div class="flex gap-2">
+                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                            @csrf @method('PUT')
+                                                                            <input type="hidden" name="status_change_action" value="approve">
+                                                                            <button class="w-full bg-indigo-600 text-white py-1.5 rounded-lg text-[10px] font-bold hover:bg-indigo-700 transition shadow-sm">Approve</button>
+                                                                        </form>
+                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                            @csrf @method('PUT')
+                                                                            <input type="hidden" name="status_change_action" value="reject">
+                                                                            <button class="w-full bg-white text-rose-500 border border-rose-100 py-1.5 rounded-lg text-[10px] font-bold hover:bg-rose-50 transition">Reject</button>
+                                                                        </form>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-[10px] text-amber-600 font-medium italic bg-amber-100/50 p-2 rounded-lg text-center">
+                                                                        Waiting for Admin approval...
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @elseif(auth()->user()->isStaff() && $reservation->status === 'approved')
+                                                             <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex flex-col gap-2">
+                                                                @csrf @method('PUT')
+                                                                <div class="flex gap-2">
+                                                                    <select name="request_status_change" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                                        @foreach(['pending','cancelled'] as $status)
+                                                                            <option value="{{ $status }}">{{ ucfirst($status) }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <button class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100 whitespace-nowrap">Request</button>
+                                                                </div>
+                                                                <p class="text-[9px] text-gray-400 italic">This change requires admin approval.</p>
+                                                            </form>
+                                                        @else
+                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex gap-2">
+                                                                @csrf @method('PUT')
+                                                                <select name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                                    @foreach(['pending','approved','cancelled'] as $status)
+                                                                        <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                                <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
+                                                            </form>
+                                                        @endif
                                                     </div>
 
                                                     @php $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); @endphp
-                                                    @if($isAdmin || $reservation->status === 'pending')
+                                                    @if(($isAdmin || $reservation->status === 'pending') && $reservation->status !== 'cancelled')
                                                         {{-- Discount Management --}}
                                                     <div class="mb-5">
                                                         <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">Discount Management</label>

@@ -57,7 +57,51 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         // 1. Handle Status Update
+        // 0. Handle Status Update Request (Staff Request)
+        if ($request->has('request_status_change')) {
+            $data = $request->validate([
+                'request_status_change' => ['required', 'in:pending,approved,cancelled'],
+            ]);
+            $reservation->update(['status_update_requested' => $data['request_status_change']]);
+
+            // Notify Admins
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\DiscountSuggested([
+                'reservation_id' => $reservation->id,
+                'discount_percentage' => 0, 
+                'guest_name' => $reservation->guest_name,
+                'message' => 'Status change requested for ' . $reservation->guest_name . ' to ' . ucfirst($data['request_status_change']),
+                'type' => 'status_change_request',
+                'subtype' => 'status'
+            ]));
+            
+            return back()->with('success', 'Status change to ' . ucfirst($data['request_status_change']) . ' requested.');
+        }
+
+        // 0.1 Handle Status Update Approval/Rejection (Admin Response)
+        if ($request->has('status_change_action') && auth()->user()->isAdmin()) {
+            $action = $request->status_change_action;
+            if ($action === 'approve') {
+                $reservation->update([
+                    'status' => $reservation->status_update_requested,
+                    'status_update_requested' => null
+                ]);
+                return back()->with('success', 'Status change request approved.');
+            } elseif ($action === 'reject') {
+                $reservation->update(['status_update_requested' => null]);
+                return back()->with('success', 'Status change request rejected.');
+            }
+        }
+
+        // 1. Handle Status Update
         if ($request->has('status')) {
+            // Prevent Staff from updating logic if already approved
+            if (auth()->user()->isStaff() && $reservation->status === 'approved') {
+                // If it is staff trying to update an approved reservation, we should direct them to request instead, or just fail validation.
+                // However, the UI should prevent this. If they bypassed UI, return error.
+                return back()->with('error', 'You cannot directly update an approved reservation. Please request a status change.');
+            }
+
             $data = $request->validate([
                 'status' => ['required', 'in:pending,approved,cancelled'],
             ]);

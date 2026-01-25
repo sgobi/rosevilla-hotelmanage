@@ -27,6 +27,8 @@
                                 <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-bold">Discount</span>
                             @elseif($type === 'reprint_request' || $subtype === 'reprint')
                                 <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold">Reprint</span>
+                            @elseif($subtype === 'status')
+                                <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-bold">Status</span>
                             @elseif($subtype === 'conflict')
                                 <span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-bold">Conflict</span>
                             @elseif($status === 'approved')

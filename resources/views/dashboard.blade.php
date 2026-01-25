@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Rosevilla Admin Dashboard') }}
+            {{ auth()->user()->isAdmin() ? 'Rosevilla Admin Dashboard' : (auth()->user()->isAccountant() ? 'Rosevilla Accountant Dashboard' : 'Rosevilla Staff Dashboard') }}
         </h2>
     </x-slot>
 
@@ -70,6 +70,26 @@
                                     <td class="py-3">
                                         <p class="font-semibold text-gray-800">{{ $reservation->guest_name }}</p>
                                         <p class="text-gray-500">{{ $reservation->email }}</p>
+                                        @if($reservation->message)
+                                            <div class="mt-2 relative" x-data="{ showMessage: false }">
+                                                <button @mouseenter="showMessage = true" @mouseleave="showMessage = false" class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors group cursor-help">
+                                                    <svg class="w-3 h-3 text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                                    <span class="text-[9px] font-bold uppercase tracking-wide">Request</span>
+                                                </button>
+                                                
+                                                <div x-show="showMessage" 
+                                                     x-transition:enter="transition ease-out duration-200"
+                                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                                     x-transition:leave="transition ease-in duration-150"
+                                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                                     class="absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-[60] pointer-events-none text-left">
+                                                    <div class="absolute -top-1.5 left-4 w-3 h-3 bg-white border-l border-t border-gray-100 transform rotate-45"></div>
+                                                    <p class="text-[10px] text-gray-600 leading-relaxed relative z-10">{{ $reservation->message }}</p>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="py-3 text-gray-700">
                                         {{ optional($reservation->check_in)->format('M d, Y') }} – {{ optional($reservation->check_out)->format('M d, Y') }}

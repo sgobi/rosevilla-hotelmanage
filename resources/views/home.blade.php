@@ -3,7 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rose Villa Heritage Homes</title>
+    
+    @php $favicon = \App\Models\ContentSetting::getValue('favicon_path'); @endphp
+    @if($favicon)
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $favicon) }}">
+    @endif
+
+    <title>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

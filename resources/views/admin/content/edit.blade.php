@@ -17,6 +17,10 @@
                 <form method="POST" action="{{ route('admin.content.update') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div class="grid md:grid-cols-2 gap-4">
+                        <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
+                            <span>Browser Site Title (e.g. Rose Villa Heritage Home)</span>
+                            <input name="site_title" class="w-full border rounded px-3 py-2 font-bold" value="{{ old('site_title', $content['site_title'] ?? 'Rose Villa') }}" required>
+                        </label>
                         <label class="text-sm text-gray-700 space-y-1">
                             <span>Hero title</span>
                             <input name="hero_title" class="w-full border rounded px-3 py-2" value="{{ old('hero_title', $content['hero_title'] ?? '') }}" required>
@@ -54,8 +58,30 @@
                             <textarea name="footer_text" rows="2" class="w-full border rounded px-3 py-2">{{ old('footer_text', $content['footer_text'] ?? '') }}</textarea>
                         </label>
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
-                            <span>Map embed iframe URL</span>
-                            <input name="map_embed" class="w-full border rounded px-3 py-2" value="{{ old('map_embed', $content['map_embed'] ?? '') }}">
+                            <span>Browser Icon (Favicon)</span>
+                            @if($content['favicon_path'] ?? null)
+                                <div class="mb-2 p-2 bg-gray-50 rounded-lg w-max">
+                                    <img src="{{ asset('storage/' . $content['favicon_path']) }}" alt="Current Favicon" class="w-8 h-8 object-contain">
+                                    <p class="text-[10px] text-gray-400 mt-1">Current icon</p>
+                                </div>
+                            @endif
+                            <input type="file" name="favicon" accept="image/*" class="w-full border rounded px-3 py-2">
+                            <p class="text-xs text-gray-500">Upload a small square image (PNG or ICO, 32x32px recommended) to appear in the browser tab.</p>
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
+                            <span>Property Logo</span>
+                            @if($content['logo_path'] ?? null)
+                                <div class="mb-2 p-4 bg-gray-50 rounded-xl w-max">
+                                    <img src="{{ asset('storage/' . $content['logo_path']) }}" alt="Current Logo" class="h-20 object-contain">
+                                    <p class="text-xs text-gray-500 mt-2">Current logo</p>
+                                </div>
+                            @endif
+                            <input type="file" name="logo" accept="image/*" class="w-full border rounded px-3 py-2">
+                            <p class="text-xs text-gray-500">Upload your property logo (Transparent PNG recommended)</p>
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
+                            <span>Your Location Gmap URL (Embed Iframe URL)</span>
+                            <input name="map_embed" class="w-full border rounded px-3 py-2" value="{{ old('map_embed', $content['map_embed'] ?? '') }}" placeholder="Paste the 'src' link from Google Maps Share > Embed a map">
                         </label>
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
                             <span>Invoice Signature</span>

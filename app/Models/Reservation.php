@@ -24,6 +24,7 @@ class Reservation extends Model
         'discount_approved_by',
         'invoice_print_count',
         'invoice_reprint_status',
+        'status_update_requested',
     ];
 
     protected $casts = [

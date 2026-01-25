@@ -18,6 +18,7 @@ class ContentController extends Controller
     public function update(Request $request)
     {
         $fields = $request->validate([
+            'site_title' => ['required', 'string', 'max:255'],
             'hero_title' => ['required', 'string', 'max:255'],
             'hero_subtitle' => ['nullable', 'string'],
             'about_text' => ['nullable', 'string'],
@@ -29,7 +30,21 @@ class ContentController extends Controller
             'contact_address' => ['nullable', 'string'],
             'map_embed' => ['nullable', 'string'],
             'signature' => ['nullable', 'image', 'max:2048'],
+            'logo' => ['nullable', 'image', 'max:2048'],
+            'favicon' => ['nullable', 'image', 'max:1024'],
         ]);
+
+        // Handle favicon upload
+        if ($request->hasFile('favicon')) {
+            $path = $request->file('favicon')->store('favicons', 'public');
+            $fields['favicon_path'] = $path;
+        }
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('logos', 'public');
+            $fields['logo_path'] = $path;
+        }
 
         // Handle signature upload
         if ($request->hasFile('signature')) {

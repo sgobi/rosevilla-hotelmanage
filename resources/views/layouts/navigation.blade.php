@@ -8,7 +8,7 @@
                 <!-- Logo Area -->
                 <div class="shrink-0 flex items-center border-r border-white/10 pr-8 mr-2">
                     <a href="{{ route('dashboard') }}" class="transition-transform duration-300 hover:scale-105 active:scale-95">
-                        <x-application-logo class="block h-10 w-auto drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]" />
+                        <x-application-logo :dark="true" class="block h-10 w-auto drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]" />
                     </a>
                 </div>
 
