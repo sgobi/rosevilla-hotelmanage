@@ -85,8 +85,8 @@
         @php $logoPath = \App\Models\ContentSetting::getValue('logo_path'); @endphp
         @if($logoPath)
             <div class="flex justify-center mb-8">
-                <div class="bg-[#111111] p-6 rounded-2xl shadow-inner">
-                    <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" class="h-20 object-contain">
+                <div class="p-2">
+                    <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" class="h-24 object-contain">
                 </div>
             </div>
         @endif
