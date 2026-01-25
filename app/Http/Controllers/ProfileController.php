@@ -42,6 +42,10 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        if (!$request->user()->isAdmin()) {
+            return Redirect::route('profile.edit')->with('error', 'Only administrators can delete accounts.');
+        }
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
