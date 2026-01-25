@@ -8,8 +8,39 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100 p-8">
-                <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
+                    
+                    <div x-data="{ photoName: null, photoPreview: null }">
+                        <x-input-label for="profile_photo" :value="__('Profile Photo')" />
+                        
+                        <!-- Photo Preview -->
+                        <div class="mt-2" x-show="photoPreview" style="display: none;">
+                            <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center border border-gray-200"
+                                  x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
+                            </span>
+                        </div>
+
+                        <div class="mt-2 text-sm text-gray-500">
+                            <input type="file" name="profile_photo" id="profile_photo" class="hidden"
+                                   x-ref="photo"
+                                   x-on:change="
+                                        photoName = $refs.photo.files[0].name;
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            photoPreview = e.target.result;
+                                        };
+                                        reader.readAsDataURL($refs.photo.files[0]);
+                                   ">
+                            
+                            <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition"
+                                    x-on:click.prevent="$refs.photo.click()">
+                                {{ __('Select Photo') }}
+                            </button>
+                            
+                            <x-input-error class="mt-2" :messages="$errors->get('profile_photo')" />
+                        </div>
+                    </div>
                     
                     <div>
                         <x-input-label for="name" :value="__('Name')" />

@@ -59,6 +59,9 @@
                         <x-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')">
                             {{ __('Content') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.home-events.index')" :active="request()->routeIs('admin.home-events.*')">
+                            {{ __('Event Cards') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Users') }}
                         </x-nav-link>
@@ -68,7 +71,14 @@
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
+                                    @if(Auth::user()->profile_photo_path)
+                                        <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" class="h-8 w-8 rounded-full object-cover">
+                                    @else
+                                        <div class="h-8 w-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold border border-rose-200 text-xs">
+                                            {{ substr(Auth::user()->name, 0, 1) }}
+                                        </div>
+                                    @endif
                                     <div>{{ Auth::user()->name }} <small class="text-gray-400">({{ ucfirst(Auth::user()->role) }})</small></div>
 
                                     <div class="ms-1">
@@ -158,6 +168,9 @@
             @if(auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')">
                     {{ __('Content') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.home-events.index')" :active="request()->routeIs('admin.home-events.*')">
+                    {{ __('Event Cards') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Users') }}

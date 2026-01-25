@@ -1,11 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Users
-            </h2>
-            <a href="{{ route('admin.users.create') }}" class="bg-rose-600 text-white px-4 py-2 rounded-md hover:bg-rose-700">Add New User</a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Users
+        </h2>
     </x-slot>
 
     <div class="py-12">
@@ -22,6 +19,7 @@
                 </div>
             @endif
 
+            <div class="bg-white shadow rounded-xl border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-800">All Users</h3>
                     <a href="{{ route('admin.users.create') }}" class="bg-gray-800 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-700 shadow-sm transition font-semibold uppercase tracking-wider">
@@ -32,6 +30,7 @@
                     <table class="min-w-full text-sm text-left">
                         <thead class="text-xs uppercase text-gray-500 bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3">Photo</th>
                                 <th class="px-6 py-3">Name</th>
                                 <th class="px-6 py-3">Email</th>
                                 <th class="px-6 py-3">Role</th>
@@ -41,6 +40,15 @@
                         <tbody class="divide-y divide-gray-100">
                             @foreach($users as $user)
                                 <tr>
+                                    <td class="px-6 py-3">
+                                        @if($user->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover border border-gray-200">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold border border-rose-200">
+                                                {{ substr($user->name, 0, 1) }}
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-3 font-semibold text-gray-800">{{ $user->name }}</td>
                                     <td class="px-6 py-3 text-gray-700">{{ $user->email }}</td>
                                     <td class="px-6 py-3">

@@ -279,80 +279,51 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-widest leading-tight">
-                    Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style
+                    {!! $content['events_title'] ?? 'Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style' !!}
                 </h2>
                 <div class="w-24 h-1 bg-rose-gold mx-auto mb-8"></div>
                 <p class="max-w-3xl mx-auto text-lg text-gray-600 font-light leading-relaxed">
-                    From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.
+                    {{ $content['events_description'] ?? 'From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.' }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                <!-- Card 1: Weddings -->
-                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    
-                    <!-- Image -->
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/wedding_event_rosevilla.png') }}" alt="Weddings at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="p-10">
-                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
-                             <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                @foreach($homeEvents as $event)
+                    <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                        
+                        <!-- Image -->
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="{{ str_starts_with($event->image_path, 'http') ? $event->image_path : (file_exists(public_path($event->image_path)) ? asset($event->image_path) : asset('storage/' . $event->image_path)) }}" 
+                                 alt="{{ $event->title }}" 
+                                 class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                         </div>
-                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Weddings</h3>
-                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
-                            Say "I do" amidst blooming frangipanis and colonial elegance. We curate intimate unions that become timeless memories.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Card 2: Corporate -->
-                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
-                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    
-                    <!-- Image -->
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/corporate_event_rosevilla.png') }}" alt="Corporate Events at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="p-10">
-                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
-                             <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        
+                        <!-- Content -->
+                        <div class="p-10">
+                            <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
+                                @if($event->icon == 'heart')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                @elseif($event->icon == 'building')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                @elseif($event->icon == 'cake')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-17v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4a1 1 0 011-1h2a1 1 0 011 1z"/></svg>
+                                @elseif($event->icon == 'star')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                @elseif($event->icon == 'music')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                                @elseif($event->icon == 'camera')
+                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                @endif
+                            </div>
+                            <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">{{ $event->title }}</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
+                                {{ $event->description }}
+                            </p>
                         </div>
-                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Corporate</h3>
-                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
-                            Inspire your team in a sanctuary of calm. Our spaces are tailored for focused leadership retreats and strategy sessions.
-                        </p>
                     </div>
-                </div>
-
-                <!-- Card 3: Private Dining -->
-                <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
-                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    
-                    <!-- Image -->
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/private_dining_rosevilla.png') }}" alt="Private Dining at Rose Villa" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="p-10">
-                        <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
-                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-17v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4a1 1 0 011-1h2a1 1 0 011 1z"/></svg>
-                        </div>
-                        <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">Private Dining</h3>
-                        <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
-                            Experience curated culinary journeys under the stars. Authentic Jaffna flavors served with our signature grace.
-                        </p>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <div class="text-center">

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventBookingController;
+use App\Http\Controllers\Admin\HomeEventController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('content', [ContentController::class, 'edit'])->name('content.edit');
             Route::post('content', [ContentController::class, 'update'])->name('content.update');
             Route::resource('users', UserController::class)->except(['show']);
+            Route::resource('home-events', HomeEventController::class)->except(['show']);
         });
     });
 

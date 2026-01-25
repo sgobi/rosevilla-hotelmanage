@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+use Illuminate\Support\Facades\Storage;
+
 class UserController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
@@ -37,14 +39,21 @@ class UserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', 'in:admin,staff,accountant'],
+            'profile_photo' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        User::create([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-        ]);
+        ];
+
+        if ($request->hasFile('profile_photo')) {
+            $data['profile_photo_path'] = $request->file('profile_photo')->store('profile-photos', 'public');
+        }
+
+        User::create($data);
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
@@ -74,11 +83,19 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'role' => ['required', 'string', 'in:admin,staff,accountant'],
+            'profile_photo' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
+
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $user->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+        }
 
         if ($request->filled('password')) {
             $request->validate([
@@ -107,6 +124,10 @@ class UserController extends Controller
 
         if (!Hash::check($request->password, auth()->user()->password)) {
             return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
         }
 
         $user->delete();

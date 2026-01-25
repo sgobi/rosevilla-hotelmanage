@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Landmark;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class LandmarkController extends Controller
@@ -34,6 +35,11 @@ class LandmarkController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatedData($request);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('landmarks', 'public');
+            $data['image_url'] = $path;
+        }
 
         Landmark::create($data);
 
@@ -66,6 +72,15 @@ class LandmarkController extends Controller
     {
         $data = $this->validatedData($request);
 
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($landmark->image_url && Storage::disk('public')->exists($landmark->image_url)) {
+                Storage::disk('public')->delete($landmark->image_url);
+            }
+            $path = $request->file('image')->store('landmarks', 'public');
+            $data['image_url'] = $path;
+        }
+
         $landmark->update($data);
 
         return redirect()->route('admin.landmarks.index')->with('success', 'Landmark updated.');
@@ -84,6 +99,11 @@ class LandmarkController extends Controller
             return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
         }
 
+        // Delete image file if it exists
+        if ($landmark->image_url && Storage::disk('public')->exists($landmark->image_url)) {
+            Storage::disk('public')->delete($landmark->image_url);
+        }
+
         $landmark->delete();
 
         return back()->with('success', 'Landmark removed.');
@@ -96,7 +116,8 @@ class LandmarkController extends Controller
             'description' => ['nullable', 'string'],
             'distance' => ['nullable', 'string', 'max:120'],
             'map_link' => ['nullable', 'url'],
-            'image_url' => ['nullable', 'url'],
+            'image' => ['nullable', 'image', 'max:2048'], // Added image validation
+            'image_url' => ['nullable'], // URL field can still be used as fallback or path
             'category' => ['nullable', 'string', 'max:120'],
         ]);
     }

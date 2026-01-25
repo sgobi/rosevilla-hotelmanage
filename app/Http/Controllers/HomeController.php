@@ -10,6 +10,8 @@ use App\Models\Review;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
+use App\Models\HomeEvent;
+
 class HomeController extends Controller
 {
     public function index()
@@ -35,12 +37,15 @@ class HomeController extends Controller
 
         $landmarks = Landmark::query()->orderBy('title')->get();
 
+        $homeEvents = HomeEvent::query()->orderBy('sort_order')->get();
+
         return view('home', [
             'content' => $content,
             'rooms' => $rooms,
             'gallery' => $gallery,
             'reviews' => $reviews,
             'landmarks' => $landmarks,
+            'homeEvents' => $homeEvents,
         ]);
     }
 

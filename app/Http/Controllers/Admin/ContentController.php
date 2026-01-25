@@ -21,6 +21,8 @@ class ContentController extends Controller
             'hero_title' => ['required', 'string', 'max:255'],
             'hero_subtitle' => ['nullable', 'string'],
             'about_text' => ['nullable', 'string'],
+            'events_title' => ['nullable', 'string', 'max:255'],
+            'events_description' => ['nullable', 'string'],
             'footer_text' => ['nullable', 'string'],
             'contact_phone' => ['nullable', 'string', 'max:120'],
             'contact_email' => ['nullable', 'email'],

@@ -30,6 +30,14 @@
                             <textarea name="about_text" rows="3" class="w-full border rounded px-3 py-2">{{ old('about_text', $content['about_text'] ?? '') }}</textarea>
                         </label>
                         <label class="text-sm text-gray-700 space-y-1">
+                            <span>Events Section Title</span>
+                            <input name="events_title" class="w-full border rounded px-3 py-2" value="{{ old('events_title', $content['events_title'] ?? '') }}" placeholder="Celebrate in Style">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
+                            <span>Events Section Description</span>
+                            <input name="events_description" class="w-full border rounded px-3 py-2" value="{{ old('events_description', $content['events_description'] ?? '') }}" placeholder="From intimate heritage weddings to executive retreats...">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
                             <span>Contact phone</span>
                             <input name="contact_phone" class="w-full border rounded px-3 py-2" value="{{ old('contact_phone', $content['contact_phone'] ?? '') }}">
                         </label>
