@@ -19,6 +19,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/reservations', [HomeController::class, 'storeReservation'])->name('reservations.store');
 
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'ta', 'si'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/notifications/mark-read', [DashboardController::class, 'markAllRead'])->name('notifications.markRead');

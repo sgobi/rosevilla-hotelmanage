@@ -39,17 +39,36 @@
                 </div>
                 
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <a href="#about" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">About</a>
-                    <a href="#rooms" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Suites</a>
-                    <a href="#events" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Events</a>
-                    <a href="#experiences" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Experiences</a>
-                    <a href="#gallery" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Gallery</a>
-                    <a href="#contact" class="text-white hover:text-rose-gold uppercase text-[0.75rem] tracking-widest font-bold transition">Contact</a>
+                <nav class="hidden md:flex space-x-7 items-center">
+                    <a href="#about" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('About') }}</a>
+                    <a href="#rooms" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Suites') }}</a>
+                    <a href="#gallery" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Gallery') }}</a>
+                    <a href="#experiences" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Experiences') }}</a>
+                    <a href="#events" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Events') }}</a>
+                    <a href="#contact" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Contact') }}</a>
                     
+                    <!-- Language Switcher -->
+                    <div class="relative group ml-2" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center gap-1.5 text-white hover:text-rose-gold text-[0.65rem] font-bold uppercase transition border border-white/20 px-3 py-1.5 rounded-sm bg-white/5">
+                            <span class="opacity-70">
+                                @if(app()->getLocale() == 'en') EN @elseif(app()->getLocale() == 'si') සිං @else தம @endif
+                            </span>
+                            <svg class="w-2.5 h-2.5 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute right-0 mt-3 w-32 bg-white rounded shadow-2xl overflow-hidden py-1.5 z-50">
+                            <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == 'en' ? 'text-rose-gold' : '' }}">English</a>
+                            <a href="{{ route('lang.switch', 'si') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition tracking-widest {{ app()->getLocale() == 'si' ? 'text-rose-gold' : '' }}">සිංහල</a>
+                            <a href="{{ route('lang.switch', 'ta') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition tracking-widest {{ app()->getLocale() == 'ta' ? 'text-rose-gold' : '' }}">தமிழ்</a>
+                        </div>
+                    </div>
+
                     <!-- Book Now Button -->
-                    <a href="#reservation" class="ml-4 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-6 py-3 tracking-widest transition duration-300 shadow-md">
-                        Book Your Stay
+                    <a href="#reservation" class="ml-4 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[0.65rem] font-bold uppercase px-6 py-3.5 tracking-[0.2em] transition duration-500 shadow-xl">
+                        {{ __('Book Your Stay') }}
                     </a>
                 </nav>
 
@@ -84,12 +103,19 @@
             </div>
 
             <div class="flex-1 px-6 py-12 flex flex-col justify-center space-y-6 text-center">
-                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">About</a>
-                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Suites</a>
-                <a href="#events" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Events</a>
-                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Experiences</a>
-                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Gallery</a>
-                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">Contact</a>
+                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('About') }}</a>
+                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Suites') }}</a>
+                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Gallery') }}</a>
+                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Experiences') }}</a>
+                <a href="#events" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Events') }}</a>
+                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Contact') }}</a>
+                
+                <!-- Mobile Language switcher -->
+                <div class="pt-8 border-t border-white/10 flex justify-center gap-6">
+                    <a href="{{ route('lang.switch', 'en') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'en' ? 'border-b border-rose-gold' : '' }}">EN</a>
+                    <a href="{{ route('lang.switch', 'si') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'si' ? 'border-b border-rose-gold' : '' }}">සිං</a>
+                    <a href="{{ route('lang.switch', 'ta') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'ta' ? 'border-b border-rose-gold' : '' }}">தம</a>
+                </div>
             </div>
         </div>
     </header>
@@ -106,17 +132,17 @@
         <div class="relative z-1 text-center px-4 max-w-5xl mx-auto mt-16">
             <h1 class="font-serif text-5xl md:text-8xl text-white mb-6 drop-shadow-2xl tracking-tight uppercase leading-none opacity-0 animate-fade-in-up" 
                 style="animation-delay: 0.3s; animation-fill-mode: forwards;">
-                {{ $heroTitle }}
+                {{ __($heroTitle) }}
             </h1>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.6s; animation-fill-mode: forwards;"></div>
             <p class="text-gray-100 text-lg md:text-2xl font-light tracking-wide mb-10 opacity-0 animate-fade-in-up" 
                style="animation-delay: 0.8s; animation-fill-mode: forwards;">
-                {{ $heroSubtitle }}
+                {{ __($heroSubtitle) }}
             </p>
             <div class="opacity-0 animate-fade-in-up" style="animation-delay: 1s; animation-fill-mode: forwards;">
                 <a href="#rooms" class="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold text-white uppercase tracking-[0.2em] transition-all duration-300 border border-white hover:bg-white hover:text-rose-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-gold">
                     <span class="absolute inset-0 w-full h-full bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                    <span class="relative">Explore Collection</span>
+                    <span class="relative">{{ __('Explore Collection') }}</span>
                 </a>
             </div>
 
@@ -125,24 +151,24 @@
                  style="animation-delay: 1.2s; animation-fill-mode: forwards;">
                 <form action="#reservation" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
                     <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Check In</label>
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Check In') }}</label>
                         <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
                     </div>
                     <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Check Out</label>
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Check Out') }}</label>
                         <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
                     </div>
                     <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">Guests</label>
+                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Guests') }}</label>
                         <select class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
-                            <option>1 Guest</option>
-                            <option>2 Guests</option>
-                            <option>3 Guests</option>
-                            <option>4+ Guests</option>
+                            <option>1 {{ __('Guest') }}</option>
+                            <option>2 {{ __('Guests') }}</option>
+                            <option>3 {{ __('Guests') }}</option>
+                            <option>4+ {{ __('Guests') }}</option>
                         </select>
                     </div>
                     <button type="submit" class="bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-8 h-10 tracking-widest transition duration-300 shadow-md">
-                        Search Availability
+                        {{ __('Search Availability') }}
                     </button>
                 </form>
             </div>
@@ -162,36 +188,36 @@
     <section id="about" class="py-20 md:py-32 bg-rose-primary">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="font-serif text-3xl md:text-4xl text-white mb-8 uppercase tracking-wide">
-                Wander & Explore
+                {{ __('Wander & Explore') }}
             </h2>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
             <p class="text-lg leading-relaxed text-white/90 mb-8 font-light">
-                {{ $content['about_text'] ?? "Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance." }}
+                {{ $content['about_text'] ?? __("Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.") }}
             </p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-sm uppercase tracking-wider text-white">
                 <div class="flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
-                    <span>Heritage Living</span>
+                    <span>{{ __('Heritage Living') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
                          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
-                    <span>Authentic Cuisine</span>
+                    <span>{{ __('Authentic Cuisine') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
                          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </div>
-                    <span>Lush Gardens</span>
+                    <span>{{ __('Lush Gardens') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
                          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <span>Curated Tours</span>
+                    <span>{{ __('Curated Tours') }}</span>
                 </div>
             </div>
         </div>
@@ -201,10 +227,10 @@
     <section id="rooms" class="py-24 bg-[#f8f5f2] overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-20">
-                <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">Sanctuary</span>
-                <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">Our Suites</h2>
+                <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">{{ __('Sanctuary') }}</span>
+                <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Our Suites') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
-                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto">Experience comfort in our historically preserved chambers, where every detail tells a story of the past.</p>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto">{{ __('Experience comfort in our historically preserved chambers, where every detail tells a story of the past.') }}</p>
             </div>
 
             <div class="space-y-24">
@@ -228,19 +254,19 @@
 
                                 <div class="mb-6">
                                     <span class="inline-block py-1 px-3 border border-rose-gold/30 text-rose-gold text-[10px] uppercase tracking-widest font-semibold mb-4">
-                                        Sleeps {{ $room->capacity }}
+                                        {{ __('Sleeps') }} {{ $room->capacity }}
                                     </span>
-                                    <h3 class="font-serif text-3xl md:text-4xl text-rose-accent uppercase mb-2">{{ $room->title }}</h3>
-                                    <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ $room->bed_type }}</p>
+                                    <h3 class="font-serif text-3xl md:text-4xl text-rose-accent uppercase mb-2">{{ __($room->title) }}</h3>
+                                    <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __($room->bed_type) }}</p>
                                 </div>
                                 
                                 <p class="text-gray-600 text-sm leading-8 font-light mb-8 lg:pr-8">
-                                    {{ Str::limit($room->description, 200) }}
+                                    {{ __(Str::limit($room->description, 200)) }}
                                 </p>
                                 
                                 <div class="flex flex-col lg:flex-row items-center lg:items-center gap-6 mt-auto">
                                     <div class="text-center lg:text-left">
-                                        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Starting from</p>
+                                        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">{{ __('Starting from') }}</p>
                                         <p class="text-2xl font-serif text-rose-accent">LKR {{ number_format($room->price_per_night, 0) }}</p>
                                     </div>
                                     
@@ -248,7 +274,7 @@
 
                                     <a href="#reservation" onclick="document.getElementById('room_id').value='{{ $room->id }}'" 
                                        class="inline-block bg-rose-accent text-white border border-rose-accent px-8 py-3 text-xs uppercase tracking-[0.15em] hover:bg-white hover:text-rose-accent transition duration-300">
-                                        Book Now
+                                        {{ __('Book Now') }}
                                     </a>
                                 </div>
 
@@ -256,11 +282,11 @@
                                 <div class="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center lg:justify-start gap-4 text-gray-400 text-xs uppercase tracking-wider">
                                     @foreach(collect($room->amenities)->take(3) as $amenity)
                                         <span class="flex items-center gap-2">
-                                            <span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ $amenity }}
+                                            <span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __($amenity) }}
                                         </span>
                                     @endforeach
                                     @if(count($room->amenities ?? []) > 3)
-                                        <span class="text-rose-gold">+{{ count($room->amenities) - 3 }} more</span>
+                                        <span class="text-rose-gold">+{{ count($room->amenities) - 3 }} {{ __('more') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -279,11 +305,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-widest leading-tight">
-                    {!! $content['events_title'] ?? 'Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style' !!}
+                    {!! $content['events_title'] ?? __('Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style') !!}
                 </h2>
                 <div class="w-24 h-1 bg-rose-gold mx-auto mb-8"></div>
                 <p class="max-w-3xl mx-auto text-lg text-gray-600 font-light leading-relaxed">
-                    {{ $content['events_description'] ?? 'From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.' }}
+                    {{ $content['events_description'] ?? __('From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.') }}
                 </p>
             </div>
 
@@ -317,9 +343,9 @@
                                     <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 @endif
                             </div>
-                            <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">{{ $event->title }}</h3>
+                            <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">{{ __($event->title) }}</h3>
                             <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
-                                {{ $event->description }}
+                                {{ __($event->description) }}
                             </p>
                         </div>
                     </div>
@@ -328,7 +354,7 @@
 
             <div class="text-center">
                 <a href="#contact" class="inline-block bg-rose-accent text-white hover:bg-rose-primary px-10 py-4 text-sm font-bold uppercase tracking-widest transition duration-300 shadow-lg hover:shadow-xl">
-                    Plan Your Event
+                    {{ __('Plan Your Event') }}
                 </a>
             </div>
         </div>
@@ -338,14 +364,14 @@
     <section id="gallery" class="py-20 bg-[#f8f5f2]">
          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Glimpses of Rose Villa</h2>
+                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Glimpses of Rose Villa') }}</h2>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 @foreach($gallery->take(8) as $image)
                     <div class="relative h-64 overflow-hidden group">
                         <img src="{{ str_starts_with($image->image_url, 'http') ? $image->image_url : asset('storage/' . $image->image_url) }}" alt="{{ $image->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
                         <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
-                            <span class="text-white uppercase tracking-widest text-xs font-semibold">{{ $image->title }}</span>
+                            <span class="text-white uppercase tracking-widest text-xs font-semibold">{{ __($image->title) }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -357,7 +383,7 @@
     <section id="reviews" class="py-20 bg-[#f9f9f9]">
         <div class="max-w-6xl mx-auto px-6">
              <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Guest Stories</h2>
+                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Guest Stories') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto"></div>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
@@ -383,9 +409,9 @@
     <section id="reservation" class="py-24 bg-[#f8f5f2]">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Reserve Your Sanctuary</h2>
+                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Reserve Your Sanctuary') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
-                <p class="text-gray-600 font-light">Tell us your plans, and we will curate your perfect stay.</p>
+                <p class="text-gray-600 font-light">{{ __('Tell us your plans, and we will curate your perfect stay.') }}</p>
             </div>
 
             @if(session('success'))
@@ -401,63 +427,63 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Guest Details -->
                         <div class="col-span-1 md:col-span-2">
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Full Name</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Full Name') }}</label>
                              <input type="text" name="guest_name" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="e.g. John Doe">
                              @error('guest_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
                         
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Email Address</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Email Address') }}</label>
                              <input type="email" name="email" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="john@example.com">
                              @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
-
+ 
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Phone Number</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Phone Number') }}</label>
                              <input type="text" name="phone" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="+94 ...">
                         </div>
-
+ 
                         <!-- Stay Details -->
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Check-in Date</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Check-in Date') }}</label>
                              <input type="date" name="check_in" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                         </div>
-
+ 
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Check-out Date</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Check-out Date') }}</label>
                              <input type="date" name="check_out" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                         </div>
-
+ 
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Preferred Suite</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Preferred Suite') }}</label>
                              <select name="room_id" id="room_id" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
-                                 <option value="">-- Select a Suite --</option>
+                                 <option value="">-- {{ __('Select a Suite') }} --</option>
                                  @foreach($rooms as $r)
                                      <option value="{{ $r->id }}">{{ $r->title }} (LKR {{ number_format($r->price_per_night) }})</option>
                                  @endforeach
                              </select>
                         </div>
-
+ 
                         <div>
-                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Guests</label>
+                             <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Guests') }}</label>
                              <select name="guests" required class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 font-light text-gray-600">
                                  @foreach(range(1, 8) as $i)
-                                     <option value="{{ $i }}">{{ $i }} Guest{{ $i > 1 ? 's' : '' }}</option>
+                                     <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? __('Guests') : __('Guest') }}</option>
                                  @endforeach
                              </select>
                         </div>
                     </div>
-
+ 
                     <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Special Requests</label>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">{{ __('Special Requests') }}</label>
                         <textarea name="message" rows="3" class="w-full border-b border-gray-300 focus:border-rose-gold outline-none ring-0 px-0 py-2 bg-transparent transition duration-300 placeholder-gray-300 font-light" placeholder="Dietary restrictions, arrival times, etc..."></textarea>
                     </div>
 
                     <div class="text-center pt-8">
                         <button type="submit" class="bg-rose-accent text-white hover:bg-white hover:text-rose-accent border border-rose-accent transition px-12 py-4 uppercase tracking-[0.2em] text-xs font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-300">
-                            Request Reservation
+                            {{ __('Request Reservation') }}
                         </button>
-                        <p class="mt-6 text-[10px] text-gray-400 uppercase tracking-widest">Our Concierge will contact you to confirm</p>
+                        <p class="mt-6 text-[10px] text-gray-400 uppercase tracking-widest">{{ __('Our Concierge will contact you to confirm') }}</p>
                     </div>
                 </form>
             </div>
@@ -467,10 +493,10 @@
     <section id="experiences" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">Explore</span>
-                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">Nearest Places</h2>
+                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">{{ __('Explore') }}</span>
+                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Nearest Places') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
-                <p class="text-gray-500 font-light max-w-2xl mx-auto">Discover the rich heritage and vibrant culture of Jaffna, just moments from our doorstep.</p>
+                <p class="text-gray-500 font-light max-w-2xl mx-auto">{{ __('Discover the rich heritage and vibrant culture of Jaffna, just moments from our doorstep.') }}</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -486,9 +512,9 @@
                                 <span class="inline-block px-2 py-1 border border-white/30 text-white/80 text-[10px] uppercase tracking-widest mb-2 backdrop-blur-sm">
                                     {{ $landmark->distance ?? 'Nearby' }}
                                 </span>
-                                <h3 class="font-serif text-xl text-white uppercase tracking-widest group-hover:text-rose-gold transition-colors">{{ $landmark->title }}</h3>
+                                <h3 class="font-serif text-xl text-white uppercase tracking-widest group-hover:text-rose-gold transition-colors">{{ __($landmark->title) }}</h3>
                                 @if($landmark->description)
-                                    <p class="text-gray-300 text-xs mt-2 line-clamp-2">{{ $landmark->description }}</p>
+                                    <p class="text-gray-300 text-xs mt-2 line-clamp-2">{{ __($landmark->description) }}</p>
                                 @endif
                                 
                                 <!-- Map Icon Indicator -->
@@ -517,9 +543,9 @@
     <section id="location" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">Find Us</h2>
+                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Find Us') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto"></div>
-                <p class="text-gray-500 font-light mt-4">Discover our sanctuary in the heart of Jaffna</p>
+                <p class="text-gray-500 font-light mt-4">{{ __('Discover our sanctuary in the heart of Jaffna') }}</p>
             </div>
             
             <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 h-[500px]">
@@ -552,12 +578,12 @@
 
                 <!-- Navigation -->
                 <div>
-                     <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">Explore</h4>
+                     <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">{{ __('Explore') }}</h4>
                      <ul class="space-y-4 text-sm text-gray-400 font-light">
-                        <li><a href="#about" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> About Us</a></li>
-                        <li><a href="#rooms" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Our Suites</a></li>
-                        <li><a href="#experiences" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Experiences</a></li>
-                        <li><a href="#gallery" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> Gallery</a></li>
+                        <li><a href="#about" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('About Us') }}</a></li>
+                        <li><a href="#rooms" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Our Suites') }}</a></li>
+                        <li><a href="#experiences" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Experiences') }}</a></li>
+                        <li><a href="#gallery" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Gallery') }}</a></li>
                      </ul>
                 </div>
 
@@ -582,23 +608,23 @@
 
                 <!-- Newsletter -->
                 <div>
-                    <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">Newsletter</h4>
-                    <p class="text-gray-400 text-sm mb-6 font-light">Subscribe to receive exclusive offers and news from Rose Villa.</p>
+                    <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">{{ __('Newsletter') }}</h4>
+                    <p class="text-gray-400 text-sm mb-6 font-light">{{ __('Subscribe to receive exclusive offers and news from Rose Villa.') }}</p>
                     <form action="#" class="space-y-3">
-                        <input type="email" placeholder="Your Email Address" class="w-full bg-white/5 border border-white/10 text-white text-sm px-4 py-3 focus:outline-none focus:border-rose-gold focus:ring-1 focus:ring-rose-gold transition">
+                        <input type="email" placeholder="{{ __('Your Email Address') }}" class="w-full bg-white/5 border border-white/10 text-white text-sm px-4 py-3 focus:outline-none focus:border-rose-gold focus:ring-1 focus:ring-rose-gold transition">
                         <button type="submit" class="w-full bg-rose-gold text-white text-xs uppercase font-bold tracking-widest px-4 py-3 hover:bg-white hover:text-rose-primary transition duration-300">
-                            Subscribe
+                            {{ __('Subscribe') }}
                         </button>
                     </form>
                 </div>
             </div>
             
             <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest">
-                <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.</p>
+                <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. {{ __('All Rights Reserved') }}.</p>
                 <div class="flex space-x-8 mt-4 md:mt-0">
-                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Terms & Conditions</a>
-                    <a href="#" class="hover:text-white transition">Sitemap</a>
+                    <a href="#" class="hover:text-white transition">{{ __('Privacy Policy') }}</a>
+                    <a href="#" class="hover:text-white transition">{{ __('Terms & Conditions') }}</a>
+                    <a href="#" class="hover:text-white transition">{{ __('Sitemap') }}</a>
                 </div>
             </div>
         </div>
