@@ -82,14 +82,9 @@
 
     <div class="invoice-page">
         {{-- Logo Section --}}
-        @php $logoPath = \App\Models\ContentSetting::getValue('logo_path'); @endphp
-        @if($logoPath)
-            <div class="flex justify-center mb-8">
-                <div class="p-2">
-                    <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" class="h-24 object-contain">
-                </div>
-            </div>
-        @endif
+        <div class="flex justify-center mb-4">
+            <h2 class="text-2xl font-black uppercase tracking-[0.1em] text-gray-900 border-b-2 border-gray-900 pb-2">Rosevilla Heritage Homes</h2>
+        </div>
 
         {{-- Title --}}
         <h1 class="header-title">Event Invoice</h1>

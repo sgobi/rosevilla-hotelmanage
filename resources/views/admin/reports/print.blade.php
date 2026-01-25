@@ -18,7 +18,7 @@
         <!-- Header -->
         <div class="flex justify-between items-center border-b-2 border-gray-800 pb-4 mb-8">
             <div>
-                <h1 class="text-2xl font-bold uppercase tracking-wider">Rose Villa Heritage Homes</h1>
+                <h1 class="text-2xl font-bold uppercase tracking-wider">Rosevilla Heritage Homes</h1>
                 <h2 class="text-lg text-gray-600 mt-1">{{ $title }}</h2>
             </div>
             <div class="text-right text-sm">
