@@ -203,7 +203,7 @@ class DatabaseSeeder extends Seeder
             'hero_subtitle' => 'A boutique heritage villa with soulful hospitality, lush courtyards, and authentic northern flavors.',
             'about_text' => 'Rosevilla Heritage Homes weaves timeless Jaffna architecture with modern comfort. Wake to birdsong, dine on heirloom recipes, wander through palm-framed gardens, and return to suites dressed in handcrafted woodwork and soft linen. Our team curates rituals, temple visits, cycling routes, and coastal escapes so every stay feels personal.',
             'footer_text' => 'Guest support is a call away — we are here to make every stay effortless.',
-            'contact_phone' => '+94 76 319 3311',
+            'contact_phone' => '+94 76 56 92476',
             'contact_email' => 'stay@rosevillaheritagehomes.com',
             'contact_address' => 'Rosevilla Heritage Homes, Jaffna, Sri Lanka',
             'map_embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126743.4021487821!2d79.989!3d9.6615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe56f0c3c3361d%3A0xb4b29d0d553cae62!2sJaffna!5e0!3m2!1sen!2slk!4v1700000000000',

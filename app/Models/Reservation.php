@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Notifications\Notifiable;
 
 class Reservation extends Model
 {
+    use Notifiable;
+
     protected $fillable = [
         'room_id',
         'guest_name',
@@ -86,5 +89,13 @@ class Reservation extends Model
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
+    }
+
+    /**
+     * Route notifications for WhatsApp channel.
+     */
+    public function routeNotificationForWhatsApp()
+    {
+        return $this->phone;
     }
 }

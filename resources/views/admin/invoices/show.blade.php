@@ -129,7 +129,7 @@
                 <tr>
                     <td>
                         <div class="font-bold text-gray-900">Room Accommodation ({{ $nights }} nights)</div>
-                        <div class="text-xs text-gray-500 mt-0.5">{{ $reservation->room->title ?? 'Base Suite' }} &times; {{ $nights }} nights @ LKR {{ number_format($reservation->room->price_per_night ?? 0, 2) }}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">{{ $reservation->room->title ?? 'Base Room' }} &times; {{ $nights }} nights @ LKR {{ number_format($reservation->room->price_per_night ?? 0, 2) }}</div>
                     </td>
                     <td class="text-right font-medium">LKR {{ number_format($reservation->total_price, 2) }}</td>
                 </tr>

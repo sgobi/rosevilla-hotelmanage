@@ -32,7 +32,7 @@
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="p-5 bg-white shadow rounded-xl border border-gray-100">
-                    <p class="text-sm text-gray-500">Rooms & Suites</p>
+                    <p class="text-sm text-gray-500">Rooms</p>
                     <p class="text-3xl font-semibold text-gray-900 mt-2">{{ $stats['rooms'] ?? 0 }}</p>
                 </div>
                 <div class="p-5 bg-white shadow rounded-xl border border-gray-100">

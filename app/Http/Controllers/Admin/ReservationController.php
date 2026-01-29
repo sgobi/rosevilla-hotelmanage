@@ -82,16 +82,28 @@ class ReservationController extends Controller
         if ($request->has('status_change_action') && auth()->user()->isAdmin()) {
             $action = $request->status_change_action;
             if ($action === 'approve') {
+                $newStatus = $reservation->status_update_requested;
                 $reservation->update([
-                    'status' => $reservation->status_update_requested,
+                    'status' => $newStatus,
                     'status_update_requested' => null
                 ]);
+                
+                // Send WhatsApp notification to customer
+                /*
+                try {
+                    $reservation->notify(new \App\Notifications\WhatsAppReservationStatusUpdate($reservation, $newStatus));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+                }
+                */
+                
                 return back()->with('success', 'Status change request approved.');
             } elseif ($action === 'reject') {
                 $reservation->update(['status_update_requested' => null]);
                 return back()->with('success', 'Status change request rejected.');
             }
         }
+
 
         // 1. Handle Status Update
         if ($request->has('status')) {
@@ -105,7 +117,22 @@ class ReservationController extends Controller
             $data = $request->validate([
                 'status' => ['required', 'in:pending,approved,cancelled'],
             ]);
+            
+            $oldStatus = $reservation->status;
+            $newStatus = $data['status'];
+            
             $reservation->update($data);
+            
+            // Send WhatsApp notification to customer if status changed to approved or cancelled
+            /*
+            if ($oldStatus !== $newStatus && in_array($newStatus, ['approved', 'cancelled'])) {
+                try {
+                    $reservation->notify(new \App\Notifications\WhatsAppReservationStatusUpdate($reservation, $newStatus));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+                }
+            }
+            */
         }
 
         // 2. Handle Discount Suggestion (Staff/Admin)

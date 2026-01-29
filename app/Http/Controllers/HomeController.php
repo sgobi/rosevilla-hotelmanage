@@ -60,7 +60,6 @@ class HomeController extends Controller
             'check_in' => ['required', 'date'],
             'check_out' => ['required', 'date', 'after:check_in'],
             'guests' => ['required', 'integer', 'min:1', 'max:8'],
-            'arrival_time' => ['nullable', 'string', 'max:120'],
             'message' => ['nullable', 'string'],
         ]);
 
@@ -73,11 +72,13 @@ class HomeController extends Controller
         \Illuminate\Support\Facades\Notification::send($users, new \App\Notifications\NewReservationRequest($reservation));
 
         // Send WhatsApp to Customer
+        /*
         try {
             $reservation->notify(new \App\Notifications\WhatsAppBookingConfirmed($reservation, 'room'));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
         }
+        */
 
         return back()->with('success', 'Thank you. Your reservation request has been received. Our team will confirm shortly.');
     }

@@ -18,73 +18,77 @@
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        [x-cloak] { display: none !important; }
+        .page-fade-in { opacity: 0; transition: opacity 0.8s ease-out; }
+        .page-fade-in.ready { opacity: 1; }
+    </style>
 </head>
-<body class="font-sans text-rose-text antialiased bg-white">
+<body class="font-sans text-rose-text antialiased bg-white page-fade-in" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 100)" :class="{ 'ready': ready }">
     @php
         $heroTitle = $content['hero_title'] ?? 'Rose Villa';
         $heroSubtitle = $content['hero_subtitle'] ?? 'Experience the Extraordinary in Jaffna';
-        // Updated to use the live site's hero image
-        $heroImage = 'https://rosevillaheritagehomes.com/wp-content/uploads/2025/11/front-page.png'; 
+        $heroImage = asset('images/rosevilla front view.png'); 
     @endphp
 
     <!-- Header -->
     <header x-data="{ scrolled: false, mobileMenuOpen: false }" 
             @scroll.window="scrolled = (window.pageYOffset > 50)"
-            :class="{ 'bg-rose-primary shadow-lg py-4': scrolled, 'bg-gradient-to-b from-black/80 to-transparent py-6': !scrolled }"
-            class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
+            :class="{ 'bg-rose-primary/95 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-3': scrolled, 'bg-gradient-to-b from-black/60 to-transparent py-4 lg:py-6': !scrolled }"
+            class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5 py-4 lg:py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center text-white">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
-                    <a href="{{ route('home') }}" class="block">
-                         <img src="https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Screenshot-2024-08-05-174751-removebg-preview1.png" 
+                    <a href="{{ route('home') }}" class="block transition-all duration-500 hover:brightness-110 active:scale-95">
+                         <img src="{{ asset('images/logo.png') }}" 
                               alt="Rose Villa Logo" 
-                              class="transition-all duration-300"
-                              :class="scrolled ? 'h-12' : 'h-16'">
+                              class="h-12 lg:h-16 transition-all duration-700 filter drop-shadow-md"
+                              :class="{ 'h-10': scrolled, 'h-12 lg:h-16': !scrolled }"
+                              loading="eager">
                     </a>
                 </div>
                 
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-7 items-center">
-                    <a href="#about" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('About') }}</a>
-                    <a href="#rooms" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Suites') }}</a>
-                    <a href="#gallery" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Gallery') }}</a>
-                    <a href="#experiences" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Experiences') }}</a>
-                    <a href="#events" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Events') }}</a>
-                    <a href="#contact" class="text-white hover:text-rose-gold uppercase text-[0.7rem] tracking-[0.2em] font-bold transition">{{ __('Contact') }}</a>
+                <nav class="hidden lg:flex space-x-6 xl:space-x-8 items-center">
+                    @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'Contact' => '#contact'] as $label => $link)
+                        <a href="{{ $link }}" class="relative text-xs tracking-widest font-black uppercase transition-all duration-300 hover:text-rose-gold group">
+                            {{ __($label) }}
+                            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-rose-gold transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                    @endforeach
                     
                     <!-- Language Switcher -->
-                    <div class="relative group ml-2" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-1.5 text-white hover:text-rose-gold text-[0.65rem] font-bold uppercase transition border border-white/20 px-3 py-1.5 rounded-sm bg-white/5">
-                            <span class="opacity-70">
+                    <div class="relative group ml-4" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-sm">
+                            <span class="opacity-100">
                                 @if(app()->getLocale() == 'en') EN @elseif(app()->getLocale() == 'si') සිං @else தம @endif
                             </span>
-                            <svg class="w-2.5 h-2.5 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            <svg class="w-3 h-3 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" 
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             class="absolute right-0 mt-3 w-32 bg-white rounded shadow-2xl overflow-hidden py-1.5 z-50">
-                            <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == 'en' ? 'text-rose-gold' : '' }}">English</a>
-                            <a href="{{ route('lang.switch', 'si') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition tracking-widest {{ app()->getLocale() == 'si' ? 'text-rose-gold' : '' }}">සිංහල</a>
-                            <a href="{{ route('lang.switch', 'ta') }}" class="block px-4 py-2 text-[10px] font-bold text-gray-700 hover:bg-rose-50 hover:text-rose-primary transition tracking-widest {{ app()->getLocale() == 'ta' ? 'text-rose-gold' : '' }}">தமிழ்</a>
+                        <div x-show="open" x-cloak @click.away="open = false" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="absolute right-0 mt-4 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                            @foreach(['en' => 'English', 'si' => 'සිංහல', 'ta' => 'தமிழ்'] as $code => $name)
+                                <a href="{{ route('lang.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }}</a>
+                            @endforeach
                         </div>
                     </div>
 
                     <!-- Book Now Button -->
-                    <a href="#reservation" class="ml-4 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[0.65rem] font-bold uppercase px-6 py-3.5 tracking-[0.2em] transition duration-500 shadow-xl">
-                        {{ __('Book Your Stay') }}
+                    <a href="#reservation" class="ml-6 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[0.7rem] font-black uppercase px-8 py-4 tracking-[0.2em] transition-all duration-500 shadow-[0_10px_30px_-10px_rgba(179,142,93,0.5)] hover:shadow-xl active:scale-95 rounded-2xl">
+                        {{ __('Reserve Now') }}
                     </a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
-                <div class="-mr-2 flex items-center md:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-rose-gold transition">
-                        <span class="sr-only">Open main menu</span>
+                <div class="flex items-center lg:hidden">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-white/5 p-3 rounded-xl border border-white/10 text-white hover:text-rose-gold transition-all backdrop-blur-md">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            <path :class="mobileMenuOpen ? 'inline-flex' : 'hidden'" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+                            <path :class="mobileMenuOpen ? 'inline-flex' : 'hidden'" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -92,89 +96,98 @@
         </div>
 
         <!-- Mobile Menu Container -->
-        <div x-show="mobileMenuOpen" 
-             x-transition:enter="transition ease-out duration-300" 
-             x-transition:enter-start="opacity-0 translate-x-full" 
-             x-transition:enter-end="opacity-100 translate-x-0" 
-             style="display: none;"
-             class="fixed inset-0 z-50 bg-rose-primary/95 backdrop-blur-xl flex flex-col">
+        <div x-show="mobileMenuOpen" x-cloak
+             x-transition:enter="transition ease-out duration-500" 
+             x-transition:enter-start="opacity-0" 
+             x-transition:enter-end="opacity-100" 
+             class="fixed inset-0 z-[100] bg-[#0d0d0d] flex flex-col overflow-y-auto">
             
-            <div class="flex justify-between items-center px-6 py-6 border-b border-white/10">
-                <span class="text-white font-serif text-xl uppercase tracking-widest">Menu</span>
-                <button @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold">
-                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+            <div class="flex justify-end p-6">
+                <button @click="mobileMenuOpen = false" class="p-3 rounded-xl bg-white/5 border border-white/10 text-white hover:text-rose-gold">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <div class="flex-1 px-6 py-12 flex flex-col justify-center space-y-6 text-center">
-                <a href="#about" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('About') }}</a>
-                <a href="#rooms" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Suites') }}</a>
-                <a href="#gallery" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Gallery') }}</a>
-                <a href="#experiences" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Experiences') }}</a>
-                <a href="#events" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Events') }}</a>
-                <a href="#contact" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-xl tracking-[0.2em] font-serif transition">{{ __('Contact') }}</a>
+            <div class="px-8 py-12 flex flex-col items-center space-y-10 text-center flex-grow">
+                @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'Contact' => '#contact'] as $label => $link)
+                    <a href="{{ $link }}" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.15em] font-serif transition-all duration-300 hover:scale-110 active:scale-95 border-b border-transparent hover:border-rose-gold/30 pb-1">{{ __($label) }}</a>
+                @endforeach
                 
-                <!-- Mobile Language switcher -->
-                <div class="pt-8 border-t border-white/10 flex justify-center gap-6">
-                    <a href="{{ route('lang.switch', 'en') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'en' ? 'border-b border-rose-gold' : '' }}">EN</a>
-                    <a href="{{ route('lang.switch', 'si') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'si' ? 'border-b border-rose-gold' : '' }}">සිං</a>
-                    <a href="{{ route('lang.switch', 'ta') }}" class="text-white hover:text-rose-gold text-sm font-bold uppercase tracking-widest {{ app()->getLocale() == 'ta' ? 'border-b border-rose-gold' : '' }}">தம</a>
+                <div class="pt-12 border-t border-white/10 w-full flex flex-col items-center gap-8">
+                    <div class="flex gap-8">
+                        @foreach(['en' => 'EN', 'si' => 'සිං', 'ta' => 'தம'] as $code => $label)
+                            <a href="{{ route('lang.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-lg font-black uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $label }}</a>
+                        @endforeach
+                    </div>
+                    
+                    <a href="#reservation" @click="mobileMenuOpen = false" class="w-full max-w-sm bg-rose-gold text-white text-[11px] font-black uppercase px-6 py-6 tracking-[0.3em] rounded-2xl shadow-2xl transition-all active:scale-95 border-b-4 border-black/20 hover:brightness-110">
+                        {{ __('CLAIM YOUR SANCTUARY') }}
+                    </a>
                 </div>
+            </div>
+
+            <div class="p-12 text-center">
+                 <p class="text-[10px] text-white/20 uppercase tracking-[0.5em] font-black">Rose Villa Heritage</p>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <div class="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+    <div class="relative h-[100dvh] flex items-center justify-center overflow-hidden bg-black">
         <!-- Background Image -->
-        <div class="absolute inset-0 z-0">
-            <img src="{{ $heroImage }}" alt="Rose Villa Heritage Home" class="w-full h-full object-cover opacity-100 animate-ken-burns">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
+        <div class="absolute inset-0 z-0 scale-105 animate-ken-burns">
+            <img src="{{ $heroImage }}" alt="Rose Villa Heritage Home" class="w-full h-full object-cover opacity-100">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
         </div>
 
         <!-- Hero Content -->
-        <div class="relative z-1 text-center px-4 max-w-5xl mx-auto mt-16">
-            <h1 class="font-serif text-5xl md:text-8xl text-white mb-6 drop-shadow-2xl tracking-tight uppercase leading-none opacity-0 animate-fade-in-up" 
-                style="animation-delay: 0.3s; animation-fill-mode: forwards;">
+        <div class="relative z-1 text-center px-4 max-w-6xl mx-auto mt-20">
+            <span class="inline-block py-2 px-4 bg-black/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.5em] mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
+                {{ __('Heritage Sanctuary in Jaffna') }}
+            </span>
+            <h1 class="font-serif text-6xl md:text-9xl text-white mb-8 drop-shadow-[0_10px_35px_rgba(0,0,0,0.8)] tracking-tighter uppercase leading-[0.85] opacity-0 animate-fade-in-up" 
+                style="animation-delay: 0.4s; animation-fill-mode: forwards;">
                 {{ __($heroTitle) }}
             </h1>
-            <div class="w-24 h-1 bg-rose-gold mx-auto mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.6s; animation-fill-mode: forwards;"></div>
-            <p class="text-gray-100 text-lg md:text-2xl font-light tracking-wide mb-10 opacity-0 animate-fade-in-up" 
+            <div class="w-32 h-1.5 bg-rose-gold mx-auto mb-10 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.6s; animation-fill-mode: forwards;"></div>
+            <p class="text-white/90 text-lg md:text-2xl font-light tracking-wide mb-12 max-w-2xl mx-auto opacity-0 animate-fade-in-up" 
                style="animation-delay: 0.8s; animation-fill-mode: forwards;">
                 {{ __($heroSubtitle) }}
             </p>
             <div class="opacity-0 animate-fade-in-up" style="animation-delay: 1s; animation-fill-mode: forwards;">
-                <a href="#rooms" class="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold text-white uppercase tracking-[0.2em] transition-all duration-300 border border-white hover:bg-white hover:text-rose-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-gold">
-                    <span class="absolute inset-0 w-full h-full bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                    <span class="relative">{{ __('Explore Collection') }}</span>
+                <a href="#rooms" class="group relative inline-flex items-center justify-center px-12 py-5 text-sm font-black text-white uppercase tracking-[0.3em] transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/30 hover:border-white hover:bg-white hover:text-black overflow-hidden active:scale-95 shadow-2xl">
+                    <span class="absolute inset-0 w-full h-full bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500"></span>
+                    <span class="relative z-10 group-hover:text-black">{{ __('Explore Collection') }}</span>
                 </a>
             </div>
 
             <!-- Booking Widget -->
-            <div class="mt-16 bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20 shadow-2xl hidden md:block opacity-0 animate-fade-in-up" 
+            <div class="mt-20 bg-white/10 backdrop-blur-3xl p-3 rounded-[2rem] border border-white/20 shadow-[0_40px_100px_-15px_rgba(0,0,0,0.6)] hidden md:block opacity-0 animate-fade-in-up max-w-5xl mx-auto" 
                  style="animation-delay: 1.2s; animation-fill-mode: forwards;">
-                <form action="#reservation" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
-                    <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Check In') }}</label>
-                        <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
+                <form action="#reservation" method="GET" class="flex items-center gap-3">
+                    <div class="flex-1 grid grid-cols-3 gap-3 p-1">
+                        <div class="relative group">
+                            <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Check In') }}</label>
+                            <input type="date" name="check_in" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
+                        </div>
+                        <div class="relative group border-l border-white/10">
+                            <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Check Out') }}</label>
+                            <input type="date" name="check_out" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
+                        </div>
+                        <div class="relative group border-l border-white/10">
+                            <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Guests') }}</label>
+                            <select name="guests" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer appearance-none hover:bg-white/10 outline-none px-6">
+                                <option value="1" class="bg-rose-dark">1 {{ __('Guest') }}</option>
+                                <option value="2" class="bg-rose-dark">2 {{ __('Guests') }}</option>
+                                <option value="3" class="bg-rose-dark">3 {{ __('Guests') }}</option>
+                                <option value="4" class="bg-rose-dark">4+ {{ __('Guests') }}</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Check Out') }}</label>
-                        <input type="date" class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
-                    </div>
-                    <div class="flex-1 text-left">
-                        <label class="block text-white text-[10px] uppercase tracking-wider mb-1">{{ __('Guests') }}</label>
-                        <select class="w-full bg-white/90 border-0 text-gray-800 text-xs focus:ring-rose-gold rounded-sm h-10">
-                            <option>1 {{ __('Guest') }}</option>
-                            <option>2 {{ __('Guests') }}</option>
-                            <option>3 {{ __('Guests') }}</option>
-                            <option>4+ {{ __('Guests') }}</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-xs font-bold uppercase px-8 h-10 tracking-widest transition duration-300 shadow-md">
-                        {{ __('Search Availability') }}
+                    <button type="submit" class="group/btn relative bg-rose-gold hover:bg-white text-white hover:text-rose-dark text-[11px] font-black uppercase px-14 py-8 tracking-[0.3em] transition-all duration-700 rounded-2xl shadow-2xl active:scale-95 flex items-center gap-4 overflow-hidden">
+                        <span class="absolute inset-0 bg-white transform translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500"></span>
+                        <span class="relative z-10">{{ __('Check Availability') }}</span>
+                        <svg class="relative z-10 w-5 h-5 transform group-hover/btn:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </button>
                 </form>
             </div>
@@ -191,39 +204,45 @@
     </div>
 
     <!-- About Section -->
-    <section id="about" class="py-20 md:py-32 bg-rose-primary">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-serif text-3xl md:text-4xl text-white mb-8 uppercase tracking-wide">
+    <section id="about" class="py-24 md:py-40 bg-rose-primary relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-24 bg-gradient-to-b from-black/20 to-transparent"></div>
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-rose-gold/10 rounded-full blur-3xl"></div>
+        <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-rose-accent/10 rounded-full blur-3xl"></div>
+
+        <div class="max-w-5xl mx-auto px-4 text-center relative z-10">
+            <span class="text-rose-gold text-xs font-bold tracking-[0.4em] uppercase block mb-6 px-10">{{ __('Our Heritage') }}</span>
+            <h2 class="font-serif text-4xl md:text-6xl text-white mb-10 uppercase tracking-tight px-12">
                 {{ __('Wander & Explore') }}
             </h2>
-            <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
-            <p class="text-lg leading-relaxed text-white/90 mb-8 font-light">
+            <div class="w-24 h-1.5 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-12 rounded-full"></div>
+            <p class="text-xl leading-relaxed text-white mb-20 font-normal max-w-3xl mx-auto px-6">
                 {{ $content['about_text'] ?? __("Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.") }}
             </p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-sm uppercase tracking-wider text-white">
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mt-16 text-[10px] font-black uppercase tracking-[0.3em] text-rose-gold/80">
                 <div class="flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
-                    <span>{{ __('Heritage Living') }}</span>
+                    <span class="group-hover:text-white transition-colors">{{ __('Heritage Living') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
-                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:-rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
+                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
-                    <span>{{ __('Authentic Cuisine') }}</span>
+                    <span class="group-hover:text-white transition-colors">{{ __('Authentic Cuisine') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
-                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
+                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </div>
-                    <span>{{ __('Lush Gardens') }}</span>
+                    <span class="group-hover:text-white transition-colors">{{ __('Lush Gardens') }}</span>
                 </div>
                 <div class="flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full border border-rose-gold/30 flex items-center justify-center mb-4 group-hover:bg-rose-gold group-hover:text-white transition duration-500 text-rose-gold">
-                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:-rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
+                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <span>{{ __('Curated Tours') }}</span>
+                    <span class="group-hover:text-white transition-colors">{{ __('Curated Tours') }}</span>
                 </div>
             </div>
         </div>
@@ -234,66 +253,77 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-20">
                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">{{ __('Sanctuary') }}</span>
-                <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Our Suites') }}</h2>
+                <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Our Rooms') }}</h2>
                 <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
                 <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto">{{ __('Experience comfort in our historically preserved chambers, where every detail tells a story of the past.') }}</p>
             </div>
 
-            <div class="space-y-24">
+            <div class="space-y-32">
                 @foreach($rooms as $room)
-                    <div class="group relative bg-white shadow-xl overflow-hidden round-sm">
+                    <div class="group relative bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.12)] transition-all duration-1000 overflow-hidden rounded-[2.5rem] border border-gray-100">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
                             <!-- Image Column -->
-                            <div class="relative h-96 lg:h-auto overflow-hidden {{ $loop->even ? 'lg:order-2' : '' }}">
+                            <div class="relative h-[28rem] lg:h-auto overflow-hidden {{ $loop->even ? 'lg:order-2' : '' }}">
                                 <img src="{{ str_starts_with($room->featured_image, 'http') ? $room->featured_image : asset('storage/' . $room->featured_image) }}" 
                                      alt="{{ $room->title }}" 
-                                     class="w-full h-full object-cover transform group-hover:scale-110 transition duration-1000 ease-in-out">
-                                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition duration-500"></div>
+                                     class="w-full h-full object-cover transform scale-105 group-hover:scale-110 group-hover:rotate-1 transition-all duration-1000 ease-out">
+                                <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-700"></div>
+                                
+                                <div class="absolute top-8 {{ $loop->even ? 'right-8' : 'left-8' }} flex flex-col items-center z-20">
+                                    <div class="px-8 py-5 rounded-3xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center border border-white transition-all duration-500 hover:scale-105">
+                                         <span class="text-[11px] font-black text-rose-gold uppercase tracking-[0.2em] leading-none mb-2.5">{{ __('Starting from') }}</span>
+                                         <div class="flex items-baseline gap-2">
+                                            <span class="text-[12px] font-bold text-rose-accent uppercase">LKR</span>
+                                            <span class="text-4xl font-serif text-rose-accent leading-none">{{ number_format($room->price_per_night, 0, '', ',') }}</span>
+                                         </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <!-- Content Column -->
-                            <div class="p-10 md:p-16 flex flex-col justify-center text-center lg:text-left relative {{ $loop->even ? 'lg:order-1' : '' }}">
+                            <div class="p-10 md:p-20 flex flex-col justify-center relative {{ $loop->even ? 'lg:order-1' : '' }}">
                                 <!-- Decorative Elements -->
-                                <div class="hidden lg:block absolute top-10 {{ $loop->even ? 'right-10' : 'left-10' }} text-6xl text-gray-100 font-serif -z-10 select-none">
+                                <div class="absolute top-10 {{ $loop->even ? 'right-20' : 'left-20' }} text-[12rem] text-gray-50/50 font-serif -z-10 select-none leading-none">
                                     0{{ $loop->iteration }}
                                 </div>
 
-                                <div class="mb-6">
-                                    <span class="inline-block py-1 px-3 border border-rose-gold/30 text-rose-gold text-[10px] uppercase tracking-widest font-semibold mb-4">
-                                        {{ __('Sleeps') }} {{ $room->capacity }}
-                                    </span>
-                                    <h3 class="font-serif text-3xl md:text-4xl text-rose-accent uppercase mb-2">{{ __($room->title) }}</h3>
-                                    <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __($room->bed_type) }}</p>
+                                <div class="mb-10">
+                                    <div class="flex items-center gap-4 mb-6">
+                                        <span class="h-px w-10 bg-rose-gold"></span>
+                                        <span class="text-xs font-black text-rose-gold uppercase tracking-[0.3em]">
+                                            {{ __('Living Sanctuary') }}
+                                        </span>
+                                    </div>
+                                    <h3 class="font-serif text-4xl md:text-6xl text-rose-accent uppercase mb-4 leading-tight tracking-tighter group-hover:translate-x-2 transition-transform duration-700 delay-100">{{ __($room->title) }}</h3>
+                                    <div class="flex items-center gap-5">
+                                        <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __($room->bed_type) }}</span>
+                                        <span class="w-2 h-2 rounded-full bg-rose-gold/40"></span>
+                                        <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __('Sleeps') }} {{ $room->capacity }}</span>
+                                    </div>
                                 </div>
                                 
-                                <p class="text-gray-600 text-sm leading-8 font-light mb-8 lg:pr-8">
-                                    {{ __(Str::limit($room->description, 200)) }}
+                                <p class="text-gray-600 text-[15px] leading-relaxed font-normal mb-10 lg:pr-12 italic">
+                                    "{{ __(Str::limit($room->description, 180)) }}"
                                 </p>
                                 
-                                <div class="flex flex-col lg:flex-row items-center lg:items-center gap-6 mt-auto">
-                                    <div class="text-center lg:text-left">
-                                        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">{{ __('Starting from') }}</p>
-                                        <p class="text-2xl font-serif text-rose-accent">LKR {{ number_format($room->price_per_night, 0) }}</p>
-                                    </div>
-                                    
-                                    <div class="flex-grow"></div>
-
+                                <div class="flex items-center gap-8 pt-8 border-t border-gray-100">
                                     <a href="#reservation" onclick="document.getElementById('room_id').value='{{ $room->id }}'" 
-                                       class="inline-block bg-rose-accent text-white border border-rose-accent px-8 py-3 text-xs uppercase tracking-[0.15em] hover:bg-white hover:text-rose-accent transition duration-300">
-                                        {{ __('Book Now') }}
+                                       class="group/btn relative inline-flex items-center gap-4 px-10 py-5 bg-rose-accent text-white rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(145,108,82,0.3)] active:scale-95">
+                                        <span class="absolute inset-0 w-full h-full bg-rose-gold transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></span>
+                                        <span class="relative text-sm font-black uppercase tracking-[0.2em] z-10">{{ __('Reserve Room') }}</span>
+                                        <svg class="relative w-6 h-6 group-hover/btn:translate-x-1 transition-transform z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                     </a>
-                                </div>
-
-                                <!-- Amenities Preview -->
-                                <div class="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center lg:justify-start gap-4 text-gray-400 text-xs uppercase tracking-wider">
-                                    @foreach(collect($room->amenities)->take(3) as $amenity)
-                                        <span class="flex items-center gap-2">
-                                            <span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __($amenity) }}
-                                        </span>
-                                    @endforeach
-                                    @if(count($room->amenities ?? []) > 3)
-                                        <span class="text-rose-gold">+{{ count($room->amenities) - 3 }} {{ __('more') }}</span>
-                                    @endif
+                                    
+                                    <div class="hidden sm:flex items-center gap-4">
+                                        @foreach(collect($room->amenities)->take(2) as $amenity)
+                                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400" title="{{ $amenity }}">
+                                                @if(Str::contains(Str::lower($amenity), 'wi-fi')) <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.111 16.404a5.503 5.503 0 017.778 0M5.636 13.929a9 9 0 0112.728 0M12 20h.01m-9.091-9.091a13.5 13.5 0 0118.182 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                                                @elseif(Str::contains(Str::lower($amenity), 'air')) <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 13h1m4 0h1m4 0h1m4 0h1m4 0h1M5 9c0 1.5 2 1.5 2 3s2 1.5 2 3M9 9c0 1.5 2 1.5 2 3s2 1.5 2 3m4-6c0 1.5 2 1.5 2 3s2 1.5 2 3m4-6c0 1.5 2 1.5 2 3s2 1.5 2 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                                                @else <span class="text-[10px] font-bold">{{ substr($amenity, 0, 1) }}</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -314,44 +344,38 @@
                     {!! $content['events_title'] ?? __('Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style') !!}
                 </h2>
                 <div class="w-24 h-1 bg-rose-gold mx-auto mb-8"></div>
-                <p class="max-w-3xl mx-auto text-lg text-gray-600 font-light leading-relaxed">
+                <p class="max-w-3xl mx-auto text-lg text-gray-700 font-normal leading-relaxed">
                     {{ $content['events_description'] ?? __('From intimate heritage weddings to executive retreats, let the timeless charm of Rose Villa be the backdrop for your most cherished moments.') }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                 @foreach($homeEvents as $event)
-                    <div class="bg-white shadow-xl border border-gray-100 group hover:-translate-y-2 transition duration-500 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="bg-white shadow-[0_15px_45px_rgba(0,0,0,0.05)] rounded-[2.5rem] group hover:-translate-y-3 transition-all duration-700 relative overflow-hidden border border-gray-50">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-rose-gold via-rose-accent to-rose-gold opacity-0 group-hover:opacity-100 transition duration-700"></div>
                         
                         <!-- Image -->
-                        <div class="relative h-64 overflow-hidden">
+                        <div class="relative h-72 overflow-hidden">
                             <img src="{{ str_starts_with($event->image_path, 'http') ? $event->image_path : (file_exists(public_path($event->image_path)) ? asset($event->image_path) : asset('storage/' . $event->image_path)) }}" 
                                  alt="{{ $event->title }}" 
-                                 class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                 class="w-full h-full object-cover transform group-hover:scale-110 group-hover:rotate-1 transition duration-1000">
+                            <div class="absolute inset-0 bg-gradient-to-t from-rose-accent/40 to-transparent opacity-60"></div>
                         </div>
                         
                         <!-- Content -->
-                        <div class="p-10">
-                            <div class="text-rose-gold mb-6 text-center transform group-hover:scale-110 transition duration-500">
+                        <div class="p-12">
+                            <div class="text-rose-gold mb-8 transform group-hover:scale-110 group-hover:-rotate-3 transition duration-700">
                                 @if($event->icon == 'heart')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/5 flex items-center justify-center mx-auto text-rose-gold"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
                                 @elseif($event->icon == 'building')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/5 flex items-center justify-center mx-auto text-rose-gold"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
                                 @elseif($event->icon == 'cake')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-17v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4a1 1 0 011-1h2a1 1 0 011 1z"/></svg>
-                                @elseif($event->icon == 'star')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                                @elseif($event->icon == 'music')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-                                @elseif($event->icon == 'camera')
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/5 flex items-center justify-center mx-auto text-rose-gold"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-17v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4a1 1 0 011-1h2a1 1 0 011 1z"/></svg></div>
                                 @endif
                             </div>
-                            <h3 class="font-serif text-2xl text-rose-accent uppercase tracking-widest mb-4 text-center">{{ __($event->title) }}</h3>
-                            <p class="text-sm text-gray-500 font-light leading-relaxed text-center">
-                                {{ __($event->description) }}
+                            <h3 class="font-serif text-3xl text-rose-accent uppercase tracking-tight mb-6 text-center group-hover:text-rose-gold transition-colors duration-500">{{ __($event->title) }}</h3>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed text-center italic group-hover:text-gray-700 transition-colors">
+                                "{{ __($event->description) }}"
                             </p>
                         </div>
                     </div>
@@ -359,8 +383,9 @@
             </div>
 
             <div class="text-center">
-                <a href="#contact" class="inline-block bg-rose-accent text-white hover:bg-rose-primary px-10 py-4 text-sm font-bold uppercase tracking-widest transition duration-300 shadow-lg hover:shadow-xl">
+                <a href="#contact" class="inline-flex items-center gap-4 bg-rose-accent text-white hover:bg-rose-dark px-12 py-5 rounded-full text-xs font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-2xl hover:shadow-rose-accent/40 active:scale-95">
                     {{ __('Plan Your Event') }}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
         </div>
@@ -370,14 +395,18 @@
     <section id="gallery" class="py-20 bg-[#f8f5f2]">
          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Glimpses of Rose Villa') }}</h2>
+                <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Gallery') }}</span>
+                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-tight">{{ __('Glimpses of Rose Villa') }}</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="columns-2 md:columns-4 gap-6 space-y-6">
                 @foreach($gallery->take(8) as $image)
-                    <div class="relative h-64 overflow-hidden group">
-                        <img src="{{ str_starts_with($image->image_url, 'http') ? $image->image_url : asset('storage/' . $image->image_url) }}" alt="{{ $image->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
-                            <span class="text-white uppercase tracking-widest text-xs font-semibold">{{ __($image->title) }}</span>
+                    <div class="relative overflow-hidden group rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-700 break-inside-avoid">
+                        <img src="{{ str_starts_with($image->image_url, 'http') ? $image->image_url : asset('storage/' . $image->image_url) }}" alt="{{ $image->title }}" 
+                             class="w-full h-auto object-cover transform group-hover:scale-110 group-hover:rotate-1 transition duration-1000">
+                        <div class="absolute inset-0 bg-gradient-to-t from-rose-accent/80 via-rose-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-8">
+                            <span class="text-white uppercase tracking-[0.3em] text-[10px] font-black mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-700">Heritage Frame</span>
+                            <span class="text-white uppercase tracking-widest text-lg font-serif translate-y-4 group-hover:translate-y-0 transition-transform duration-700 delay-100">{{ __($image->title) }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -388,21 +417,29 @@
     <!-- Reviews Section -->
     <section id="reviews" class="py-20 bg-[#f9f9f9]">
         <div class="max-w-6xl mx-auto px-6">
-             <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Guest Stories') }}</h2>
-                <div class="w-16 h-0.5 bg-rose-gold mx-auto"></div>
+             <div class="text-center mb-20">
+                <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Testimonials') }}</span>
+                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-tight">{{ __('Guest Stories') }}</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
                 @foreach($reviews as $review)
-                    <div class="bg-white p-8 shadow-sm border-t-4 border-rose-gold relative">
-                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-rose-gold text-white w-10 h-10 flex items-center justify-center rounded-full text-xl font-serif">“</div>
-                        <p class="text-gray-600 text-sm leading-relaxed italic mb-6 pt-4 text-center">
-                            {{ Str::limit($review->comment, 150) }}
+                    <div class="bg-white p-12 rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-gray-50 relative group hover:-translate-y-3 transition-all duration-700">
+                        <div class="absolute -top-8 left-12 flex">
+                             <div class="bg-rose-gold text-white w-16 h-16 flex items-center justify-center rounded-2xl text-4xl font-serif shadow-2xl shadow-rose-gold/30 transform group-hover:rotate-6 transition-transform">“</div>
+                        </div>
+                        <p class="text-gray-600 text-base leading-relaxed font-medium italic mb-10 pt-8">
+                            {{ Str::limit($review->comment, 180) }}
                         </p>
-                        <div class="text-center">
-                            <p class="font-serif text-rose-accent uppercase tracking-wide text-sm">{{ $review->guest_name }}</p>
-                            <div class="text-rose-gold text-xs mt-1">
-                                @for($i = 0; $i < $review->rating; $i++) ★ @endfor
+                        <div class="flex items-center gap-5 pt-8 border-t border-gray-50">
+                            <div class="w-12 h-12 rounded-full bg-rose-gold/10 flex items-center justify-center font-serif text-rose-gold font-bold">
+                                {{ substr($review->guest_name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="font-serif text-rose-accent uppercase tracking-wider text-sm">{{ $review->guest_name }}</p>
+                                <div class="flex gap-1 text-rose-gold text-[10px] mt-1">
+                                    @for($i = 0; $i < $review->rating; $i++) <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg> @endfor
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -439,8 +476,10 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-[0_30px_100px_-20px_rgba(0,0,0,0.1)] rounded-[2.5rem] border border-gray-100 p-6 md:p-12 relative overflow-hidden">
-                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-10" 
+            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
+                
+                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-16" 
                       x-data="{ 
                         checkIn: '', 
                         checkOut: '', 
@@ -448,10 +487,17 @@
                         guests: 1,
                         taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
                         rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
+                        init() {
+                            const params = new URLSearchParams(window.location.search);
+                            if (params.get('check_in')) this.checkIn = params.get('check_in');
+                            if (params.get('check_out')) this.checkOut = params.get('check_out');
+                            if (params.get('guests')) this.guests = params.get('guests');
+                        },
                         get nights() {
                             if (!this.checkIn || !this.checkOut) return 0;
                             const start = new Date(this.checkIn);
                             const end = new Date(this.checkOut);
+                            if (isNaN(start) || isNaN(end)) return 0;
                             const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
                             return diff > 0 ? diff : 0;
                         },
@@ -465,174 +511,153 @@
                     @csrf
                     
                     {{-- Section 1: Personal Details --}}
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
-                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">01</span>
-                            <div>
-                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Guest Particulars') }}</h3>
-                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('Your contact information') }}</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        <div class="lg:col-span-4">
+                            <div class="sticky top-32">
+                                <span class="w-14 h-14 rounded-2xl bg-rose-gold text-white flex items-center justify-center font-black text-xl mb-6 shadow-2xl shadow-rose-gold/40 border-b-4 border-rose-accent/20">01</span>
+                                <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Guest Identity') }}</h3>
+                                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Provide your credentials for a personalized welcome.') }}</p>
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {{-- Full Name --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Full Name') }}</label>
-                                <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    </div>
-                                    <input type="text" name="guest_name" required placeholder="Enter your full name" 
-                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                </div>
-                                @error('guest_name') <p class="text-rose-500 text-[10px] mt-1 uppercase font-bold">{{ $message }}</p> @enderror
+                        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Full Name') }} <span class="text-rose-gold">*</span></label>
+                                <input type="text" name="guest_name" required placeholder="John Doe" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
                             </div>
 
-                            {{-- Email --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Email Address') }}</label>
-                                <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
-                                    </div>
-                                    <input type="email" name="email" required placeholder="name@example.com" 
-                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                </div>
-                                @error('email') <p class="text-rose-500 text-[10px] mt-1 uppercase font-bold">{{ $message }}</p> @enderror
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Email Address') }} <span class="text-rose-gold">*</span></label>
+                                <input type="email" name="email" required placeholder="john@example.com" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
                             </div>
 
-                            {{-- Phone --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Phone Number') }}</label>
-                                <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                    </div>
-                                    <input type="text" name="phone" placeholder="+94 ..." 
-                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                </div>
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Contact Number') }}</label>
+                                <input type="text" name="phone" placeholder="+94 ..." 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
                             </div>
 
-                            {{-- Address --}}
-                            <div class="space-y-2 md:col-span-2 lg:col-span-3">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Home / Billing Address') }}</label>
-                                <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400 group-focus-within:text-rose-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    </div>
-                                    <input type="text" name="address" placeholder="Full address for your booking records" 
-                                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                </div>
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Permanent Address') }}</label>
+                                <input type="text" name="address" placeholder="123 Street, City" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
                             </div>
                         </div>
                     </div>
 
                     {{-- Section 2: Stay Details --}}
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
-                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">02</span>
-                            <div>
-                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Stay Preferences') }}</h3>
-                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('When would you like to visit?') }}</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                        <div class="lg:col-span-4">
+                            <div class="sticky top-32">
+                                <span class="w-14 h-14 rounded-2xl bg-rose-gold text-white flex items-center justify-center font-black text-xl mb-6 shadow-2xl shadow-rose-gold/40 border-b-4 border-rose-accent/20">02</span>
+                                <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Your Sanctuary') }}</h3>
+                                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Choose your timing and preferred experience.') }}</p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {{-- Check In --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Check-In') }}</label>
-                                <input type="date" name="check_in" x-model="checkIn" required 
-                                       :min="new Date().toISOString().split('T')[0]"
-                                       class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                            </div>
-
-                            {{-- Check Out --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Check-Out') }}</label>
-                                <input type="date" name="check_out" x-model="checkOut" required 
-                                       :min="checkIn || new Date().toISOString().split('T')[0]"
-                                       class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                            </div>
-
-                            {{-- Preferred Suite --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Sanctuary Type') }}</label>
-                                <select name="room_id" id="room_id" x-model="roomId" 
-                                        class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                    <option value="">{{ __('Any Available') }}</option>
-                                    @foreach($rooms as $r)
-                                        <option value="{{ $r->id }}">{{ $r->title }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Guests --}}
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Guests') }}</label>
-                                <select name="guests" x-model="guests" required 
-                                        class="w-full px-4 py-3.5 bg-gray-50 border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all outline-none text-sm font-medium">
-                                    @foreach(range(1, 8) as $i)
-                                        <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'Guests' : 'Guest' }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- Dynamic Summary Preview --}}
-                        <div x-show="nights > 0 && roomId" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 -translate-y-4"
-                             class="p-6 bg-gradient-to-br from-rose-50 to-white rounded-3xl border border-rose-100 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-accent">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <div class="lg:col-span-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-In') }} <span class="text-rose-gold">*</span></label>
+                                    <input type="date" name="check_in" x-model="checkIn" required 
+                                           :min="new Date().toISOString().split('T')[0]"
+                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900">
                                 </div>
-                                <div class="text-center md:text-left">
-                                    <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.2em] mb-0.5">Selected Selection</p>
-                                    <h4 class="font-serif text-xl md:text-2xl text-rose-accent uppercase" x-text="rooms[roomId].title"></h4>
+
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-Out') }} <span class="text-rose-gold">*</span></label>
+                                    <input type="date" name="check_out" x-model="checkOut" required 
+                                           :min="checkIn || new Date().toISOString().split('T')[0]"
+                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900">
+                                </div>
+
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Room Type') }}</label>
+                                    <select name="room_id" id="room_id" x-model="roomId" 
+                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
+                                        <option value="" class="bg-white">{{ __('Any Collection') }}</option>
+                                        @foreach($rooms as $r)
+                                            <option value="{{ $r->id }}" class="bg-white">{{ $r->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Guest Count') }}</label>
+                                    <select name="guests" x-model="guests" required 
+                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
+                                        @foreach(range(1, 8) as $i)
+                                            <option value="{{ $i }}" class="bg-white">{{ $i }} {{ $i > 1 ? 'People' : 'Person' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="space-y-3 md:col-span-2">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Special Requirements') }}</label>
+                                    <textarea name="message" placeholder="{{ __('Do you have any dietary preferences or heritage site tour requests?') }}" 
+                                              class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-[2rem] focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300 min-h-[120px] resize-none"></textarea>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-12">
-                                <div class="text-center">
-                                    <p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Nights</p>
-                                    <p class="text-2xl font-serif text-rose-accent" x-text="nights"></p>
+
+                            <div x-show="nights > 0 && roomId" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
+                                 class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 shadow-xl shadow-gray-200/50 overflow-hidden relative">
+                                <div class="absolute -right-12 -top-12 w-64 h-64 bg-rose-gold/5 rounded-full blur-3xl"></div>
+                                <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-rose-accent/5 rounded-full blur-2xl"></div>
+                                
+                                <div class="flex items-center gap-6 relative z-10">
+                                    <div class="w-1.5 h-16 bg-rose-gold rounded-full hidden md:block"></div>
+                                    <div class="text-left">
+                                        <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.4em] mb-2 opacity-70">Luxury Selection</p>
+                                        <h4 class="font-serif text-4xl text-rose-accent uppercase leading-tight" x-text="rooms[roomId].title"></h4>
+                                    </div>
                                 </div>
-                                <div class="text-center bg-white px-6 py-3 rounded-2xl shadow-sm border border-rose-100/50">
-                                    <p class="text-[10px] uppercase font-black text-rose-gold tracking-widest">Approx. Value</p>
-                                    <p class="text-2xl font-serif text-rose-accent">LKR <span x-text="estimatedTotal.toLocaleString()"></span></p>
-                                    <p class="text-[8px] text-gray-400 uppercase font-bold mt-1 tracking-tighter">* Includes {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }}% Tax</p>
+                                <div class="flex items-center gap-10 relative z-10">
+                                    <div class="text-center">
+                                        <p class="text-[10px] uppercase font-black text-gray-400 tracking-[0.4em] mb-2">Duration</p>
+                                        <p class="text-4xl font-serif text-rose-accent"><span x-text="nights"></span> <span class="text-sm italic uppercase font-sans font-bold text-rose-gold/60 ml-1">Nights</span></p>
+                                    </div>
+                                    <div class="text-center bg-white px-10 py-6 rounded-[2rem] shadow-xl shadow-rose-gold/10 border border-rose-gold/20 transform hover:scale-105 transition-transform duration-500">
+                                        <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.4em] mb-2">Estimated Worth</p>
+                                        <p class="text-4xl font-serif text-rose-accent">LKR <span x-text="estimatedTotal.toLocaleString()" class="font-bold"></span></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Section 3: Special Requests --}}
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
-                            <span class="w-10 h-10 rounded-xl bg-rose-accent/10 text-rose-accent flex items-center justify-center font-bold text-lg italic">03</span>
-                            <div>
-                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">{{ __('Curated Experiences') }}</h3>
-                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">{{ __('Tailor your stay to your needs') }}</p>
+                    {{-- Section 3: Final Touches --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                         <div class="lg:col-span-4">
+                            <div class="sticky top-32">
+                                <span class="w-14 h-14 rounded-2xl bg-rose-gold text-white flex items-center justify-center font-black text-xl mb-6 shadow-2xl shadow-rose-gold/40 border-b-4 border-rose-accent/20">03</span>
+                                <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Special Rituals') }}</h3>
+                                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Tailor your stay with specific requirements or requests.') }}</p>
                             </div>
                         </div>
                         
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-gray-700 ml-1 uppercase tracking-wider">{{ __('Special Requests & Preferences') }}</label>
-                            <textarea name="message" rows="4" placeholder="Dietary requirements, preferred arrival time, anniversary notes..." 
-                                      class="w-full bg-gray-50 border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-rose-gold/10 focus:border-rose-gold transition-all duration-300 p-6 text-gray-700 font-light placeholder-gray-300 italic text-sm"></textarea>
-                        </div>
-                    </div>
+                        <div class="lg:col-span-8 space-y-12">
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Additional Requests & Notes') }}</label>
+                                <textarea name="message" rows="5" placeholder="Special dietary needs, preferred arrival rituals, anniversary highlights..." 
+                                          class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
+                            </div>
 
-                    {{-- Submit Action --}}
-                    <div class="pt-6 flex flex-col items-center">
-                        <button type="submit" class="group relative inline-flex items-center justify-center px-16 py-5 bg-rose-accent text-white rounded-full overflow-hidden shadow-[0_20px_50px_-10px_rgba(138,21,56,0.3)] hover:shadow-[0_25px_60px_-10px_rgba(138,21,56,0.5)] transition-all duration-500 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
-                                :disabled="!checkIn || !checkOut || nights < 1">
-                            <span class="absolute inset-0 w-full h-full bg-rose-gold transform scale-x-0 group-hover:scale-x-100 transition-transform origin-right duration-500"></span>
-                            <span class="relative font-bold uppercase tracking-[0.3em] text-xs">{{ __('Initiate Reservation Request') }}</span>
-                            <svg class="relative w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </button>
-                        <div class="mt-8 flex items-center gap-4 text-[10px] text-gray-400 font-bold uppercase tracking-[0.1em]">
-                            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg> Secure Inquiry</span>
-                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-rose-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 9.503l7.834-4.603a1.5 1.5 0 011.666 2.508l-8.667 5.1a1.5 1.5 0 01-1.666 0l-8.667-5.1a1.5 1.5 0 011.666-2.508z" clip-rule="evenodd"></path></svg> Response via Email</span>
+                            <div class="flex flex-col items-center pt-8">
+                                <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
+                                        :class="(!checkIn || !checkOut || nights < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
+                                        :disabled="!checkIn || !checkOut || nights < 1">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-rose-accent via-rose-gold to-rose-accent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
+                                    <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10">{{ __('Inquire Reservation') }}</span>
+                                    <svg class="relative w-6 h-6 ml-6 transform group-hover:translate-x-3 transition-transform duration-700 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </button>
+                                <p class="mt-8 text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] flex items-center gap-4">
+                                    <span class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> PRIVACY PROTECTED</span>
+                                    <span class="w-1 h-1 bg-gray-200 rounded-full"></span>
+                                    <span class="flex items-center gap-2"><svg class="w-4 h-4 text-rose-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg> RAPID CONCIERGE RESPONSE</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -644,16 +669,16 @@
     @if(isset($landmarks) && $landmarks->count() > 0)
     <section id="experiences" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">{{ __('Explore') }}</span>
-                <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Nearest Places') }}</h2>
-                <div class="w-16 h-0.5 bg-rose-gold mx-auto mb-6"></div>
-                <p class="text-gray-500 font-light max-w-2xl mx-auto">{{ __('Discover the rich heritage and vibrant culture of Jaffna, just moments from our doorstep.') }}</p>
+            <div class="text-center mb-20">
+                 <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Explore') }}</span>
+                <h2 class="font-serif text-4xl md:text-6xl text-rose-accent mb-6 uppercase tracking-tight leading-tight">{{ __('Nearest Places') }}</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto leading-relaxed">{{ __('Discover the rich heritage and vibrant culture of Jaffna, just moments from our doorstep.') }}</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 @foreach($landmarks as $landmark)
-                    <a href="{{ $landmark->map_link ?? '#' }}" target="_blank" rel="noopener noreferrer" class="group relative h-80 overflow-hidden rounded-sm shadow-lg cursor-pointer block hover:shadow-2xl transition-shadow duration-300">
+                    <a href="{{ $landmark->map_link ?? '#' }}" target="_blank" rel="noopener noreferrer" class="group relative h-[28rem] overflow-hidden rounded-[2.5rem] shadow-lg cursor-pointer block hover:shadow-2xl transition-all duration-700">
                         <img src="{{ str_starts_with($landmark->image_url, 'http') ? $landmark->image_url : asset('storage/' . $landmark->image_url) }}" 
                              alt="{{ $landmark->title }}" 
                              class="w-full h-full object-cover transform group-hover:scale-110 transition duration-1000 ease-in-out">
@@ -694,14 +719,15 @@
     <!-- Location Section -->
     <section id="location" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl text-rose-accent mb-4 uppercase tracking-wide">{{ __('Find Us') }}</h2>
-                <div class="w-16 h-0.5 bg-rose-gold mx-auto"></div>
-                <p class="text-gray-500 font-light mt-4">{{ __('Discover our sanctuary in the heart of Jaffna') }}</p>
+            <div class="text-center mb-20">
+                <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Map') }}</span>
+                <h2 class="font-serif text-4xl md:text-6xl text-rose-accent mb-6 uppercase tracking-tight leading-tight">{{ __('Find Us') }}</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto leading-relaxed">{{ __('Discover our sanctuary in the heart of Jaffna') }}</p>
             </div>
             
             <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 h-[500px]">
-                <iframe src="{{ $content['map_embed'] ?? 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7864.813254581939!2d80.015534!3d9.731581!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1768293510945!5m2!1sen!2slk' }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="{{ $content['map_embed'] ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7864.813244882406!2d80.00654078217246!3d9.73158141202129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2snl!4v1769480636437!5m2!1sen!2snl' }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
@@ -713,7 +739,7 @@
                 <!-- Brand -->
                 <div class="space-y-6">
                     <h3 class="font-serif text-3xl text-white uppercase tracking-widest">Rose Villa</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                    <p class="text-gray-300 text-sm leading-relaxed font-normal">
                         A sanctuary of heritage and luxury in the heart of Jaffna. Experience the timeless charm of our colonial home.
                     </p>
                     <div class="flex space-x-4">
@@ -731,11 +757,11 @@
                 <!-- Navigation -->
                 <div>
                      <h4 class="font-serif text-sm text-rose-gold mb-8 uppercase tracking-widest">{{ __('Explore') }}</h4>
-                     <ul class="space-y-4 text-sm text-gray-400 font-light">
-                        <li><a href="#about" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('About Us') }}</a></li>
-                        <li><a href="#rooms" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Our Suites') }}</a></li>
-                        <li><a href="#experiences" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Experiences') }}</a></li>
-                        <li><a href="#gallery" class="hover:text-white transition duration-300 flex items-center gap-2"><span class="w-1 h-1 bg-rose-gold rounded-full"></span> {{ __('Gallery') }}</a></li>
+                     <ul class="space-y-4 text-sm text-gray-300 font-normal">
+                        <li><a href="#about" class="hover:text-rose-gold transition duration-300 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-rose-gold rounded-full"></span> {{ __('About Us') }}</a></li>
+                        <li><a href="#rooms" class="hover:text-rose-gold transition duration-300 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-rose-gold rounded-full"></span> {{ __('Our Rooms') }}</a></li>
+                        <li><a href="#experiences" class="hover:text-rose-gold transition duration-300 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-rose-gold rounded-full"></span> {{ __('Experiences') }}</a></li>
+                        <li><a href="#gallery" class="hover:text-rose-gold transition duration-300 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-rose-gold rounded-full"></span> {{ __('Gallery') }}</a></li>
                      </ul>
                 </div>
 

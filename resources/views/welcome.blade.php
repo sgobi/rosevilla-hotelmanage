@@ -33,7 +33,7 @@
                 <nav class="hidden md:flex space-x-8 items-center">
                     <a href="#home" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Home</a>
                     <a href="#about" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">The Villa</a>
-                    <a href="#suites" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Suites</a>
+                    <a href="#rooms" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Rooms</a>
                     <a href="#experiences" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Experiences</a>
                     <a href="#contact" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Contact</a>
                     
@@ -68,7 +68,7 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#home" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Home</a>
                 <a href="#about" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">The Villa</a>
-                <a href="#suites" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Suites</a>
+                <a href="#rooms" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Rooms</a>
                 <a href="#experiences" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Experiences</a>
                 <a href="#contact" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Contact</a>
             </div>
@@ -91,7 +91,7 @@
             <p class="text-white text-lg md:text-xl font-light tracking-widest uppercase mb-8">
                 Experience the Extraordinary in Jaffna
             </p>
-            <a href="#suites" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-primary px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
+            <a href="#rooms" class="inline-block border-2 border-white text-white hover:bg-white hover:text-rose-primary px-8 py-3 text-sm font-semibold uppercase tracking-widest transition duration-300">
                 Explore Our Heritage
             </a>
 
@@ -149,7 +149,7 @@
                          <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury Suites" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
                          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                     </div>
-                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Luxury Suites</h3>
+                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Luxury Rooms</h3>
                     <p class="text-gray-500 text-sm">Comfort meets tradition in our designed rooms.</p>
                 </div>
                  <!-- Feature 2 -->
@@ -193,7 +193,7 @@
                     <ul class="space-y-3 text-sm text-gray-400">
                         <li><a href="#" class="hover:text-white transition">Home</a></li>
                         <li><a href="#" class="hover:text-white transition">The Villa</a></li>
-                        <li><a href="#" class="hover:text-white transition">Suites</a></li>
+                        <li><a href="#" class="hover:text-white transition">Rooms</a></li>
                         <li><a href="#" class="hover:text-white transition">Gallery</a></li>
                     </ul>
                 </div>

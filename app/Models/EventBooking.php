@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class EventBooking extends Model
 {
+    use Notifiable;
+
     protected $fillable = [
         'customer_name',
         'customer_email',
@@ -86,5 +89,13 @@ class EventBooking extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
+    }
+
+    /**
+     * Route notifications for WhatsApp channel.
+     */
+    public function routeNotificationForWhatsApp()
+    {
+        return $this->customer_phone;
     }
 }

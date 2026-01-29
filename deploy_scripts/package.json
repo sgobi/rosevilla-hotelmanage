@@ -1,0 +1,15 @@
+{
+  "name": "deploy_scripts",
+  "version": "1.0.0",
+  "main": "check_ftp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "basic-ftp": "^5.1.0"
+  }
+}

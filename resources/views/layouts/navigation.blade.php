@@ -1,42 +1,46 @@
-<nav x-data="{ open: false }" class="bg-[#111111] border-b border-white/5 sticky top-0 z-50 shadow-2xl">
+<nav x-data="{ open: false }" class="bg-[#0d0d0d] border-b border-white/5 sticky top-0 z-50 shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
-        <div class="flex h-20 items-center justify-between">
+    <div class="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12">
+        <div class="flex h-24 items-center justify-between">
             
             <!-- Left Side: Logo & Main Nav -->
-            <div class="flex items-center gap-8">
+            <div class="flex items-center gap-12">
                 <!-- Logo Area -->
-                <div class="shrink-0 flex items-center border-r border-white/10 pr-8 mr-2">
-                    <a href="{{ route('dashboard') }}" class="transition-transform duration-300 hover:scale-105 active:scale-95">
-                        <x-application-logo :dark="true" class="block h-10 w-auto drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]" />
+                <div class="shrink-0 flex items-center border-r border-white/10 pr-12">
+                    <a href="{{ route('dashboard') }}" class="transition-all duration-500 hover:scale-105 active:scale-95 group">
+                        <img src="{{ asset('images/logo.png') }}" 
+                             alt="Rose Villa Logo" 
+                             class="block h-12 w-auto drop-shadow-[0_0_15px_rgba(179,142,93,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(179,142,93,0.5)]">
                     </a>
                 </div>
 
                 <!-- Navigation Links (Desktop) -->
-                <div class="hidden space-x-1 xl:flex items-center">
+                <div class="hidden space-x-2 xl:flex items-center">
                     <!-- Dashboard -->
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
-                        class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 group {{ request()->routeIs('dashboard') ? 'bg-white/10 text-white font-black' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-                        <svg class="w-4 h-4 transition-colors group-hover:text-rose-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        <span class="text-[10px] uppercase font-black tracking-[0.15em] whitespace-nowrap">{{ __('Dashboard') }}</span>
+                        class="flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-500 group {{ request()->routeIs('dashboard') ? 'bg-white/10 text-white font-black shadow-lg shadow-white/5 border border-white/20' : 'text-gray-100 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-4 h-4 transition-colors {{ request()->routeIs('dashboard') ? 'text-rose-gold' : 'text-gray-300 group-hover:text-rose-gold' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="text-[11px] uppercase font-black tracking-[0.1em] whitespace-nowrap">{{ __('Dashboard') }}</span>
                     </x-nav-link>
 
                     <!-- Bookings Dropdown -->
                     @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
                     <div class="relative">
-                        <x-dropdown align="left" width="56">
+                        <x-dropdown align="left" width="60" class="flex">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-4 py-2 border-none text-[10px] font-black uppercase tracking-[0.15em] rounded-lg transition-all duration-300 gap-2 whitespace-nowrap {{ request()->routeIs('admin.reservations.*', 'admin.events.*', 'admin.reviews.*') ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
+                                <button class="inline-flex items-center px-5 py-3 border border-transparent text-[11px] font-black uppercase tracking-[0.1em] rounded-xl transition-all duration-500 gap-3 whitespace-nowrap {{ request()->routeIs('admin.reservations.*', 'admin.events.*', 'admin.reviews.*') ? 'bg-white/10 text-white border-white/20' : 'text-gray-100 hover:text-white hover:bg-white/10' }}">
+                                    <svg class="w-4 h-4 {{ request()->routeIs('admin.reservations.*', 'admin.events.*', 'admin.reviews.*') ? 'text-rose-gold' : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
                                     <span>Bookings</span>
-                                    <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-300 group-hover:translate-y-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                                 </button>
                             </x-slot>
                             <x-slot name="content">
-                                <div class="bg-white rounded-xl shadow-2xl py-2 overflow-hidden border border-gray-100">
-                                    <x-dropdown-link :href="route('admin.reservations.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50"><span class="mr-2 opacity-50">🏨</span> Room Reservations</x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.events.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50"><span class="mr-2 opacity-50">🎉</span> Event Bookings</x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.reviews.index')" class="text-[10px] font-black uppercase tracking-wider py-3 border-t border-gray-100 hover:bg-gray-50"><span class="mr-2 opacity-50">⭐</span> Guest Reviews</x-dropdown-link>
+                                <div class="bg-white rounded-2xl shadow-2xl py-2 overflow-hidden border border-gray-100">
+                                    <div class="px-5 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50 mb-1 leading-none pt-4 border-b pb-2">Operations</div>
+                                    <x-dropdown-link :href="route('admin.reservations.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Room Reservations</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.events.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Event Bookings</x-dropdown-link>
+                                    <div class="my-1 border-t border-gray-100"></div>
+                                    <x-dropdown-link :href="route('admin.reviews.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Guest Reviews</x-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-dropdown>
@@ -48,22 +52,22 @@
                     <div class="relative">
                         <x-dropdown align="left" width="60">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-4 py-2 border-none text-[10px] font-black uppercase tracking-[0.15em] rounded-lg transition-all duration-300 gap-2 whitespace-nowrap {{ request()->routeIs('admin.rooms.*', 'admin.gallery.*', 'admin.landmarks.*') ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                <button class="inline-flex items-center px-5 py-3 border border-transparent text-[11px] font-black uppercase tracking-[0.1em] rounded-xl transition-all duration-500 gap-3 whitespace-nowrap {{ request()->routeIs('admin.rooms.*', 'admin.gallery.*', 'admin.landmarks.*') ? 'bg-white/10 text-white border-white/20' : 'text-gray-100 hover:text-white hover:bg-white/10' }}">
+                                    <svg class="w-4 h-4 {{ request()->routeIs('admin.rooms.*', 'admin.gallery.*', 'admin.landmarks.*') ? 'text-rose-gold' : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                     <span>Resources</span>
-                                    <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-300 group-hover:translate-y-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                                 </button>
                             </x-slot>
                             <x-slot name="content">
-                                <div class="bg-white rounded-xl shadow-2xl py-2 overflow-hidden border border-gray-100">
+                                <div class="bg-white rounded-2xl shadow-2xl py-2 overflow-hidden border border-gray-100">
                                     <div class="px-5 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50 mb-1 leading-none pt-4 border-b pb-2">Property Assets</div>
-                                    <x-dropdown-link :href="route('admin.rooms.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50">Room Listing</x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.gallery.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50">Infrastructure Gallery</x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.landmarks.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50">Nearby Landmarks</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.rooms.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Room Listing</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.gallery.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Infrastructure Gallery</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.landmarks.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Nearby Landmarks</x-dropdown-link>
                                     
                                     <div class="px-5 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50 mb-1 leading-none pt-4 border-t border-b mt-2 pb-2">Website Tools</div>
-                                    <x-dropdown-link :href="route('admin.content.edit')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50">General Content</x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.home-events.index')" class="text-[10px] font-black uppercase tracking-wider py-3 hover:bg-gray-50">Home Experience Cards</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.content.edit')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">General Content</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.home-events.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Home Experience Cards</x-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-dropdown>
@@ -73,18 +77,18 @@
                     <!-- Reports & Finance -->
                     @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
                         <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 group {{ request()->routeIs('admin.reports.*') ? 'bg-white/10 text-white font-black' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-                            <svg class="w-4 h-4 transition-colors group-hover:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                            <span class="text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{{ __('Finance') }}</span>
+                            class="flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-500 group {{ request()->routeIs('admin.reports.*') ? 'bg-white/10 text-white font-black border border-white/20 shadow-lg shadow-white/5' : 'text-gray-100 hover:text-white hover:bg-white/10' }}">
+                            <svg class="w-4 h-4 transition-colors {{ request()->routeIs('admin.reports.*') ? 'text-amber-400' : 'text-gray-300 group-hover:text-amber-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            <span class="text-[11px] font-black uppercase tracking-[0.1em] whitespace-nowrap">{{ __('Finance') }}</span>
                         </x-nav-link>
                     @endif
 
                     <!-- User Management -->
                     @if(auth()->user()->isAdmin())
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 group {{ request()->routeIs('admin.users.*') ? 'bg-white/10 text-white font-black' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-                            <svg class="w-4 h-4 transition-colors group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            <span class="text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{{ __('Team') }}</span>
+                            class="flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-500 group {{ request()->routeIs('admin.users.*') ? 'bg-white/10 text-white font-black border border-white/20 shadow-lg shadow-white/5' : 'text-gray-100 hover:text-white hover:bg-white/10' }}">
+                            <svg class="w-4 h-4 transition-colors {{ request()->routeIs('admin.users.*') ? 'text-blue-400' : 'text-gray-300 group-hover:text-blue-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <span class="text-[11px] font-black uppercase tracking-[0.1em] whitespace-nowrap">{{ __('Team') }}</span>
                         </x-nav-link>
                     @endif
                 </div>
@@ -94,10 +98,10 @@
             <div class="hidden xl:flex items-center gap-6">
                 <!-- VISIT LIVE SITE BUTTON -->
                 <a href="{{ route('home') }}" target="_blank" 
-                   class="px-6 py-3 text-[10px] font-black uppercase tracking-[0.25em] text-white bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl transition-all duration-300 flex items-center gap-3 group whitespace-nowrap">
+                   class="px-6 py-3 text-[11px] font-black uppercase tracking-[0.15em] text-white bg-rose-gold border border-rose-gold/20 rounded-xl transition-all duration-500 flex items-center gap-3 group whitespace-nowrap shadow-[0_10px_30px_-10px_rgba(179,142,93,0.4)] hover:shadow-rose-gold/20 active:scale-95">
                     <div class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-gold opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-gold"></span>
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </div>
                     LIVE SITE
                 </a>
@@ -107,22 +111,22 @@
 
                 <x-dropdown align="right" width="64">
                     <x-slot name="trigger">
-                        <button class="flex items-center gap-4 py-1.5 px-2 rounded-xl bg-white/5 border border-white/5 hover:border-white/15 hover:bg-white/10 transition-all duration-300 group">
+                        <button class="flex items-center gap-4 py-2 px-3 rounded-xl bg-white/10 border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all duration-300 group shadow-lg shadow-black/20">
                             <div class="relative">
                                 @if(Auth::user()->profile_photo_path)
-                                    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" class="h-10 w-10 rounded-lg object-cover shadow-2xl ring-2 ring-white/5 group-hover:ring-rose-accent transition-all duration-500">
+                                    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" class="h-10 w-10 rounded-lg object-cover shadow-2xl ring-2 ring-white/10 group-hover:ring-rose-gold transition-all duration-500">
                                 @else
-                                    <div class="h-10 w-10 rounded-lg bg-rose-accent/20 border border-rose-accent/30 flex items-center justify-center text-rose-accent font-black text-sm uppercase">
+                                    <div class="h-10 w-10 rounded-lg bg-rose-accent/30 border border-rose-accent/40 flex items-center justify-center text-rose-accent font-black text-sm uppercase shadow-inner">
                                         {{ substr(Auth::user()->name, 0, 1) }}
                                     </div>
                                 @endif
-                                <div class="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#111111]"></div>
+                                <div class="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0d0d0d]"></div>
                             </div>
-                            <div class="text-left hidden 2xl:block truncate max-w-[120px]">
-                                <p class="text-[11px] font-black text-white leading-none uppercase tracking-widest truncate">{{ Auth::user()->name }}</p>
-                                <p class="text-[8px] text-gray-500 font-black uppercase tracking-[0.2em] mt-1.5 italic">{{ Auth::user()->role }} Account</p>
+                            <div class="text-left hidden 2xl:block truncate max-w-[140px]">
+                                <p class="text-[11px] font-black text-white leading-none uppercase tracking-[0.1em] truncate">{{ Auth::user()->name }}</p>
+                                <p class="text-[8px] text-gray-400 font-black uppercase tracking-[0.2em] mt-2 italic">{{ Auth::user()->role }} Account</p>
                             </div>
-                            <svg class="h-4 w-4 text-gray-600 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="h-4 w-4 text-gray-400 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </x-slot>
 
@@ -184,9 +188,9 @@
                 <span class="h-px w-full bg-white/5"></span>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Reservations</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Room Reservations</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.events.index')" :active="request()->routeIs('admin.events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Event Bookings</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Guest Feedback</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Guest Reviews</x-responsive-nav-link>
             @endif
 
             <!-- Mobile Section: Management -->
@@ -195,11 +199,11 @@
                     <span class="text-[9px] font-black text-blue-400 uppercase tracking-[0.4em] whitespace-nowrap">MANAGEMENT</span>
                     <span class="h-px w-full bg-white/5"></span>
                 </div>
-                <x-responsive-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Rooms Manager</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Gallery Vault</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Room Listing</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Infrastructure Gallery</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.landmarks.index')" :active="request()->routeIs('admin.landmarks.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Nearby Landmarks</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">General CMS</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.home-events.index')" :active="request()->routeIs('admin.home-events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Experience Cards</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.content.edit')" :active="request()->routeIs('admin.content.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">General Content</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.home-events.index')" :active="request()->routeIs('admin.home-events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 py-4">Home Experience Cards</x-responsive-nav-link>
             @endif
 
             <!-- Mobile Section: Systems -->

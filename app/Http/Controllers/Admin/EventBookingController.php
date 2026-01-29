@@ -122,11 +122,13 @@ class EventBookingController extends Controller
         }
 
         // Send WhatsApp to Customer
+        /*
         try {
             $booking->notify(new \App\Notifications\WhatsAppBookingConfirmed($booking, 'event'));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
         }
+        */
 
         return redirect()->route('admin.events.index')->with('success', $msg);
     }
@@ -158,8 +160,24 @@ class EventBookingController extends Controller
                 abort(403, 'Only administrators and staff can update booking status.');
             }
             $request->validate(['status' => 'required|in:pending,approved,rejected,cancelled']);
-            $event->update(['status' => $request->status]);
-            return back()->with('success', 'Booking status updated to ' . $request->status);
+            
+            $oldStatus = $event->status;
+            $newStatus = $request->status;
+            
+            $event->update(['status' => $newStatus]);
+            
+            // Send WhatsApp notification to customer if status changed to approved, rejected, or cancelled
+            /*
+            if ($oldStatus !== $newStatus && in_array($newStatus, ['approved', 'rejected', 'cancelled'])) {
+                try {
+                    $event->notify(new \App\Notifications\WhatsAppEventStatusUpdate($event, $newStatus));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+                }
+            }
+            */
+            
+            return back()->with('success', 'Booking status updated to ' . $newStatus . '.');
         }
 
         // 2. Handle Discount Suggestion (Staff/Admin)
@@ -251,6 +269,16 @@ class EventBookingController extends Controller
                     'status' => 'approved', // Auto-approve booking if conflict is approved? Or keep pending? Let's approve for now as it's an "Override"
                 ]);
                 Notification::send($staff, new BookingStatusUpdated($event, 'conflict', 'approved'));
+                
+                // Send WhatsApp notification to customer
+                /*
+                try {
+                    $event->notify(new \App\Notifications\WhatsAppEventStatusUpdate($event, 'approved'));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+                }
+                */
+                
                 return back()->with('success', 'Conflict override APPROVED. Booking is now active.');
             } elseif ($action === 'reject') {
                 $event->update([
@@ -258,6 +286,16 @@ class EventBookingController extends Controller
                     'status' => 'rejected',
                 ]);
                 Notification::send($staff, new BookingStatusUpdated($event, 'conflict', 'rejected'));
+                
+                // Send WhatsApp notification to customer
+                /*
+                try {
+                    $event->notify(new \App\Notifications\WhatsAppEventStatusUpdate($event, 'rejected'));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WhatsApp notification failed: ' . $e->getMessage());
+                }
+                */
+                
                 return back()->with('success', 'Conflict override REJECTED. Booking has been rejected.');
             }
         }
