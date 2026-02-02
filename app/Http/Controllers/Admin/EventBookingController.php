@@ -108,6 +108,14 @@ class EventBookingController extends Controller
         }
 
         unset($validated['force_conflict']);
+        
+        // Apply current tax rate
+        $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
+        $validated['tax_percentage'] = $taxRate;
+        if (isset($validated['total_price']) && $validated['total_price'] > 0) {
+            $validated['tax_amount'] = ($validated['total_price'] * $taxRate) / 100;
+        }
+
         $booking = EventBooking::create($validated);
 
         // Notify Admins
@@ -328,6 +336,13 @@ class EventBookingController extends Controller
              return back()->withInput()->withErrors([
                 'conflict' => 'This time slot overlaps with an existing booking (' . $conflict->event_type . ').',
             ]);
+        }
+
+        // Apply current tax rate during update
+        $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
+        $validated['tax_percentage'] = $taxRate;
+        if (isset($validated['total_price']) && $validated['total_price'] > 0) {
+            $validated['tax_amount'] = ($validated['total_price'] * $taxRate) / 100;
         }
 
         $event->update($validated);
