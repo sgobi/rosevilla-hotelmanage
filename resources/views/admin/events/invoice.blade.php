@@ -104,8 +104,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="text-center font-bold text-lg">{{ $event->customer_name }}</td>
-                    <td class="text-center text-gray-600">{{ $content['contact_address'] ?? 'Jaffna, Sri Lanka' }}</td>
+                    <td class="text-center font-bold text-lg capitalize">{{ strtolower($event->customer_name) }}</td>
+                    <td class="text-center text-gray-600 capitalize">{{ strtolower($content['contact_address'] ?? 'Jaffna, Sri Lanka') }}</td>
                     <td class="text-center font-bold">{{ $event->customer_phone }}</td>
                 </tr>
             </tbody>
