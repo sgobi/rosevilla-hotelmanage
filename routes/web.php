@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventBookingController;
 use App\Http\Controllers\Admin\HomeEventController;
 use App\Http\Controllers\Admin\FrontDeskController;
+use App\Http\Controllers\Admin\EventFrontDeskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
