@@ -72,10 +72,27 @@
                 </div>
             </div>
 
-            <!-- Custom Report & Search Bar Container -->
+            <!-- Transaction Search -->
             <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Front Desk Operational Report link -->
+                 <div class="bg-indigo-600 rounded-3xl p-6 shadow-xl flex-1 max-w-sm overflow-hidden group hover:bg-indigo-700 transition-all cursor-pointer relative" onclick="window.location.href='{{ route('admin.reports.front-desk') }}'">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="relative flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white ring-1 ring-white/30 group-hover:rotate-12 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-white uppercase tracking-widest leading-none">Front Desk</h4>
+                            <p class="text-[10px] text-white/60 font-medium mt-1">Check-in & Occupancy Reports</p>
+                        </div>
+                        <div class="ml-auto">
+                            <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Custom Report Form -->
-                <div class="bg-gray-900 rounded-3xl p-1 shadow-xl flex-1 max-w-2xl overflow-hidden">
+                <div class="bg-gray-900 rounded-3xl p-1 shadow-xl flex-1 max-w-xl overflow-hidden">
                     <div class="bg-gray-800/50 rounded-[inherit] px-6 py-4 flex flex-wrap items-center gap-6">
                         <div class="flex items-center gap-2">
                              <div class="w-2 h-2 rounded-full bg-rose-gold"></div>

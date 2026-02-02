@@ -16,6 +16,7 @@ class DashboardController extends Controller
             'rooms' => Room::count(),
             'reservations_pending' => Reservation::where('status', 'pending')->count(),
             'reservations_total' => Reservation::count(),
+            'guests_in_house' => Reservation::whereNotNull('checked_in_at')->whereNull('checked_out_at')->count(),
             'reviews' => Review::count(),
             'gallery' => GalleryImage::count(),
         ];

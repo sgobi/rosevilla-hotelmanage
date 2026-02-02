@@ -37,6 +37,10 @@
                             <x-slot name="content">
                                 <div class="bg-white rounded-2xl shadow-2xl py-2 overflow-hidden border border-gray-100">
                                     <div class="px-5 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50 mb-1 leading-none pt-4 border-b pb-2">Operations</div>
+                                    <x-dropdown-link :href="route('admin.front-desk.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-indigo-50 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-indigo-500"></div>
+                                        Front Desk (Check In/Out)
+                                    </x-dropdown-link>
                                     <x-dropdown-link :href="route('admin.reservations.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Room Reservations</x-dropdown-link>
                                     <x-dropdown-link :href="route('admin.events.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Event Bookings</x-dropdown-link>
                                     <div class="my-1 border-t border-gray-100"></div>
@@ -188,6 +192,10 @@
                 <span class="h-px w-full bg-white/5"></span>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                <x-responsive-nav-link :href="route('admin.front-desk.index')" :active="request()->routeIs('admin.front-desk.*')" class="text-indigo-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-indigo-500 transition-colors py-4 flex items-center gap-2">
+                    <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                    Front Desk (Check In/Out)
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Room Reservations</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.events.index')" :active="request()->routeIs('admin.events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Event Bookings</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Guest Reviews</x-responsive-nav-link>

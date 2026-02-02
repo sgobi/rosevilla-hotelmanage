@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventBookingController;
 use App\Http\Controllers\Admin\HomeEventController;
+use App\Http\Controllers\Admin\FrontDeskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -37,6 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Staff & Admin
         Route::middleware('role:admin,staff')->group(function () {
             Route::resource('reservations', ReservationController::class)->only(['index', 'update', 'destroy']);
+            
+            // Front Desk
+            Route::get('front-desk', [FrontDeskController::class, 'index'])->name('front-desk.index');
+            Route::post('front-desk/{reservation}/advance', [FrontDeskController::class, 'recordAdvance'])->name('front-desk.advance');
+            Route::post('front-desk/{reservation}/final-payment', [FrontDeskController::class, 'recordFinalPayment'])->name('front-desk.final-payment');
+            Route::post('front-desk/{reservation}/check-in', [FrontDeskController::class, 'checkIn'])->name('front-desk.check-in');
+            Route::post('front-desk/{reservation}/check-out', [FrontDeskController::class, 'checkOut'])->name('front-desk.check-out');
+
             Route::resource('events', EventBookingController::class);
             Route::get('events-calendar', [EventBookingController::class, 'calendar'])->name('events.calendar');
             Route::get('api/events', [EventBookingController::class, 'apiEvents'])->name('events.api');
@@ -53,6 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('role:admin,accountant')->group(function () {
             Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
             Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
+            Route::get('/reports/front-desk', [ReportController::class, 'frontDeskReport'])->name('reports.front-desk');
+            Route::get('/reports/front-desk/print', [ReportController::class, 'frontDeskPrint'])->name('reports.front-desk-print');
         });
 
         // Admin Only

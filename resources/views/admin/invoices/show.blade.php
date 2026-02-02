@@ -156,9 +156,40 @@
                     <td>Tax ({{ number_format($reservation->tax_percentage, 1) }}%)</td>
                     <td class="text-right">LKR {{ number_format($reservation->tax_amount, 2) }}</td>
                 </tr>
-                <tr class="font-bold border-t-2 border-gray-400 bg-gray-50">
-                    <td class="text-lg">Total Amount Due</td>
-                    <td class="text-right text-lg">LKR {{ number_format($final, 2) }}</td>
+                <tr class="font-bold border-t border-gray-200">
+                    <td class="text-lg">Total Invoice Amount</td>
+                    <td class="text-right text-lg">LKR {{ number_format($reservation->final_price, 2) }}</td>
+                </tr>
+
+                {{-- Payment Deductions --}}
+                @if($reservation->advance_paid_at)
+                    <tr class="text-indigo-700">
+                        <td class="flex items-center gap-2">
+                             <div class="h-1.5 w-1.5 bg-indigo-600 rounded-full"></div>
+                             Advance Payment Received ({{ $reservation->advance_payment_method }})
+                        </td>
+                        <td class="text-right font-bold">- LKR {{ number_format($reservation->advance_amount, 2) }}</td>
+                    </tr>
+                @endif
+
+                @if($reservation->final_payment_at)
+                    <tr class="text-indigo-700">
+                        <td class="flex items-center gap-2">
+                             <div class="h-1.5 w-1.5 bg-indigo-600 rounded-full"></div>
+                             Final Balance Settlement ({{ $reservation->final_payment_method }})
+                        </td>
+                        <td class="text-right font-bold">- LKR {{ number_format($reservation->final_payment_amount, 2) }}</td>
+                    </tr>
+                @endif
+
+                @php
+                    $paid = ($reservation->advance_amount ?? 0) + ($reservation->final_payment_amount ?? 0);
+                    $balance = $reservation->final_price - $paid;
+                @endphp
+
+                <tr class="font-black border-t-2 border-gray-900 bg-gray-50 uppercase tracking-tight">
+                    <td class="text-lg">{{ $balance <= 0 ? 'Total Balance Settled' : 'Net Balance Payable' }}</td>
+                    <td class="text-right text-lg">LKR {{ number_format(max(0, $balance), 2) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -182,6 +213,36 @@
                 </tr>
             </tbody>
         </table>
+
+        {{-- Special Requests & Notes Section --}}
+        @if($reservation->special_requirements || $reservation->additional_notes || $reservation->message)
+            <div class="mt-8 p-8 bg-gray-50 rounded-[2rem] border border-gray-200">
+                <h4 class="section-title text-gray-900 border-b border-gray-200 pb-3 mb-6 uppercase tracking-widest text-xs">Guest Preferences & Special Requests</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    @if($reservation->special_requirements)
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Special Requirements</p>
+                            <p class="text-sm text-gray-700 leading-relaxed italic">"{{ $reservation->special_requirements }}"</p>
+                        </div>
+                    @endif
+
+                    @if($reservation->additional_notes)
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Additional Notes</p>
+                            <p class="text-sm text-gray-700 leading-relaxed italic">"{{ $reservation->additional_notes }}"</p>
+                        </div>
+                    @endif
+
+                    @if(!$reservation->special_requirements && !$reservation->additional_notes && $reservation->message)
+                        <div class="md:col-span-2 space-y-2">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Requests & Notes</p>
+                            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line italic">"{{ $reservation->message }}"</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endif
 
         {{-- Terms and Conditions --}}
         <div class="mt-8">

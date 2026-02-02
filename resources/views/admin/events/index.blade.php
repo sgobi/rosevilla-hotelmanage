@@ -37,6 +37,7 @@
                                 <th class="px-6 py-3">Event Details</th>
                                 <th class="px-6 py-3">Date & Time</th>
                                 <th class="px-6 py-3">Guests</th>
+                                <th class="px-6 py-3">Total</th>
                                 <th class="px-6 py-3">Status</th>
                                 <th class="px-6 py-3 text-right">Actions</th>
                             </tr>
@@ -44,7 +45,7 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse($bookings as $booking)
                                 <tr id="event-{{ $booking->id }}" 
-                                    class="transition-colors hover:bg-gray-50 scroll-mt-20" 
+                                    class="transition-colors hover:bg-gray-50 scroll-mt-20 hover:relative hover:z-[60]" 
                                     :class="editing ? 'bg-gray-50 relative z-50' : ''"
                                     x-data="{ editing: false }">
                                     <td class="px-6 py-4">
@@ -61,6 +62,87 @@
                                         <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('h:i A') }}</div>
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">{{ $booking->guests }}</td>
+                                    <td class="px-6 py-4">
+                                        <div x-data="{ show: false }" class="relative">
+                                            <div @mouseenter="show = true" @mouseleave="show = false" class="cursor-help inline-block">
+                                                <div class="font-bold text-gray-900">LKR {{ number_format($booking->final_price, 2) }}</div>
+                                                @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
+                                                    <div class="text-[9px] text-emerald-600 font-medium italic">-{{ $booking->discount_percentage }}% Off applied</div>
+                                                @endif
+                                            </div>
+
+                                             <!-- Tooltip Popover -->
+                                            <div x-show="show" 
+                                                 x-transition:enter="transition ease-out duration-200"
+                                                 x-transition:enter-start="opacity-0 translate-y-1"
+                                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                                 x-transition:leave="transition ease-in duration-150"
+                                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                                 x-transition:leave-end="opacity-0 translate-y-1"
+                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900/95 backdrop-blur-md text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                                                 style="display: none;">
+                                                
+                                                <div class="space-y-3 text-xs">
+                                                    <div class="flex justify-between border-b border-white/10 pb-2.5 mb-2.5">
+                                                        <span class="text-gray-400 uppercase tracking-widest font-black text-[9px]">Event Summary</span>
+                                                        <span class="font-bold text-indigo-300">#{{ $booking->id }}</span>
+                                                    </div>
+                                                    
+                                                    <div class="flex justify-between items-center text-gray-400">
+                                                        <span>Customer</span>
+                                                        <span class="font-bold text-white">{{ $booking->customer_name }}</span>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-2 gap-4 py-2 border-y border-white/5 my-1">
+                                                        <div>
+                                                            <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Date</div>
+                                                            <div class="font-medium text-white">{{ $booking->event_date->format('M d, Y') }}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Guests</div>
+                                                            <div class="font-medium text-white">{{ $booking->guests }} Person(s)</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5 pt-1">
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400">Base Price</span>
+                                                            <span class="font-medium text-white">LKR {{ number_format($booking->total_price, 2) }}</span>
+                                                        </div>
+                                                        
+                                                        @if($booking->discount_amount > 0)
+                                                            <div class="flex justify-between text-emerald-400">
+                                                                <span>Discount ({{ number_format($booking->discount_percentage, 1) }}%)</span>
+                                                                <span>- LKR {{ number_format($booking->discount_amount, 2) }}</span>
+                                                            </div>
+                                                        @endif
+
+                                                        <div class="flex justify-between text-gray-400">
+                                                            <span>Tax ({{ number_format($booking->tax_percentage, 1) }}%)</span>
+                                                            <span>+ LKR {{ number_format($booking->tax_amount, 2) }}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex justify-between border-t border-white/20 pt-3 mt-3 items-end">
+                                                        <div>
+                                                            <div class="text-[9px] text-gray-400 uppercase font-black tracking-widest">Grand Total</div>
+                                                            <div class="text-xs text-gray-500 italic">Net revenue</div>
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <div class="text-lg font-black text-amber-400 leading-none">LKR {{ number_format($booking->final_price, 2) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Arrow -->
+                                                @if($loop->remaining < 2)
+                                                    <div class="absolute -bottom-1.5 right-12 w-3 h-3 bg-gray-900/95 rotate-45 border-r border-b border-white/10"></div>
+                                                @else
+                                                    <div class="absolute -top-1.5 right-12 w-3 h-3 bg-gray-900/95 rotate-45 border-l border-t border-white/10"></div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-col">
                                             <span class="px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border inline-block w-max

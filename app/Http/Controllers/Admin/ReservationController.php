@@ -12,9 +12,41 @@ class ReservationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reservations = Reservation::with('room')->latest()->get();
+        $query = Reservation::with('room');
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('guest_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'created_at');
+        $direction = $request->get('direction', 'desc');
+        
+        // Ensure valid sort column
+        $allowedSorts = ['guest_name', 'check_in', 'check_out', 'guests', 'final_price', 'status', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            // Special handling for calculated final_price if needed, but since it's a dynamic attribute 
+            // we will sort by total_price as a proxy or stick to base columns.
+            if ($sort === 'final_price') $sort = 'total_price'; 
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
+        $reservations = $query->get();
 
         return view('admin.reservations.index', compact('reservations'));
     }
@@ -223,6 +255,21 @@ class ReservationController extends Controller
                     return back()->with('success', 'Reprint rejected.');
                 }
             }
+        }
+        
+        // 5. Handle Guest Notes Update
+        if ($request->hasAny(['special_requirements', 'additional_notes'])) {
+            $data = $request->validate([
+                'special_requirements' => ['nullable', 'string'],
+                'additional_notes' => ['nullable', 'string'],
+            ]);
+
+            $messageParts = [];
+            if ($data['special_requirements']) $messageParts[] = "Special Requirements: " . $data['special_requirements'];
+            if ($data['additional_notes']) $messageParts[] = "Additional Notes: " . $data['additional_notes'];
+            $data['message'] = implode("\n\n", $messageParts);
+
+            $reservation->update($data);
         }
 
         return back()->with('success', 'Reservation updated.');

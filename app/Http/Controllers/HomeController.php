@@ -60,9 +60,17 @@ class HomeController extends Controller
             'check_in' => ['required', 'date'],
             'check_out' => ['required', 'date', 'after:check_in'],
             'guests' => ['required', 'integer', 'min:1', 'max:8'],
-            'message' => ['nullable', 'string'],
+            'special_requirements' => ['nullable', 'string'],
+            'additional_notes' => ['nullable', 'string'],
         ]);
 
+        $messageParts = [];
+        if ($request->special_requirements) $messageParts[] = "Special Requirements: " . $request->special_requirements;
+        if ($request->additional_notes) $messageParts[] = "Additional Notes: " . $request->additional_notes;
+        
+        $data['message'] = implode("\n\n", $messageParts);
+        $data['special_requirements'] = $request->special_requirements;
+        $data['additional_notes'] = $request->additional_notes;
         $data['status'] = 'pending';
 
         $reservation = Reservation::create($data);

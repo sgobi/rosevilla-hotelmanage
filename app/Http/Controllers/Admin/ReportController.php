@@ -150,4 +150,51 @@ class ReportController extends Controller
 
         return view('admin.reports.print', compact('sales', 'totalSubtotal', 'totalTax', 'totalDiscount', 'totalNet', 'title'));
     }
+
+    public function frontDeskReport(Request $request)
+    {
+        $start = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->startOfMonth();
+        $end = $request->filled('end_date') ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
+
+        $checkIns = Reservation::with('room')
+            ->whereBetween('checked_in_at', [$start, $end])
+            ->orderBy('checked_in_at')
+            ->get();
+
+        $checkOuts = Reservation::with('room')
+            ->whereBetween('checked_out_at', [$start, $end])
+            ->orderBy('checked_out_at')
+            ->get();
+
+        $occupancyData = Reservation::where('status', 'approved')
+            ->where(function($q) use ($start, $end) {
+                $q->whereBetween('check_in', [$start, $end])
+                  ->orWhereBetween('check_out', [$start, $end])
+                  ->orWhere(function($sub) use ($start, $end) {
+                      $sub->where('check_in', '<', $start)->where('check_out', '>', $end);
+                  });
+            })
+            ->get();
+
+        return view('admin.reports.front-desk', compact('checkIns', 'checkOuts', 'occupancyData', 'start', 'end'));
+    }
+
+    public function frontDeskPrint(Request $request)
+    {
+        $start = Carbon::parse($request->start_date)->startOfDay();
+        $end = Carbon::parse($request->end_date)->endOfDay();
+        $title = "Front Desk Operational Report: " . $start->format('M d') . " - " . $end->format('M d, Y');
+
+        $checkIns = Reservation::with('room')
+            ->whereBetween('checked_in_at', [$start, $end])
+            ->orderBy('checked_in_at')
+            ->get();
+
+        $checkOuts = Reservation::with('room')
+            ->whereBetween('checked_out_at', [$start, $end])
+            ->orderBy('checked_out_at')
+            ->get();
+
+        return view('admin.reports.front-desk-print', compact('checkIns', 'checkOuts', 'title', 'start', 'end'));
+    }
 }

@@ -505,7 +505,9 @@
                             if (!this.roomId || this.nights === 0) return 0;
                             const subtotal = this.rooms[this.roomId].price * this.nights;
                             return subtotal + (subtotal * this.taxRate / 100);
-                        }
+                        },
+                        specialReq: '',
+                        additionalNotes: ''
                       }"
                       @set-room.window="roomId = $event.detail.id; $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
                     @csrf
@@ -596,31 +598,55 @@
 
                                 <div class="space-y-3 md:col-span-2">
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Special Requirements') }}</label>
-                                    <textarea name="message" placeholder="{{ __('Do you have any dietary preferences or heritage site tour requests?') }}" 
+                                    <textarea name="special_requirements" x-model="specialReq" placeholder="{{ __('Do you have any dietary preferences or heritage site tour requests?') }}" 
                                               class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-[2rem] focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300 min-h-[120px] resize-none"></textarea>
                                 </div>
                             </div>
 
                             <div x-show="nights > 0 && roomId" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
-                                 class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 shadow-xl shadow-gray-200/50 overflow-hidden relative">
+                                 class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative">
                                 <div class="absolute -right-12 -top-12 w-64 h-64 bg-rose-gold/5 rounded-full blur-3xl"></div>
                                 <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-rose-accent/5 rounded-full blur-2xl"></div>
                                 
-                                <div class="flex items-center gap-6 relative z-10">
-                                    <div class="w-1.5 h-16 bg-rose-gold rounded-full hidden md:block"></div>
-                                    <div class="text-left">
-                                        <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.4em] mb-2 opacity-70">Luxury Selection</p>
-                                        <h4 class="font-serif text-4xl text-rose-accent uppercase leading-tight" x-text="rooms[roomId].title"></h4>
+                                <div class="flex flex-col gap-8 relative z-10">
+                                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-1 h-16 bg-rose-gold rounded-full hidden md:block"></div>
+                                            <div class="text-left">
+                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70">Luxury Selection</p>
+                                                <h4 class="font-serif text-3xl text-rose-accent uppercase leading-tight" x-text="rooms[roomId].title"></h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-12">
+                                            <div class="text-center">
+                                                <p class="text-[9px] uppercase font-black text-gray-400 tracking-[0.3em] mb-2">Duration</p>
+                                                <p class="text-4xl font-serif text-rose-accent flex items-baseline gap-1">
+                                                    <span x-text="nights"></span> 
+                                                    <span class="text-[10px] uppercase font-black text-rose-gold tracking-widest" x-text="nights === 1 ? 'Night' : 'Nights'"></span>
+                                                </p>
+                                            </div>
+
+                                            <div class="text-center bg-white px-10 py-6 rounded-3xl shadow-xl shadow-gray-100 border border-rose-gold/20 transform hover:scale-105 transition-transform duration-500">
+                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.3em] mb-2">Estimate Worth</p>
+                                                <div class="flex items-baseline gap-2">
+                                                    <span class="text-xs font-black text-rose-accent opacity-60">LKR</span>
+                                                    <span class="text-3xl font-serif text-rose-accent font-bold" x-text="estimatedTotal.toLocaleString()"></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex items-center gap-10 relative z-10">
-                                    <div class="text-center">
-                                        <p class="text-[10px] uppercase font-black text-gray-400 tracking-[0.4em] mb-2">Duration</p>
-                                        <p class="text-4xl font-serif text-rose-accent"><span x-text="nights"></span> <span class="text-sm italic uppercase font-sans font-bold text-rose-gold/60 ml-1">Nights</span></p>
-                                    </div>
-                                    <div class="text-center bg-white px-10 py-6 rounded-[2rem] shadow-xl shadow-rose-gold/10 border border-rose-gold/20 transform hover:scale-105 transition-transform duration-500">
-                                        <p class="text-[10px] uppercase font-black text-rose-gold tracking-[0.4em] mb-2">Estimated Worth</p>
-                                        <p class="text-4xl font-serif text-rose-accent">LKR <span x-text="estimatedTotal.toLocaleString()" class="font-bold"></span></p>
+
+                                    {{-- Live Preview of Notes --}}
+                                    <div x-show="specialReq || additionalNotes" class="pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div x-show="specialReq">
+                                            <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.3em] mb-2">Special Requirements</p>
+                                            <p class="text-xs text-gray-600 italic leading-relaxed line-clamp-2" x-text="specialReq"></p>
+                                        </div>
+                                        <div x-show="additionalNotes">
+                                            <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.3em] mb-2">Additional Notes</p>
+                                            <p class="text-xs text-gray-600 italic leading-relaxed line-clamp-2" x-text="additionalNotes"></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -640,11 +666,11 @@
                         <div class="lg:col-span-8 space-y-12">
                             <div class="space-y-4">
                                 <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Additional Requests & Notes') }}</label>
-                                <textarea name="message" rows="5" placeholder="Special dietary needs, preferred arrival rituals, anniversary highlights..." 
+                                <textarea name="additional_notes" x-model="additionalNotes" rows="5" placeholder="Special dietary needs, preferred arrival rituals, anniversary highlights..." 
                                           class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
                             </div>
 
-                            <div class="flex flex-col items-center pt-8">
+                            <div class="flex flex-col items-center pt-8" x-show="roomId" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
                                 <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
                                         :class="(!checkIn || !checkOut || nights < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
                                         :disabled="!checkIn || !checkOut || nights < 1">
