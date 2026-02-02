@@ -104,8 +104,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="text-center font-bold text-lg">{{ $reservation->guest_name }}</td>
-                    <td class="text-center text-gray-600">{{ $reservation->address ?? 'N/A' }}</td>
+                    <td class="text-center font-bold text-lg capitalize">{{ strtolower($reservation->guest_name) }}</td>
+                    <td class="text-center text-gray-600 capitalize">{{ strtolower($reservation->address ?? 'N/A') }}</td>
                     <td class="text-center font-bold">{{ $reservation->phone }}</td>
                 </tr>
             </tbody>
@@ -157,39 +157,57 @@
                     <td class="text-right">LKR {{ number_format($reservation->tax_amount, 2) }}</td>
                 </tr>
                 <tr class="font-bold border-t border-gray-200">
-                    <td class="text-lg">Total Invoice Amount</td>
+                    <td class="text-xs uppercase tracking-wider text-gray-500">Gross Invoice Amount</td>
                     <td class="text-right text-lg">LKR {{ number_format($reservation->final_price, 2) }}</td>
                 </tr>
 
                 {{-- Payment Deductions --}}
                 @if($reservation->advance_paid_at)
-                    <tr class="text-indigo-700">
-                        <td class="flex items-center gap-2">
-                             <div class="h-1.5 w-1.5 bg-indigo-600 rounded-full"></div>
-                             Advance Payment Received ({{ $reservation->advance_payment_method }})
+                    <tr class="text-indigo-700 bg-indigo-50/20">
+                        <td class="flex items-center gap-3 py-4">
+                             <div class="h-6 w-6 bg-indigo-600/10 rounded-full flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                             </div>
+                             <div>
+                                <p class="text-xs font-black uppercase tracking-widest leading-none">Advance Deposit Received</p>
+                                <p class="text-[9px] opacity-70 mt-1 uppercase">Method: {{ $reservation->advance_payment_method }} • Recorded {{ $reservation->advance_paid_at->format('M d, Y') }}</p>
+                             </div>
                         </td>
-                        <td class="text-right font-bold">- LKR {{ number_format($reservation->advance_amount, 2) }}</td>
+                        <td class="text-right font-black">- LKR {{ number_format($reservation->advance_amount, 2) }}</td>
                     </tr>
                 @endif
 
                 @if($reservation->final_payment_at)
-                    <tr class="text-indigo-700">
-                        <td class="flex items-center gap-2">
-                             <div class="h-1.5 w-1.5 bg-indigo-600 rounded-full"></div>
-                             Final Balance Settlement ({{ $reservation->final_payment_method }})
+                    <tr class="text-indigo-700 bg-indigo-50/20">
+                        <td class="flex items-center gap-3 py-4">
+                             <div class="h-6 w-6 bg-indigo-600/10 rounded-full flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                             </div>
+                             <div>
+                                <p class="text-xs font-black uppercase tracking-widest leading-none">Final Balance Settlement</p>
+                                <p class="text-[9px] opacity-70 mt-1 uppercase">Method: {{ $reservation->final_payment_method }} • Recorded {{ $reservation->final_payment_at->format('M d, Y') }}</p>
+                             </div>
                         </td>
-                        <td class="text-right font-bold">- LKR {{ number_format($reservation->final_payment_amount, 2) }}</td>
+                        <td class="text-right font-black">- LKR {{ number_format($reservation->final_payment_amount, 2) }}</td>
                     </tr>
                 @endif
 
                 @php
                     $paid = ($reservation->advance_amount ?? 0) + ($reservation->final_payment_amount ?? 0);
                     $balance = $reservation->final_price - $paid;
+                    $isFullyPaid = $balance <= 0.01;
                 @endphp
 
-                <tr class="font-black border-t-2 border-gray-900 bg-gray-50 uppercase tracking-tight">
-                    <td class="text-lg">{{ $balance <= 0 ? 'Total Balance Settled' : 'Net Balance Payable' }}</td>
-                    <td class="text-right text-lg">LKR {{ number_format(max(0, $balance), 2) }}</td>
+                <tr class="font-black border-t-2 border-gray-900 {{ $isFullyPaid ? 'bg-emerald-50 text-emerald-800' : 'bg-gray-50' }} uppercase tracking-tight">
+                    <td class="text-lg py-6 flex items-center gap-4">
+                        {{ $isFullyPaid ? 'Settlement Complete' : 'Net Balance Outstanding' }}
+                        @if($isFullyPaid)
+                            <span class="bg-emerald-600 text-white text-[10px] px-3 py-1 rounded-full shadow-lg shadow-emerald-200">OFFICIAL PAID</span>
+                        @endif
+                    </td>
+                    <td class="text-right text-2xl py-6 {{ $isFullyPaid ? 'text-emerald-700' : 'text-rose-600' }}">
+                        LKR {{ number_format(max(0, $balance), 2) }}
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -39,7 +39,11 @@
                                     <div class="px-5 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50 mb-1 leading-none pt-4 border-b pb-2">Operations</div>
                                     <x-dropdown-link :href="route('admin.front-desk.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-indigo-50 hover:text-indigo-600 transition-colors flex items-center gap-2">
                                         <div class="h-1.5 w-1.5 rounded-full bg-indigo-500"></div>
-                                        Front Desk (Check In/Out)
+                                        Room Front Desk (Check In/Out)
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.event-front-desk.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-amber-50 hover:text-amber-600 transition-colors flex items-center gap-2">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
+                                        Event Front Desk (Arrival/Compl.)
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('admin.reservations.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Room Reservations</x-dropdown-link>
                                     <x-dropdown-link :href="route('admin.events.index')" class="text-[10px] font-black uppercase tracking-wider py-3.5 hover:bg-gray-50 transition-colors">Event Bookings</x-dropdown-link>

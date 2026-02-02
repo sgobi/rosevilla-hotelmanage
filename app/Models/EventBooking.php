@@ -29,6 +29,22 @@ class EventBooking extends Model
         'discount_status',
         'discount_approved_by',
         'conflict_status',
+        'checked_in_at',
+        'checked_out_at',
+        'advance_amount',
+        'advance_payment_method',
+        'advance_paid_at',
+        'advance_guest_name',
+        'advance_nic_no',
+        'advance_bank_name',
+        'advance_bank_branch',
+        'final_payment_amount',
+        'final_payment_method',
+        'final_payment_at',
+        'final_guest_name',
+        'final_nic_no',
+        'final_bank_name',
+        'final_bank_branch',
     ];
 
     protected $casts = [
@@ -40,6 +56,12 @@ class EventBooking extends Model
         'tax_percentage' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'discount_percentage' => 'decimal:2',
+        'checked_in_at' => 'datetime',
+        'checked_out_at' => 'datetime',
+        'advance_amount' => 'decimal:2',
+        'advance_paid_at' => 'datetime',
+        'final_payment_amount' => 'decimal:2',
+        'final_payment_at' => 'datetime',
     ];
 
     protected static function booted()

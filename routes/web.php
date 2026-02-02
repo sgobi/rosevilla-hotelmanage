@@ -46,6 +46,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('front-desk/{reservation}/check-in', [FrontDeskController::class, 'checkIn'])->name('front-desk.check-in');
             Route::post('front-desk/{reservation}/check-out', [FrontDeskController::class, 'checkOut'])->name('front-desk.check-out');
 
+            // Event Front Desk
+            Route::get('event-front-desk', [EventFrontDeskController::class, 'index'])->name('event-front-desk.index');
+            Route::post('event-front-desk/{eventBooking}/advance', [EventFrontDeskController::class, 'recordAdvance'])->name('event-front-desk.advance');
+            Route::post('event-front-desk/{eventBooking}/final-payment', [EventFrontDeskController::class, 'recordFinalPayment'])->name('event-front-desk.final-payment');
+            Route::post('event-front-desk/{eventBooking}/check-in', [EventFrontDeskController::class, 'checkIn'])->name('event-front-desk.check-in');
+            Route::post('event-front-desk/{eventBooking}/check-out', [EventFrontDeskController::class, 'checkOut'])->name('event-front-desk.check-out');
+
             Route::resource('events', EventBookingController::class);
             Route::get('events-calendar', [EventBookingController::class, 'calendar'])->name('events.calendar');
             Route::get('api/events', [EventBookingController::class, 'apiEvents'])->name('events.api');
