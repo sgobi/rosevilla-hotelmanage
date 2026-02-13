@@ -898,7 +898,10 @@
             </div>
             
             <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest">
-                <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. {{ __('All Rights Reserved') }}.</p>
+                <div class="text-center md:text-left">
+                    <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. {{ __('All Rights Reserved') }}.</p>
+                    <p class="mt-3 normal-case text-xs font-medium text-gray-300">Powered by Gobikrishna Subramaniyam (BEng (Hons)) | Mobile: <a href="tel:+94766383402" class="text-rose-gold hover:text-white transition">+94 76 638 3402</a></p>
+                </div>
                 <div class="flex space-x-8 mt-4 md:mt-0">
                     <a href="#" class="hover:text-white transition">{{ __('Privacy Policy') }}</a>
                     <a href="#" class="hover:text-white transition">{{ __('Terms & Conditions') }}</a>

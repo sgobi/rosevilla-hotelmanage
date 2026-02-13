@@ -217,7 +217,10 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500 uppercase tracking-widest">
-                &copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.
+                <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.</p>
+                <div class="mt-4 text-xs font-semibold text-white normal-case opacity-90">
+                    Powered by Gobikrishna Subramaniyam (BEng (Hons)) | Mobile: <a href="tel:+94766383402" class="text-rose-gold hover:text-white transition">+94 76 638 3402</a>
+                </div>
             </div>
         </div>
     </footer>
