@@ -18,8 +18,13 @@ use App\Http\Controllers\Admin\FrontDeskController;
 use App\Http\Controllers\Admin\EventFrontDeskController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/reservations', [HomeController::class, 'storeReservation'])->name('reservations.store');
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
 
 Route::get('lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ta', 'si', 'fr', 'hi'])) {

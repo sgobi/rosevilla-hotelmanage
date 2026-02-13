@@ -3,7 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rose Villa Heritage Homes</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Rose Villa Heritage Homes | Luxury Stay in Jaffna</title>
+    <meta name="description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury. Book your stay for an unforgettable authentic experience.">
+    <meta name="keywords" content="Rose Villa, Heritage Home Jaffna, Luxury Hotel Jaffna, Boutique Hotel Sri Lanka, Jaffna Accommodation, Colonial Villa Jaffna, Best Places to Stay in Jaffna">
+    <meta name="author" content="Rose Villa Heritage Homes">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Rose Villa Heritage Homes | Luxury Stay in Jaffna">
+    <meta property="og:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+    <meta property="og:site_name" content="Rose Villa Heritage Homes">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="Rose Villa Heritage Homes | Luxury Stay in Jaffna">
+    <meta property="twitter:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +53,7 @@
                 </div>
                 
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-8 items-center">
+                <nav class="hidden md:flex space-x-8 items-center" aria-label="Main Navigation">
                     <a href="#home" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Home</a>
                     <a href="#about" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">The Villa</a>
                     <a href="#rooms" class="text-white hover:text-rose-accent uppercase text-xs tracking-widest font-semibold transition">Rooms</a>
@@ -45,8 +68,7 @@
 
                 <!-- Mobile Menu Button -->
                 <div class="-mr-2 flex items-center md:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-gray-300">
-                        <span class="sr-only">Open main menu</span>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-transparent p-2 text-white hover:text-gray-300" aria-label="Open main menu">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -77,9 +99,9 @@
 
     <!-- Hero Section -->
     <div id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Image -->
+        <!-- Background Image (Eager Load) -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Rose Villa Heritage Home" class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Rose Villa Heritage Home in Jaffna" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black/30"></div>
         </div>
 
@@ -100,15 +122,15 @@
                 <form action="#" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
                     <div class="flex-1 text-left">
                         <label class="block text-white text-xs uppercase tracking-wider mb-1">Check In</label>
-                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm" aria-label="Check In Date">
                     </div>
                     <div class="flex-1 text-left">
                         <label class="block text-white text-xs uppercase tracking-wider mb-1">Check Out</label>
-                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                        <input type="date" class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm" aria-label="Check Out Date">
                     </div>
                     <div class="flex-1 text-left">
                         <label class="block text-white text-xs uppercase tracking-wider mb-1">Guests</label>
-                        <select class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm">
+                        <select class="w-full bg-white/80 border-0 text-gray-800 text-sm focus:ring-0 rounded-sm" aria-label="Number of Guests">
                             <option>1 Guest</option>
                             <option>2 Guests</option>
                             <option>3 Guests</option>
@@ -127,7 +149,7 @@
     <section id="about" class="py-20 md:py-32 bg-white text-rose-dark">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="font-serif text-3xl md:text-4xl text-rose-primary mb-8 uppercase tracking-wide">
-                Wander & Explore
+                About Rose Villa Heritage Home
             </h2>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
             <p class="text-lg leading-relaxed text-gray-600 mb-8 font-light">
@@ -142,11 +164,12 @@
     <!-- Features Section (Grid) -->
     <section id="experiences" class="py-16 bg-rose-light">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="sr-only">Our Experiences</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 <!-- Feature 1 -->
                 <div class="text-center group cursor-pointer">
                     <div class="overflow-hidden mb-6 h-64 relative">
-                         <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury Suites" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury Suites at Rose Villa" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
                          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                     </div>
                     <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Luxury Rooms</h3>
@@ -155,9 +178,9 @@
                  <!-- Feature 2 -->
                  <div class="text-center group cursor-pointer">
                     <div class="overflow-hidden mb-6 h-64 relative">
-                         <img src="https://images.unsplash.com/photo-1596178060841-5a9d8d1H1c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dining" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                         <!-- Note: Image URL might need fixing, using a valid placeholder -->
-                         <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dining" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 absolute inset-0">
+                         <img src="https://images.unsplash.com/photo-1596178060841-5a9d8d1H1c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Exquisite Dining Experience" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <!-- Fallback image just in case -->
+                         <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Exquisite Dining at Rose Villa" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 absolute inset-0">
                          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                     </div>
                     <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Exquisite Dining</h3>
@@ -166,7 +189,7 @@
                  <!-- Feature 3 -->
                  <div class="text-center group cursor-pointer">
                     <div class="overflow-hidden mb-6 h-64 relative">
-                         <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Gardens" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Serene Gardens at Rose Villa" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
                          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                     </div>
                     <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Serene Gardens</h3>
@@ -200,19 +223,21 @@
                  <!-- Col 3 -->
                  <div>
                     <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Contact</h4>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li>123 Heritage Lane, Jaffna</li>
-                        <li>+94 77 123 4567</li>
-                        <li>info@rosevilla.com</li>
-                    </ul>
+                    <address class="not-italic">
+                        <ul class="space-y-3 text-sm text-gray-400">
+                            <li>123 Heritage Lane, Jaffna</li>
+                            <li><a href="tel:+94771234567" class="hover:text-white transition">+94 77 123 4567</a></li>
+                            <li><a href="mailto:info@rosevilla.com" class="hover:text-white transition">info@rosevilla.com</a></li>
+                        </ul>
+                    </address>
                 </div>
                  <!-- Col 4 -->
                  <div>
                     <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Follow Us</h4>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i> FB</a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i> IG</a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i> TW</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Facebook"><i class="fab fa-facebook-f"></i> FB</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Instagram"><i class="fab fa-instagram"></i> IG</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Twitter"><i class="fab fa-twitter"></i> TW</a>
                     </div>
                 </div>
             </div>
@@ -224,5 +249,27 @@
             </div>
         </div>
     </footer>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LodgingBusiness",
+      "name": "Rose Villa Heritage Homes",
+      "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      "description": "Rose Villa Heritage Homes blends colonial charm with modern luxury in the heart of Jaffna. Experience authentic cultural heritage.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Heritage Lane",
+        "addressLocality": "Jaffna",
+        "addressRegion": "Northern Province",
+        "postalCode": "40000",
+        "addressCountry": "LK"
+      },
+      "telephone": "+94771234567",
+      "priceRange": "$$",
+      "url": "{{ url('/') }}"
+    }
+    </script>
 </body>
 </html>

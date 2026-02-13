@@ -11,7 +11,12 @@
 
     <title>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}</title>
     <meta name="description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
-    <meta name="keywords" content="Jaffna Hotel, Sri Lanka Heritage Hotel, Rose Villa Jaffna, Luxury Stay Jaffna, Colonial Home Sri Lanka, Jaffna Tourism, Jaffna Events, Boutique Hotel Sri Lanka">
+    <meta name="keywords" content="Heritage Hotel Jaffna, Boutique Hotel Jaffna, Luxury Stay Jaffna, Colonial Villa Jaffna, Best Hotel in Jaffna, Jaffna Accommodation, Hotels in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Hotels near Jaffna Fort, Hotels near Nallur Temple, Northern Province Hotels, Sri Lanka Heritage Hotel, Boutique Hotels Sri Lanka, Jaffna Tourism, Wedding Venue Jaffna, Colonial Architecture Jaffna, Tamil Cuisine Jaffna, Jaffna Cultural Experience, Heritage Tours Jaffna">
+    <meta name="geo.region" content="LK-41">
+    <meta name="geo.placename" content="Jaffna">
+    <meta name="geo.position" content="9.6615;80.0255">
+    <meta name="ICBM" content="9.6615, 80.0255">
+
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -67,8 +72,8 @@
                 
                 <!-- Navigation -->
                 <nav class="hidden lg:flex space-x-6 xl:space-x-8 items-center">
-                    @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'Contact' => '#contact'] as $label => $link)
-                        <a href="{{ $link }}" class="relative text-xs tracking-widest font-black uppercase transition-all duration-300 hover:text-rose-gold group">
+                    @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Contact' => '#contact'] as $label => $link)
+                        <a href="{{ $link }}" class="relative text-xs tracking-widest font-black uppercase transition-all duration-300 hover:text-rose-gold group" aria-label="{{ $label }}">
                             {{ __($label) }}
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-rose-gold transition-all duration-300 group-hover:w-full"></span>
                         </a>
