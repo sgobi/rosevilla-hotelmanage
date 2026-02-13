@@ -1,8 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Sales Reports
-        </h2>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-black text-gray-900 leading-tight tracking-tight uppercase">Financial Intelligence Terminal</h2>
+                <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Revenue Audit & Transactional Analytics</p>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                <div class="h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Treasury Status</p>
+                    <p class="text-xs font-black text-emerald-600 tabular-nums uppercase">Operational</p>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-8">
@@ -13,7 +26,7 @@
                 <!-- Daily -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-2xl border-t-4 border-indigo-500 p-6 transition-all hover:shadow-md">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
@@ -26,7 +39,7 @@
                 <!-- Weekly -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-2xl border-t-4 border-emerald-500 p-6 transition-all hover:shadow-md relative group">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         </div>
                         <div>
@@ -42,7 +55,7 @@
                 <!-- Monthly -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-2xl border-t-4 border-rose-500 p-6 transition-all hover:shadow-md relative group">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <div>
@@ -58,7 +71,7 @@
                 <!-- Yearly -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-2xl border-t-4 border-amber-500 p-6 transition-all hover:shadow-md relative group">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                         </div>
                         <div>
@@ -78,7 +91,7 @@
                  <div class="bg-indigo-600 rounded-3xl p-6 shadow-xl flex-1 max-w-sm overflow-hidden group hover:bg-indigo-700 transition-all cursor-pointer relative" onclick="window.location.href='{{ route('admin.reports.front-desk') }}'">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                     <div class="relative flex items-center gap-4">
-                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white ring-1 ring-white/30 group-hover:rotate-12 transition-transform">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ring-1 ring-white/30 group-hover:rotate-12 transition-transform" style="background: rgba(255, 255, 255, 0.2);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         </div>
                         <div>
@@ -101,10 +114,12 @@
                         
                         <div class="flex items-center gap-3">
                             <input type="date" form="custom-report" name="start_date" required 
-                                   class="bg-transparent border-none p-0 text-white text-xs focus:ring-0 cursor-pointer">
+                                   class="bg-transparent border-none p-0 text-white text-xs focus:ring-0 cursor-pointer"
+                                   style="color-scheme: dark;">
                             <span class="text-white/20">/</span>
                             <input type="date" form="custom-report" name="end_date" required 
-                                   class="bg-transparent border-none p-0 text-white text-xs focus:ring-0 cursor-pointer">
+                                   class="bg-transparent border-none p-0 text-white text-xs focus:ring-0 cursor-pointer"
+                                   style="color-scheme: dark;">
                         </div>
 
                         <form id="custom-report" action="{{ route('admin.reports.print') }}" method="GET" target="_blank" class="ml-auto">

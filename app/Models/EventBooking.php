@@ -66,14 +66,17 @@ class EventBooking extends Model
 
     protected static function booted()
     {
-        static::creating(function ($booking) {
+        static::saving(function ($booking) {
             // Apply current tax rate
+            // Note: We use the current system tax rate whenever the booking is saved.
+            // If total_price is set, calculate tax.
             $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
             $booking->tax_percentage = $taxRate;
-            // Note: total_price for events is usually set manually in admin or during booking logic.
-            // If total_price is already set, calculate tax.
+            
             if ($booking->total_price > 0) {
                 $booking->tax_amount = ($booking->total_price * $taxRate) / 100;
+            } else {
+                $booking->tax_amount = 0;
             }
         });
     }

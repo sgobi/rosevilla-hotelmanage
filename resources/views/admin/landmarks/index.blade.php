@@ -26,7 +26,7 @@
                         </label>
                         <label class="text-sm text-gray-700 space-y-1">
                             <span>Category</span>
-                            <input name="category" class="w-full border rounded px-3 py-2" value="{{ old('category', $editingLandmark->category ?? '') }}" placeholder="culture / heritage / nature">
+                            <input name="category" class="w-full border rounded px-3 py-2" value="{{ old('category', $editingLandmark->category ?? '') }}" placeholder="culture / heritage / nature" required>
                         </label>
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
                             <span>Description</span>

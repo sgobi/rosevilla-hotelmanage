@@ -1,8 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Reservations
-        </h2>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-black text-gray-900 leading-tight tracking-tight uppercase">Reservation Terminal</h2>
+                <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Guest Lifecycle & Occupancy Logs</p>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100" style="background: #4f46e5;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Active Database</p>
+                    <p class="text-xs font-black text-gray-900 tabular-nums">v4.2.0-STABLE</p>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-8">

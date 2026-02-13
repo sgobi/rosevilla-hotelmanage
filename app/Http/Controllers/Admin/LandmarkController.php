@@ -111,7 +111,7 @@ class LandmarkController extends Controller
 
     protected function validatedData(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'distance' => ['nullable', 'string', 'max:120'],
@@ -120,5 +120,9 @@ class LandmarkController extends Controller
             'image_url' => ['nullable'], // URL field can still be used as fallback or path
             'category' => ['nullable', 'string', 'max:120'],
         ]);
+
+        $data['category'] = $data['category'] ?: 'culture';
+
+        return $data;
     }
 }

@@ -1,17 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center gap-4">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Event Bookings
-            </h2>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-black text-gray-900 leading-tight tracking-tight uppercase">Event Management Terminal</h2>
+                <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Social Gatherings & Corporate Logistics</p>
+            </div>
+            
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.events.calendar') }}" class="inline-flex items-center justify-center bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    View Calendar
+                <a href="{{ route('admin.events.calendar') }}" class="group bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 group-hover:rotate-6 transition-transform" style="background: #4f46e5;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1 text-left">Planning</p>
+                        <p class="text-xs font-black text-gray-900 uppercase">View Calendar</p>
+                    </div>
                 </a>
-                <a href="{{ route('admin.events.create') }}" class="inline-flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    New Booking
+                <a href="{{ route('admin.events.create') }}" class="group bg-gray-900 px-5 py-2.5 rounded-2xl border border-gray-800 shadow-sm transition-all hover:bg-black hover:shadow-xl flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-900/20 group-hover:rotate-6 transition-transform" style="background: #10b981;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-white/50 uppercase tracking-widest leading-none mb-1 text-left">New Entry</p>
+                        <p class="text-xs font-black text-white uppercase">Register Event</p>
+                    </div>
                 </a>
             </div>
         </div>

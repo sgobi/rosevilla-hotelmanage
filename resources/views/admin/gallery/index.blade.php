@@ -26,7 +26,7 @@
                         </label>
                         <label class="text-sm text-gray-700 space-y-1">
                             <span>Category</span>
-                            <input name="category" class="w-full border rounded px-3 py-2" value="{{ old('category', $editingImage->category ?? '') }}" placeholder="villa / dining / garden">
+                            <input name="category" class="w-full border rounded px-3 py-2" value="{{ old('category', $editingImage->category ?? '') }}" placeholder="villa / dining / garden" required>
                         </label>
                         <div class="md:col-span-2 grid md:grid-cols-2 gap-4 border-b pb-4 mb-2">
                             <label class="text-sm text-gray-700 space-y-1">

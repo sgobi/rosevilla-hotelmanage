@@ -108,6 +108,7 @@ class GalleryController extends Controller
             'is_featured' => ['nullable', 'boolean'],
         ]);
 
+        $data['category'] = $data['category'] ?: 'villa';
         $data['is_featured'] = $request->boolean('is_featured', false);
 
         return $data;

@@ -2,12 +2,12 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-black text-gray-900 leading-tight tracking-tight uppercase">Front Desk Operations</h2>
-                <p class="text-[10px] font-black text-rose-gold uppercase tracking-[0.3em] mt-1 italic">Property Management & Guest Logistics</p>
+                <h2 class="text-2xl font-black text-gray-900 leading-tight tracking-tight uppercase">Room Front Desk</h2>
+                <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Property Management & Guest Logistics</p>
             </div>
             
             <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                <div class="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-lg">
+                <div class="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-lg" style="background: #111827;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div class="text-left">
@@ -23,7 +23,8 @@
         finalPaymentModal: false,
         currentRes: null,
         paymentMethod: 'bank',
-        remainingBalance: 0
+        remainingBalance: 0,
+        advanceAmount: 0
     }">
         <div class="max-w-[1600px] mx-auto px-6 lg:px-8 space-y-8">
             
@@ -66,7 +67,7 @@
                 <div class="group relative bg-white p-7 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
                     <div class="relative flex flex-col gap-4">
-                        <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 group-hover:rotate-6 transition-transform">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 group-hover:rotate-6 transition-transform" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         </div>
                         <div>
@@ -80,7 +81,7 @@
                 <div class="group relative bg-white p-7 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
                     <div class="relative flex flex-col gap-4">
-                        <div class="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-100 ring-4 ring-amber-50 group-hover:rotate-6 transition-transform">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-100 ring-4 ring-amber-50 group-hover:rotate-6 transition-transform" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         </div>
                         <div>
@@ -94,7 +95,7 @@
                 <div class="group relative bg-white p-7 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
                     <div class="relative flex flex-col gap-4">
-                        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-100 ring-4 ring-emerald-50 group-hover:rotate-6 transition-transform">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-100 ring-4 ring-emerald-50 group-hover:rotate-6 transition-transform" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         </div>
                         <div>
@@ -133,7 +134,7 @@
                     <div class="bg-indigo-50/30 rounded-[3rem] p-8 border border-white/50 backdrop-blur-sm">
                         <div class="flex items-center justify-between mb-8 px-2">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
                                 </div>
                                 <h3 class="text-xs font-black text-indigo-900 uppercase tracking-[0.3em]">Expected Arrivals</h3>
@@ -164,7 +165,7 @@
                                                 @if($res->advance_paid_at)
                                                     <div class="flex items-center gap-1.5 text-emerald-600 font-black"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ADVANCE PAID</div>
                                                 @else
-                                                    <div class="flex items-center gap-1.5 text-rose-500 font-black"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ADVANCE REQUIRED</div>
+                                                    <div class="flex items-center gap-1.5 text-rose-500 font-black"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ADVANCE REQUIRED (LKR {{ number_format($res->total_price * 0.1, 2) }})</div>
                                                 @endif
                                                 <div class="h-1 w-1 bg-gray-200 rounded-full"></div>
                                                 <div class="flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $res->check_in->format('M d') }}</div>
@@ -178,7 +179,7 @@
                                             <button class="bg-gray-900 text-white px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-black hover:shadow-xl active:scale-95">Check In</button>
                                         </form>
                                     @else
-                                        <button @click="currentRes = {{ json_encode($res) }}; advanceModal = true; paymentMethod = 'bank'" class="bg-indigo-600 text-white px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-indigo-700 hover:shadow-xl active:scale-95">Record Advance</button>
+                                        <button @click="currentRes = {{ json_encode($res) }}; advanceAmount = (currentRes.total_price * 0.1).toFixed(2); advanceModal = true; paymentMethod = 'bank'" class="bg-indigo-600 text-white px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-indigo-700 hover:shadow-xl active:scale-95">Record Advance</button>
                                     @endif
                                 </div>
                             @empty
@@ -196,7 +197,7 @@
                     <div class="bg-amber-50/30 rounded-[3rem] p-8 border border-white/50 backdrop-blur-sm">
                         <div class="flex items-center justify-between mb-8 px-2">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                                 </div>
                                 <h3 class="text-xs font-black text-amber-900 uppercase tracking-[0.3em]">Expected Departures</h3>
@@ -253,7 +254,7 @@
                 <div class="bg-gray-50/50 rounded-[3rem] p-8 border border-gray-200/50">
                     <div class="flex items-center justify-between mb-8 px-2">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             </div>
                             <h3 class="text-xs font-black text-emerald-900 uppercase tracking-[0.3em]">{{ request('search') ? 'Filtered Results' : 'Overall Property Occupancy' }}</h3>
@@ -353,7 +354,7 @@
                                                     <button class="w-full bg-indigo-600 text-white px-6 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-black hover:shadow-xl active:scale-95 shadow-lg shadow-indigo-100">Check In</button>
                                                 </form>
                                             @else
-                                                <button @click="currentRes = {{ json_encode($res) }}; advanceModal = true; paymentMethod = 'bank'" class="w-full bg-rose-gold text-white px-6 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-black hover:shadow-xl active:scale-95 shadow-lg shadow-rose-gold/20 leading-tight">Pay Advance</button>
+                                                <button @click="currentRes = {{ json_encode($res) }}; advanceAmount = (currentRes.total_price * 0.1).toFixed(2); advanceModal = true; paymentMethod = 'bank'" class="w-full bg-rose-gold text-white px-6 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-black hover:shadow-xl active:scale-95 shadow-lg shadow-rose-gold/20 leading-tight">Pay Advance</button>
                                             @endif
                                         @elseif(!$res->checked_out_at)
                                             @if($res->final_payment_at)
@@ -397,58 +398,80 @@
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity bg-gray-900/90 backdrop-blur-sm" @click="advanceModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
-                <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3rem] border border-gray-100"
+                <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3.5rem] border border-gray-100 p-10"
                      x-show="advanceModal">
                     
-                    <form :action="'/admin/front-desk/' + currentRes?.id + '/advance'" method="POST" class="p-10">
+                    <form :action="'/admin/front-desk/' + currentRes?.id + '/advance'" method="POST">
                         @csrf
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h3 class="text-2xl font-black text-gray-900 tracking-tight">Record Advance Payment</h3>
-                                <p class="text-[10px] font-black text-rose-gold uppercase tracking-widest mt-1 italic">Security Transaction Layer</p>
+                                <h3 class="text-3xl font-black text-gray-900 tracking-tight">Record Room Advance</h3>
+                                <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Advance Payment Details</p>
                             </div>
                             <button type="button" @click="advanceModal = false" class="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
-                        {{-- (Same fields as advance modal) --}}
-                        <div class="space-y-6">
+                        
+                        <div class="space-y-8">
+                            {{-- Payment Method Tabs --}}
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="cursor-pointer group">
                                     <input type="radio" name="advance_payment_method" value="bank" x-model="paymentMethod" class="hidden">
-                                    <div class="p-5 rounded-3xl border-2 transition-all flex flex-col items-center gap-3" :class="paymentMethod === 'bank' ? 'border-indigo-600 bg-indigo-50/50' : 'border-gray-100'">
-                                        <span class="text-[10px] font-black uppercase tracking-widest">Bank</span>
+                                    <div class="py-4 rounded-2xl border-2 text-center text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300" 
+                                         :class="paymentMethod === 'bank' ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-lg shadow-indigo-100' : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200'">
+                                        Bank Transfer
                                     </div>
                                 </label>
                                 <label class="cursor-pointer group">
                                     <input type="radio" name="advance_payment_method" value="cash" x-model="paymentMethod" class="hidden">
-                                    <div class="p-5 rounded-3xl border-2 transition-all flex flex-col items-center gap-3" :class="paymentMethod === 'cash' ? 'border-emerald-600 bg-emerald-50/50' : 'border-gray-100'">
-                                        <span class="text-[10px] font-black uppercase tracking-widest">Cash</span>
+                                    <div class="py-4 rounded-2xl border-2 text-center text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300" 
+                                         :class="paymentMethod === 'cash' ? 'border-emerald-600 bg-emerald-50 text-emerald-900 shadow-lg shadow-emerald-100' : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200'">
+                                        Cash Payment
                                     </div>
                                 </label>
                             </div>
-                            <div class="bg-gray-50 p-6 rounded-[2rem] space-y-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <input type="text" name="advance_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" class="bg-white border-gray-200 rounded-xl">
-                                    <input type="text" name="advance_nic_no" required placeholder="NIC NUMBER" class="bg-white border-gray-200 rounded-xl uppercase">
-                                </div>
-                                <input type="number" name="advance_amount" step="0.01" required placeholder="Amount (LKR)" class="w-full bg-white border-gray-200 rounded-xl text-lg font-black">
-                                <template x-if="paymentMethod === 'bank'">
-                                    <div class="space-y-4">
-                                        <select name="advance_bank_name" required class="w-full bg-white border-gray-200 rounded-xl">
-                                            <option value="">Select Bank...</option>
-                                            <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
-                                            <option value="People’s Bank">People’s Bank</option>
-                                            <option value="Commercial Bank of Ceylon PLC">Commercial Bank of Ceylon PLC</option>
-                                            <option value="Hatton National Bank PLC (HNB)">Hatton National Bank PLC (HNB)</option>
-                                            <option value="Sampath Bank PLC">Sampath Bank PLC</option>
-                                        </select>
-                                        <input type="text" name="advance_bank_branch" required placeholder="Branch Name" class="w-full bg-white border-gray-200 rounded-xl">
+    
+                            {{-- Content Box --}}
+                            <div class="bg-gray-50/80 backdrop-blur-sm p-8 rounded-[2.5rem] space-y-5 border border-gray-100">
+                                <div class="space-y-4">
+                                    <input type="text" name="advance_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" 
+                                           class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
+                                    
+                                    <input type="text" name="advance_nic_no" required placeholder="NIC NUMBER" 
+                                           class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all uppercase tracking-widest">
+                                    
+                                    <div class="relative">
+                                        <input type="number" name="advance_amount" x-model="advanceAmount" step="0.01" required placeholder="Amount (LKR)" 
+                                               class="w-full bg-white border-transparent rounded-[1.25rem] text-2xl font-black py-5 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all tabular-nums">
+                                        <div class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400 uppercase tracking-widest">LKR</div>
                                     </div>
-                                </template>
+                                    
+                                    <template x-if="paymentMethod === 'bank'">
+                                        <div class="space-y-4 animate-fade-in-down">
+                                            <div class="relative">
+                                                <select name="advance_bank_name" required 
+                                                        class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
+                                                    <option value="">Select Bank...</option>
+                                                    <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
+                                                    <option value="People’s Bank">People’s Bank</option>
+                                                    <option value="Commercial Bank of Ceylon PLC">Commercial Bank of Ceylon PLC</option>
+                                                    <option value="Hatton National Bank PLC (HNB)">Hatton National Bank PLC (HNB)</option>
+                                                    <option value="Sampath Bank PLC">Sampath Bank PLC</option>
+                                                </select>
+                                                <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
+                                            </div>
+                                            <input type="text" name="advance_bank_branch" required placeholder="Branch Name" 
+                                                   class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
-                        <button type="submit" class="w-full mt-8 bg-gray-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest">Post Advance Payment</button>
+    
+                        <button type="submit" class="w-full mt-10 bg-[#111827] text-white py-6 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-gray-200 hover:bg-black hover:-translate-y-1 transition-all duration-300 active:scale-95">Confirm Payment</button>
                     </form>
                 </div>
             </div>
@@ -467,69 +490,92 @@
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity bg-gray-900/95 backdrop-blur-md" @click="finalPaymentModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
-                <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3rem] border border-gray-100"
+                <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3.5rem] border border-gray-100 p-10"
                      x-show="finalPaymentModal">
                     
-                    <form :action="'/admin/front-desk/' + currentRes?.id + '/final-payment'" method="POST" class="p-10">
+                    <form :action="'/admin/front-desk/' + currentRes?.id + '/final-payment'" method="POST">
                         @csrf
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h3 class="text-2xl font-black text-gray-900 tracking-tight">Final Settlement</h3>
-                                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-1 italic">Total Outstanding Balance Collection</p>
+                                <h3 class="text-3xl font-black text-gray-900 tracking-tight">Room Final Settlement</h3>
+                                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em] mt-1 italic">Total Outstanding Balance Collection</p>
                             </div>
                             <button type="button" @click="finalPaymentModal = false" class="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
-
-                        <div class="space-y-6">
-                            <div class="bg-indigo-900 text-white p-8 rounded-[2rem] flex items-center justify-between">
-                                <div>
-                                    <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Total Outstanding</p>
-                                    <p class="text-3xl font-black tracking-tighter tabular-nums">LKR <span x-text="remainingBalance.toLocaleString()"></span></p>
+    
+                        <div class="space-y-8">
+                            {{-- Balance Summary Card --}}
+                            <div class="bg-indigo-900 text-white p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-indigo-200 overflow-hidden relative group">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors"></div>
+                                <div class="relative">
+                                    <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] mb-1 leading-none">Total Outstanding</p>
+                                    <p class="text-4xl font-black tracking-tighter tabular-nums leading-none">LKR <span x-text="remainingBalance.toLocaleString()"></span></p>
                                 </div>
-                                <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <div class="relative w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20">
+                                    <svg class="w-7 h-7 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 </div>
                             </div>
 
+                            {{-- Payment Method Tabs --}}
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="cursor-pointer group">
                                     <input type="radio" name="final_payment_method" value="bank" x-model="paymentMethod" class="hidden">
-                                    <div class="p-5 rounded-3xl border-2 transition-all flex flex-col items-center gap-3" :class="paymentMethod === 'bank' ? 'border-indigo-600 bg-indigo-50/50' : 'border-gray-100'">
-                                        <span class="text-[10px] font-black uppercase tracking-widest">Bank</span>
+                                    <div class="py-4 rounded-2xl border-2 text-center text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300" 
+                                         :class="paymentMethod === 'bank' ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-lg shadow-indigo-100' : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200'">
+                                        Bank Transfer
                                     </div>
                                 </label>
                                 <label class="cursor-pointer group">
                                     <input type="radio" name="final_payment_method" value="cash" x-model="paymentMethod" class="hidden">
-                                    <div class="p-5 rounded-3xl border-2 transition-all flex flex-col items-center gap-3" :class="paymentMethod === 'cash' ? 'border-emerald-600 bg-emerald-50/50' : 'border-gray-100'">
-                                        <span class="text-[10px] font-black uppercase tracking-widest">Cash</span>
+                                    <div class="py-4 rounded-2xl border-2 text-center text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300" 
+                                         :class="paymentMethod === 'cash' ? 'border-emerald-600 bg-emerald-50 text-emerald-900 shadow-lg shadow-emerald-100' : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200'">
+                                        Cash Payment
                                     </div>
                                 </label>
                             </div>
-
-                            <div class="bg-gray-50 p-6 rounded-[2rem] space-y-4 shadow-inner border border-gray-100">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <input type="text" name="final_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" class="bg-white border-gray-200 rounded-xl font-bold text-sm">
-                                    <input type="text" name="final_nic_no" x-bind:value="currentRes?.advance_nic_no" required placeholder="NIC NUMBER" class="bg-white border-gray-200 rounded-xl uppercase font-bold text-sm">
-                                </div>
-                                <input type="number" name="final_payment_amount" step="0.01" x-bind:value="remainingBalance" required placeholder="Amount (LKR)" class="w-full bg-white border-gray-200 rounded-xl text-xl font-black">
-                                <template x-if="paymentMethod === 'bank'">
-                                    <div class="space-y-4">
-                                        <select name="final_bank_name" required class="w-full bg-white border-gray-200 rounded-xl font-bold text-sm">
-                                            <option value="">Select Bank...</option>
-                                            <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
-                                            <option value="People’s Bank">People’s Bank</option>
-                                            <option value="Commercial Bank of Ceylon PLC">Commercial Bank of Ceylon PLC</option>
-                                            <option value="Hatton National Bank PLC (HNB)">Hatton National Bank PLC (HNB)</option>
-                                            <option value="Sampath Bank PLC">Sampath Bank PLC</option>
-                                        </select>
-                                        <input type="text" name="final_bank_branch" required placeholder="Branch Name" class="w-full bg-white border-gray-200 rounded-xl font-bold text-sm">
+    
+                            {{-- Content Box --}}
+                            <div class="bg-gray-50/80 backdrop-blur-sm p-8 rounded-[2.5rem] space-y-5 border border-gray-100 shadow-inner">
+                                <div class="space-y-4">
+                                    <input type="text" name="final_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" 
+                                           class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
+                                    
+                                    <input type="text" name="final_nic_no" x-bind:value="currentRes?.advance_nic_no" required placeholder="NIC NUMBER" 
+                                           class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all uppercase tracking-widest">
+                                    
+                                    <div class="relative">
+                                        <input type="number" name="final_payment_amount" step="0.01" x-bind:value="remainingBalance" required placeholder="Amount (LKR)" 
+                                               class="w-full bg-white border-transparent rounded-[1.25rem] text-2xl font-black py-5 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all tabular-nums">
+                                        <div class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400 uppercase tracking-widest">LKR</div>
                                     </div>
-                                </template>
+                                    
+                                    <template x-if="paymentMethod === 'bank'">
+                                        <div class="space-y-4 animate-fade-in-down">
+                                            <div class="relative">
+                                                <select name="final_bank_name" required 
+                                                        class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
+                                                    <option value="">Select Bank...</option>
+                                                    <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
+                                                    <option value="People’s Bank">People’s Bank</option>
+                                                    <option value="Commercial Bank of Ceylon PLC">Commercial Bank of Ceylon PLC</option>
+                                                    <option value="Hatton National Bank PLC (HNB)">Hatton National Bank PLC (HNB)</option>
+                                                    <option value="Sampath Bank PLC">Sampath Bank PLC</option>
+                                                </select>
+                                                <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
+                                            </div>
+                                            <input type="text" name="final_bank_branch" required placeholder="Branch Name" 
+                                                   class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
-                        <button type="submit" class="w-full mt-8 bg-indigo-600 text-white py-6 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 hover:bg-black transition-all">Clear Balance & Authorize Departure</button>
+    
+                        <button type="submit" class="w-full mt-10 bg-indigo-600 text-white py-6 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-indigo-100 hover:bg-black hover:-translate-y-1 transition-all duration-300 active:scale-95">Clear Balance & Finalize</button>
                     </form>
                 </div>
             </div>
