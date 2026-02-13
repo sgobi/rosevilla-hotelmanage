@@ -10,6 +10,22 @@
     @endif
 
     <title>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}</title>
+    <meta name="description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
+    <meta name="keywords" content="Jaffna Hotel, Sri Lanka Heritage Hotel, Rose Villa Jaffna, Luxury Stay Jaffna, Colonial Home Sri Lanka, Jaffna Tourism, Jaffna Events, Boutique Hotel Sri Lanka">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}">
+    <meta property="og:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
+    <meta property="og:image" content="{{ asset('images/rosevilla front view.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}">
+    <meta property="twitter:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes.') }}">
+    <meta property="twitter:image" content="{{ asset('images/rosevilla front view.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,11 +74,11 @@
                         </a>
                     @endforeach
                     
-                    <!-- Language Switcher -->
+                    <!-- Currency Switcher -->
                     <div class="relative group ml-4" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-sm">
                             <span class="opacity-100">
-                                @if(app()->getLocale() == 'en') EN @elseif(app()->getLocale() == 'si') සිං @else தம @endif
+                                {{ session('currency', 'LKR') }}
                             </span>
                             <svg class="w-3 h-3 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -71,7 +87,26 @@
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
                              class="absolute right-0 mt-4 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
-                            @foreach(['en' => 'English', 'si' => 'සිංහல', 'ta' => 'தமிழ்'] as $code => $name)
+                            @foreach(['LKR' => 'Sri Lankan Rupee', 'USD' => 'US Dollar', 'EUR' => 'Euro', 'CAD' => 'Canadian Dollar', 'INR' => 'Indian Rupee'] as $code => $name)
+                                <a href="{{ route('currency.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }} ({{ $code }})</a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Language Switcher -->
+                    <div class="relative group ml-4" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-sm">
+                            <span class="opacity-100 uppercase">
+                                {{ app()->getLocale() }}
+                            </span>
+                            <svg class="w-3 h-3 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="open" x-cloak @click.away="open = false" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="absolute right-0 mt-4 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                            @foreach(['en' => 'English', 'fr' => 'Français', 'hi' => 'हिन्दी', 'si' => 'සිංහල', 'ta' => 'தமிழ்'] as $code => $name)
                                 <a href="{{ route('lang.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }}</a>
                             @endforeach
                         </div>
@@ -114,10 +149,17 @@
                 @endforeach
                 
                 <div class="pt-12 border-t border-white/10 w-full flex flex-col items-center gap-8">
-                    <div class="flex gap-8">
-                        @foreach(['en' => 'EN', 'si' => 'සිං', 'ta' => 'தம'] as $code => $label)
-                            <a href="{{ route('lang.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-lg font-black uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $label }}</a>
-                        @endforeach
+                    <div class="flex flex-col gap-6 items-center">
+                        <div class="flex flex-wrap justify-center gap-4">
+                            @foreach(['en' => 'EN', 'fr' => 'FR', 'hi' => 'HI', 'si' => 'සිං', 'ta' => 'தம'] as $code => $label)
+                                <a href="{{ route('lang.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-lg font-black uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $label }}</a>
+                            @endforeach
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-4 border-t border-white/10 pt-6 w-full max-w-xs">
+                            @foreach(['LKR', 'USD', 'EUR', 'CAD', 'INR'] as $code)
+                                <a href="{{ route('currency.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-sm font-black uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $code }}</a>
+                            @endforeach
+                        </div>
                     </div>
                     
                     <a href="#reservation" @click="mobileMenuOpen = false" class="w-full max-w-sm bg-rose-gold text-white text-[11px] font-black uppercase px-6 py-6 tracking-[0.3em] rounded-2xl shadow-2xl transition-all active:scale-95 border-b-4 border-black/20 hover:brightness-110">
@@ -271,10 +313,11 @@
                                 
                                 <div class="absolute top-8 {{ $loop->even ? 'right-8' : 'left-8' }} flex flex-col items-center z-20">
                                     <div class="px-8 py-5 rounded-3xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center border border-white transition-all duration-500 hover:scale-105">
-                                         <span class="text-[11px] font-black text-rose-gold uppercase tracking-[0.2em] leading-none mb-2.5">{{ __('Starting from') }}</span>
+                                         <span class="text-[11px] font-black text-rose-gold uppercase tracking-[0.2em] mb-2.5">{{ __('Starting from') }}</span>
                                          <div class="flex items-baseline gap-2">
-                                            <span class="text-[12px] font-bold text-rose-accent uppercase">LKR</span>
-                                            <span class="text-4xl font-serif text-rose-accent leading-none">{{ number_format($room->price_per_night, 0, '', ',') }}</span>
+                                            <span class="text-2xl font-serif text-rose-accent uppercase">
+                                                {{ \App\Helpers\CurrencyHelper::format($room->price_per_night) }}
+                                            </span>
                                          </div>
                                     </div>
                                 </div>
@@ -492,6 +535,9 @@
                         roomId: '',
                         guests: 1,
                         taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
+                        exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
+                        currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
+                        currencyCode: '{{ session('currency', 'LKR') }}',
                         rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
                         init() {
                             const params = new URLSearchParams(window.location.search);
@@ -510,7 +556,11 @@
                         get estimatedTotal() {
                             if (!this.roomId || this.nights === 0) return 0;
                             const subtotal = this.rooms[this.roomId].price * this.nights;
-                            return subtotal + (subtotal * this.taxRate / 100);
+                            const totalLkr = subtotal + (subtotal * this.taxRate / 100);
+                            return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
+                                minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                            });
                         },
                         specialReq: '',
                         additionalNotes: ''
@@ -636,8 +686,8 @@
                                             <div class="text-center bg-white px-10 py-6 rounded-3xl shadow-xl shadow-gray-100 border border-rose-gold/20 transform hover:scale-105 transition-transform duration-500">
                                                 <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.3em] mb-2">Estimate Worth</p>
                                                 <div class="flex items-baseline gap-2">
-                                                    <span class="text-xs font-black text-rose-accent opacity-60">LKR</span>
-                                                    <span class="text-3xl font-serif text-rose-accent font-bold" x-text="estimatedTotal.toLocaleString()"></span>
+                                                    <span class="text-xs font-black text-rose-accent opacity-60" x-text="currencyCode"></span>
+                                                    <span class="text-3xl font-serif text-rose-accent font-bold"><span x-text="currencySymbol"></span> <span x-text="estimatedTotal"></span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -780,7 +830,7 @@
                     <p class="text-gray-300 text-sm leading-relaxed font-normal">
                         A sanctuary of heritage and luxury in the heart of Jaffna. Experience the timeless charm of our colonial home.
                     </p>
-                    <div class="flex space-x-4">
+                    <div class="flex flex-wrap gap-4">
                         <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white transition duration-300">
                             <span class="sr-only">Facebook</span>
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -789,6 +839,18 @@
                             <span class="sr-only">Instagram</span>
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.072 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.225-.149-4.771-1.664-4.919-4.919-.059-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                         </a>
+                        <a href="#" title="TripAdvisor" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white transition duration-300">
+                             <span class="text-[10px] font-bold">TA</span>
+                        </a>
+                    </div>
+                    
+                    <div class="pt-6">
+                        <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.3em] mb-4">Currency</p>
+                        <div class="flex flex-wrap gap-3">
+                            @foreach(['LKR', 'USD', 'EUR', 'CAD', 'INR'] as $code)
+                                <a href="{{ route('currency.switch', $code) }}" class="text-[10px] font-black tracking-widest px-3 py-1.5 border border-white/10 rounded-lg hover:border-rose-gold transition {{ session('currency', 'LKR') == $code ? 'bg-rose-gold text-white border-rose-gold' : 'text-gray-400' }}">{{ $code }}</a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 

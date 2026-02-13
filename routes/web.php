@@ -22,11 +22,18 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/reservations', [HomeController::class, 'storeReservation'])->name('reservations.store');
 
 Route::get('lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'ta', 'si'])) {
+    if (in_array($locale, ['en', 'ta', 'si', 'fr', 'hi'])) {
         session()->put('locale', $locale);
     }
     return redirect()->back();
 })->name('lang.switch');
+
+Route::get('currency/{currency}', function ($currency) {
+    if (in_array($currency, ['LKR', 'USD', 'EUR', 'CAD', 'INR'])) {
+        session()->put('currency', $currency);
+    }
+    return redirect()->back();
+})->name('currency.switch');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
