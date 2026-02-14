@@ -55,8 +55,8 @@
     <!-- Header -->
     <header x-data="{ scrolled: false, mobileMenuOpen: false }" 
             @scroll.window="scrolled = (window.pageYOffset > 50)"
-            :class="{ 'bg-rose-primary/95 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-3': scrolled, 'bg-gradient-to-b from-black/60 to-transparent py-4 lg:py-6': !scrolled }"
-            class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5 py-4 lg:py-6">
+            :class="{ 'bg-[#1a1c1e] shadow-xl py-3': scrolled, 'bg-gradient-to-b from-black/70 to-transparent py-4 lg:py-6': !scrolled }"
+            class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5 py-4 lg:py-6" style="transform: translateZ(0);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center text-white">
                 <!-- Logo -->
@@ -81,7 +81,7 @@
                     
                     <!-- Currency Switcher -->
                     <div class="relative group ml-4" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-sm">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/20">
                             <span class="opacity-100">
                                 {{ session('currency', 'LKR') }}
                             </span>
@@ -91,7 +91,7 @@
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="absolute right-0 mt-4 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                             class="absolute right-0 mt-4 w-40 bg-white rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
                             @foreach(['LKR' => 'Sri Lankan Rupee', 'USD' => 'US Dollar', 'EUR' => 'Euro', 'CAD' => 'Canadian Dollar', 'INR' => 'Indian Rupee'] as $code => $name)
                                 <a href="{{ route('currency.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }} ({{ $code }})</a>
                             @endforeach
@@ -100,7 +100,7 @@
 
                     <!-- Language Switcher -->
                     <div class="relative group ml-4" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-sm">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/20">
                             <span class="opacity-100 uppercase">
                                 {{ app()->getLocale() }}
                             </span>
@@ -110,7 +110,7 @@
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="absolute right-0 mt-4 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                             class="absolute right-0 mt-4 w-40 bg-white rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
                             @foreach(['en' => 'English', 'fr' => 'Français', 'hi' => 'हिन्दी', 'si' => 'සිංහල', 'ta' => 'தமிழ்'] as $code => $name)
                                 <a href="{{ route('lang.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }}</a>
                             @endforeach
@@ -125,7 +125,7 @@
 
                 <!-- Mobile Menu Button -->
                 <div class="flex items-center lg:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-white/5 p-3 rounded-xl border border-white/10 text-white hover:text-rose-gold transition-all backdrop-blur-md">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-white/10 p-3 rounded-xl border border-white/10 text-white hover:text-rose-gold transition-all">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
                             <path :class="mobileMenuOpen ? 'inline-flex' : 'hidden'" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -182,14 +182,14 @@
     <!-- Hero Section -->
     <div class="relative h-[100dvh] flex items-center justify-center overflow-hidden bg-black">
         <!-- Background Image -->
-        <div class="absolute inset-0 z-0 scale-105 animate-ken-burns">
+        <div class="absolute inset-0 z-0 scale-105 animate-ken-burns" style="will-change: transform; transform: translateZ(0);">
             <img src="{{ $heroImage }}" alt="Rose Villa Heritage Home" class="w-full h-full object-cover opacity-100">
             <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
         </div>
 
         <!-- Hero Content -->
         <div class="relative z-1 text-center px-4 max-w-6xl mx-auto mt-20">
-            <span class="inline-block py-2 px-4 bg-black/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.5em] mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
+            <span class="inline-block py-2 px-4 bg-black/40 border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.5em] mb-8 rounded-full opacity-0 animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
                 {{ __('Heritage Sanctuary in Jaffna') }}
             </span>
             <h1 class="font-serif text-6xl md:text-9xl text-white mb-8 drop-shadow-[0_10px_35px_rgba(0,0,0,0.8)] tracking-tighter uppercase leading-[0.85] opacity-0 animate-fade-in-up" 
@@ -202,15 +202,15 @@
                 {{ __($heroSubtitle) }}
             </p>
             <div class="opacity-0 animate-fade-in-up" style="animation-delay: 1s; animation-fill-mode: forwards;">
-                <a href="#rooms" class="group relative inline-flex items-center justify-center px-12 py-5 text-sm font-black text-white uppercase tracking-[0.3em] transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/30 hover:border-white hover:bg-white hover:text-black overflow-hidden active:scale-95 shadow-2xl">
+                <a href="#rooms" class="group relative inline-flex items-center justify-center px-12 py-5 text-sm font-black text-white uppercase tracking-[0.3em] transition-all duration-500 bg-white/10 border border-white/30 hover:border-white hover:bg-white hover:text-black overflow-hidden active:scale-95 shadow-2xl">
                     <span class="absolute inset-0 w-full h-full bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500"></span>
                     <span class="relative z-10 group-hover:text-black">{{ __('Explore Collection') }}</span>
                 </a>
             </div>
 
             <!-- Booking Widget -->
-            <div class="mt-20 bg-white/10 backdrop-blur-3xl p-3 rounded-[2rem] border border-white/20 shadow-[0_40px_100px_-15px_rgba(0,0,0,0.6)] hidden md:block opacity-0 animate-fade-in-up max-w-5xl mx-auto" 
-                 style="animation-delay: 1.2s; animation-fill-mode: forwards;">
+            <div class="mt-20 bg-black/40 p-3 rounded-[2rem] border border-white/20 shadow-[0_40px_100px_-15px_rgba(0,0,0,0.6)] hidden md:block opacity-0 animate-fade-in-up max-w-5xl mx-auto" 
+                 style="animation-delay: 1.2s; animation-fill-mode: forwards; transform: translateZ(0);">
                 <form action="#reservation" method="GET" class="flex items-center gap-3">
                     <div class="flex-1 grid grid-cols-3 gap-3 p-1">
                         <div class="relative group">
@@ -253,8 +253,8 @@
     <!-- About Section -->
     <section id="about" class="py-24 md:py-40 bg-rose-primary relative overflow-hidden">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-24 bg-gradient-to-b from-black/20 to-transparent"></div>
-        <div class="absolute -right-20 -top-20 w-96 h-96 bg-rose-gold/10 rounded-full blur-3xl"></div>
-        <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-rose-accent/10 rounded-full blur-3xl"></div>
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-rose-gold/5 rounded-full"></div>
+        <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-rose-accent/5 rounded-full"></div>
 
         <div class="max-w-5xl mx-auto px-4 text-center relative z-10">
             <span class="text-rose-gold text-xs font-bold tracking-[0.4em] uppercase block mb-6 px-10">{{ __('Our Heritage') }}</span>
@@ -505,8 +505,8 @@
     <!-- Reservation Section -->
     <section id="reservation" class="py-28 bg-[#fdfaf8] overflow-hidden relative">
         {{-- Decorative Elements --}}
-        <div class="absolute top-0 left-0 w-64 h-64 bg-rose-gold/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-rose-accent/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+        <div class="absolute top-0 left-0 w-64 h-64 bg-rose-gold/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-rose-accent/5 rounded-full translate-x-1/3 translate-y-1/3"></div>
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
@@ -779,7 +779,7 @@
                         <!-- Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-300">
                              <div class="absolute bottom-6 left-6 text-left">
-                                <span class="inline-block px-2 py-1 border border-white/30 text-white/80 text-[10px] uppercase tracking-widest mb-2 backdrop-blur-sm">
+                                <span class="inline-block px-2 py-1 border border-white/30 text-white/80 text-[10px] uppercase tracking-widest mb-2 bg-black/20">
                                     {{ $landmark->distance ?? 'Nearby' }}
                                 </span>
                                 <h3 class="font-serif text-xl text-white uppercase tracking-widest group-hover:text-rose-gold transition-colors">{{ __($landmark->title) }}</h3>

@@ -6,7 +6,7 @@
                 <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Property Management & Guest Logistics</p>
             </div>
             
-            <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+            <div class="flex items-center gap-3 bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
                 <div class="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-lg" style="background: #111827;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -131,7 +131,7 @@
                 {{-- Column 1: Priority Shifts --}}
                 <div class="space-y-10">
                     {{-- ARRIVALS CARD --}}
-                    <div class="bg-indigo-50/30 rounded-[3rem] p-8 border border-white/50 backdrop-blur-sm">
+                    <div class="bg-indigo-50/50 rounded-[3rem] p-8 border border-white/50">
                         <div class="flex items-center justify-between mb-8 px-2">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
@@ -194,7 +194,7 @@
                     </div>
 
                     {{-- DEPARTURES CARD --}}
-                    <div class="bg-amber-50/30 rounded-[3rem] p-8 border border-white/50 backdrop-blur-sm">
+                    <div class="bg-amber-50/50 rounded-[3rem] p-8 border border-white/50">
                         <div class="flex items-center justify-between mb-8 px-2">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
@@ -396,7 +396,7 @@
              class="fixed inset-0 z-[150] overflow-y-auto" style="display: none;">
             
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity bg-gray-900/90 backdrop-blur-sm" @click="advanceModal = false"></div>
+                <div class="fixed inset-0 transition-opacity bg-gray-900/95" @click="advanceModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
                 <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3.5rem] border border-gray-100 p-10"
                      x-show="advanceModal">
@@ -433,7 +433,7 @@
                             </div>
     
                             {{-- Content Box --}}
-                            <div class="bg-gray-50/80 backdrop-blur-sm p-8 rounded-[2.5rem] space-y-5 border border-gray-100">
+                            <div class="bg-gray-50 rounded-[2.5rem] space-y-5 border border-gray-100">
                                 <div class="space-y-4">
                                     <input type="text" name="advance_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" 
                                            class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
@@ -488,7 +488,7 @@
              class="fixed inset-0 z-[150] overflow-y-auto" style="display: none;">
             
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity bg-gray-900/95 backdrop-blur-md" @click="finalPaymentModal = false"></div>
+                <div class="fixed inset-0 transition-opacity bg-gray-900/95" @click="finalPaymentModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
                 <div class="inline-block overflow-hidden transition-all transform bg-white text-left align-middle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] sm:max-w-xl sm:w-full rounded-[3.5rem] border border-gray-100 p-10"
                      x-show="finalPaymentModal">
@@ -537,7 +537,7 @@
                             </div>
     
                             {{-- Content Box --}}
-                            <div class="bg-gray-50/80 backdrop-blur-sm p-8 rounded-[2.5rem] space-y-5 border border-gray-100 shadow-inner">
+                            <div class="bg-gray-50 p-8 rounded-[2.5rem] space-y-5 border border-gray-100 shadow-inner">
                                 <div class="space-y-4">
                                     <input type="text" name="final_guest_name" x-bind:value="currentRes?.guest_name" required placeholder="Guest Name" 
                                            class="w-full bg-white border-transparent rounded-[1.25rem] font-bold text-sm py-4 px-6 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">

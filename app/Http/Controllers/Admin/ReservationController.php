@@ -141,19 +141,28 @@ class ReservationController extends Controller
         if ($request->has('status')) {
             // Prevent Staff from updating logic if already approved
             if (auth()->user()->isStaff() && $reservation->status === 'approved') {
-                // If it is staff trying to update an approved reservation, we should direct them to request instead, or just fail validation.
-                // However, the UI should prevent this. If they bypassed UI, return error.
                 return back()->with('error', 'You cannot directly update an approved reservation. Please request a status change.');
             }
 
-            $data = $request->validate([
+            $rules = [
                 'status' => ['required', 'in:pending,approved,cancelled'],
-            ]);
+            ];
+            
+            if ($request->status === 'cancelled') {
+                $rules['cancellation_reason'] = ['nullable', 'string'];
+            }
+
+            $data = $request->validate($rules);
             
             $oldStatus = $reservation->status;
             $newStatus = $data['status'];
             
-            $reservation->update($data);
+            $updateData = ['status' => $newStatus];
+            if ($newStatus === 'cancelled' && isset($data['cancellation_reason'])) {
+                $updateData['cancellation_reason'] = $data['cancellation_reason'];
+            }
+            
+            $reservation->update($updateData);
             
             // Send WhatsApp notification to customer if status changed to approved or cancelled
             /*
@@ -165,6 +174,8 @@ class ReservationController extends Controller
                 }
             }
             */
+            
+            return back()->with('success', 'Status updated to ' . ucfirst($newStatus) . '.');
         }
 
         // 2. Handle Discount Suggestion (Staff/Admin)

@@ -7,7 +7,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.events.calendar') }}" class="group bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
+                <a href="{{ route('admin.events.calendar') }}" class="group bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
                     <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 group-hover:rotate-6 transition-transform" style="background: #4f46e5;">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
@@ -71,7 +71,19 @@
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">
                                         <div class="font-medium">{{ $booking->event_date->format('M d, Y') }}</div>
-                                        <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('h:i A') }}</div>
+                                        @php
+                                            $startTime = \Carbon\Carbon::parse($booking->start_time);
+                                            $endTime = \Carbon\Carbon::parse($booking->end_time);
+                                            $isNextDay = $endTime->lt($startTime);
+                                        @endphp
+                                        <div class="text-xs text-gray-500">
+                                            {{ $startTime->format('h:i A') }} - {{ $endTime->format('h:i A') }}
+                                            @if($isNextDay)
+                                                <div class="text-[10px] text-rose-600 font-bold mt-0.5">
+                                                    Dep: {{ $booking->event_date->copy()->addDay()->format('M d, Y') }}
+                                                </div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">{{ $booking->guests }}</td>
                                     <td class="px-6 py-4">
@@ -91,7 +103,7 @@
                                                  x-transition:leave="transition ease-in duration-150"
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
-                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900/95 backdrop-blur-md text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900 text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
                                                  style="display: none;">
                                                 
                                                 <div class="space-y-3 text-xs">
@@ -107,8 +119,28 @@
 
                                                     <div class="grid grid-cols-2 gap-4 py-2 border-y border-white/5 my-1">
                                                         <div>
-                                                            <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Date</div>
+                                                            <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Date & Time</div>
+                                                            @php
+                                                                $tooltipStart = \Carbon\Carbon::parse($booking->start_time);
+                                                                $tooltipEnd = \Carbon\Carbon::parse($booking->end_time);
+                                                                $tooltipNext = $tooltipEnd->lt($tooltipStart);
+                                                            @endphp
                                                             <div class="font-medium text-white">{{ $booking->event_date->format('M d, Y') }}</div>
+                                                            <div class="text-[10px] text-gray-400 mt-0.5">
+                                                                <div class="flex justify-between">
+                                                                    <span>Start:</span>
+                                                                    <span>{{ $tooltipStart->format('h:i A') }}</span>
+                                                                </div>
+                                                                <div class="flex justify-between {{ $tooltipNext ? 'text-rose-300 font-bold' : '' }}">
+                                                                    <span>End:</span>
+                                                                    <span>
+                                                                        {{ $tooltipEnd->format('h:i A') }}
+                                                                        @if($tooltipNext)
+                                                                            <span class="block text-[9px] opacity-75">{{ $booking->event_date->copy()->addDay()->format('M d') }}</span>
+                                                                        @endif
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <div>
                                                             <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Guests</div>
@@ -217,19 +249,30 @@
 
                                                     <div class="space-y-5">
                                                         {{-- Admin Status Update --}}
-                                                        @if((auth()->user()->isAdmin() || auth()->user()->isStaff()) && $booking->conflict_status !== 'requested')
-                                                            <div>
-                                                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
-                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex gap-2">
-                                                                    @csrf @method('PATCH')
-                                                                    <select name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                                                                        @foreach(['pending','approved','rejected','cancelled'] as $status)
-                                                                            <option value="{{ $status }}" @selected($booking->status === $status)>{{ ucfirst($status) }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
-                                                                </form>
-                                                            </div>
+                                                        @if((auth()->user()->isAdmin() || (auth()->user()->isStaff() && !in_array($booking->status, ['approved', 'cancelled']))) && $booking->conflict_status !== 'requested')
+                                                                <div x-data="{ status: '{{ $booking->status }}' }">
+                                                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
+                                                                    <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex flex-col gap-2">
+                                                                        @csrf @method('PATCH')
+                                                                        <div class="flex gap-2">
+                                                                            <select x-model="status" name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                                                @foreach(['pending','approved','rejected','cancelled'] as $status)
+                                                                                    <option value="{{ $status }}">{{ ucfirst($status) }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
+                                                                        </div>
+                                                                        <div x-show="status === 'cancelled'" x-transition class="mt-2">
+                                                                            <textarea name="cancellation_reason" rows="2" class="w-full border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-rose-50 placeholder-rose-300" placeholder="Reason for cancellation (optional)..."></textarea>
+                                                                        </div>
+                                                                    </form>
+                                                                    @if($booking->status === 'cancelled' && $booking->cancellation_reason)
+                                                                        <div class="mt-2 p-2 bg-rose-50 border border-rose-100 rounded-lg">
+                                                                            <p class="text-[9px] text-rose-800 font-bold uppercase mb-1">Cancellation Reason:</p>
+                                                                            <p class="text-[10px] text-rose-600 italic">"{{ $booking->cancellation_reason }}"</p>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
                                                         @endif
 
                                                         {{-- Conflict Management --}}
@@ -244,27 +287,30 @@
                                                                     <div class="bg-rose-50 rounded-xl p-3 mb-3 border border-rose-100">
                                                                         <p class="text-xs text-rose-800 font-bold mb-2">Overbooking Requested</p>
                                                                         @if(auth()->user()->isAdmin())
-                                                                            <div class="flex gap-2">
-                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
-                                                                                    @csrf @method('PATCH')
-                                                                                    <input type="hidden" name="conflict_action" value="approve">
-                                                                                    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm" style="background-color: #4F46E5; color: white;">Approve Override</button>
-                                                                                </form>
-                                                                                <form method="POST" action="{{ route('admin.events.update', $booking) }}" class="flex-1">
-                                                                                    @csrf @method('PATCH')
-                                                                                    <input type="hidden" name="conflict_action" value="reject">
-                                                                                    <button class="w-full bg-white text-gray-600 border border-gray-200 py-2 rounded-lg text-xs font-bold hover:bg-gray-50 transition">Reject</button>
-                                                                                </form>
-                                                                            </div>
+                                                                            <form method="POST" action="{{ route('admin.events.update', $booking) }}">
+                                                                                @csrf @method('PATCH')
+                                                                                <textarea name="conflict_note" rows="2" class="w-full border-rose-200 rounded-lg text-xs mb-2 focus:ring-rose-500 focus:border-rose-500 bg-white" placeholder="Add a note (optional)..."></textarea>
+                                                                                <div class="flex gap-2">
+                                                                                    <button type="submit" name="conflict_action" value="approve" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm">Approve Override</button>
+                                                                                    <button type="submit" name="conflict_action" value="reject" class="flex-1 bg-white text-rose-500 border border-rose-200 py-2 rounded-lg text-xs font-bold hover:bg-rose-50 transition">Reject</button>
+                                                                                </div>
+                                                                            </form>
                                                                         @else
                                                                             <span class="text-[10px] uppercase font-bold text-rose-400">Waiting for Admin</span>
                                                                         @endif
                                                                     </div>
                                                                 @elseif($booking->conflict_status === 'approved')
-                                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                                        Override Approved
-                                                                    </span>
+                                                                    <div>
+                                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                            Override Approved
+                                                                        </span>
+                                                                        @if($booking->conflict_note)
+                                                                            <p class="text-[9px] text-gray-500 mt-1 italic border-l-2 border-rose-200 pl-2">
+                                                                                "{{ $booking->conflict_note }}"
+                                                                            </p>
+                                                                        @endif
+                                                                    </div>
                                                                 @endif
                                                             </div>
                                                         @endif

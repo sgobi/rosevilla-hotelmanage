@@ -6,7 +6,7 @@
                 <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Guest Lifecycle & Occupancy Logs</p>
             </div>
             
-            <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+            <div class="flex items-center gap-3 bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
                 <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100" style="background: #4f46e5;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
@@ -184,7 +184,7 @@
                                                  x-transition:leave="transition ease-in duration-150"
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
-                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900/95 backdrop-blur-md text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900 text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
                                                  style="display: none;">
                                                 
                                                 <div class="space-y-3 text-xs">
@@ -362,29 +362,37 @@
                                                                     </div>
                                                                 @endif
                                                             </div>
-                                                        @elseif(auth()->user()->isStaff() && $reservation->status === 'approved')
-                                                             <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex flex-col gap-2">
-                                                                @csrf @method('PUT')
-                                                                <div class="flex gap-2">
-                                                                    <select name="request_status_change" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                                                                        @foreach(['pending','cancelled'] as $status)
-                                                                            <option value="{{ $status }}">{{ ucfirst($status) }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <button class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100 whitespace-nowrap">Request</button>
+                                                        @elseif(auth()->user()->isStaff() && ($reservation->status === 'approved' || $reservation->status === 'cancelled'))
+                                                            <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 text-center opacity-75">
+                                                                <div class="flex items-center justify-center gap-2 mb-1">
+                                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                                                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Update Locked</span>
                                                                 </div>
-                                                                <p class="text-[9px] text-gray-400 italic">This change requires admin approval.</p>
-                                                            </form>
+                                                                <p class="text-[9px] text-gray-400">Status is finalized.</p>
+                                                            </div>
                                                         @else
-                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex gap-2">
-                                                                @csrf @method('PUT')
-                                                                <select name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                                                                    @foreach(['pending','approved','cancelled'] as $status)
-                                                                        <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
-                                                            </form>
+                                                            <div x-data="{ status: '{{ $reservation->status }}' }">
+                                                                <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex flex-col gap-2">
+                                                                    @csrf @method('PUT')
+                                                                    <div class="flex gap-2">
+                                                                         <select x-model="status" name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                                             @foreach(['pending','approved','cancelled'] as $status)
+                                                                                 <option value="{{ $status }}">{{ ucfirst($status) }}</option>
+                                                                             @endforeach
+                                                                         </select>
+                                                                         <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
+                                                                    </div>
+                                                                    <div x-show="status === 'cancelled'" x-transition class="mt-2">
+                                                                        <textarea name="cancellation_reason" rows="2" class="w-full border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-rose-50 placeholder-rose-300" placeholder="Reason for cancellation (optional)..."></textarea>
+                                                                    </div>
+                                                                </form>
+                                                                @if($reservation->status === 'cancelled' && $reservation->cancellation_reason)
+                                                                    <div class="mt-2 p-2 bg-rose-50 border border-rose-100 rounded-lg">
+                                                                        <p class="text-[9px] text-rose-800 font-bold uppercase mb-1">Cancellation Reason:</p>
+                                                                        <p class="text-[10px] text-rose-600 italic">"{{ $reservation->cancellation_reason }}"</p>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                         @endif
                                                     </div>
 

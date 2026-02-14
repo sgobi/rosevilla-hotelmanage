@@ -26,6 +26,7 @@ class Reservation extends Model
         'checked_in_at',
         'checked_out_at',
         'status',
+        'cancellation_reason',
         'total_price',
         'tax_percentage',
         'tax_amount',

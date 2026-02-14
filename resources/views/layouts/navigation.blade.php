@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-[#0d0d0d] border-b border-white/5 sticky top-0 z-50 shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+<nav x-data="{ open: false }" class="bg-[#0d0d0d] border-b border-white/10 sticky top-0 z-50 shadow-xl" style="transform: translateZ(0); -webkit-font-smoothing: antialiased;">
     <!-- Primary Navigation Menu -->
     <div class="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12">
         <div class="flex h-24 items-center justify-between">
@@ -6,7 +6,7 @@
             <!-- Left Side: Logo & Main Nav -->
             <div class="flex items-center gap-12">
                 <!-- Logo Area -->
-                <div class="shrink-0 flex items-center border-r border-white/10 pr-12">
+                <div class="shrink-0 flex items-center pr-12">
                     <a href="{{ route('dashboard') }}" class="transition-all duration-500 hover:scale-105 active:scale-95 group">
                         <img src="{{ asset('images/logo.png') }}" 
                              alt="Rose Villa Logo" 
@@ -106,20 +106,18 @@
             <div class="hidden xl:flex items-center gap-6">
                 <!-- VISIT LIVE SITE BUTTON -->
                 <a href="{{ route('home') }}" target="_blank" 
-                   class="px-6 py-3 text-[11px] font-black uppercase tracking-[0.15em] text-white bg-rose-gold border border-rose-gold/20 rounded-xl transition-all duration-500 flex items-center gap-3 group whitespace-nowrap shadow-[0_10px_30px_-10px_rgba(179,142,93,0.4)] hover:shadow-rose-gold/20 active:scale-95">
+                   class="px-6 py-3 text-[11px] font-black uppercase tracking-[0.15em] text-white bg-rose-gold border border-rose-gold/20 rounded-xl flex items-center gap-3 group whitespace-nowrap shadow-lg hover:bg-rose-gold/90 active:scale-95 transition-all">
                     <div class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </div>
                     LIVE SITE
                 </a>
 
-                <!-- User Interface Card -->
-                <div class="h-10 w-px bg-white/10 mx-1"></div>
+
 
                 <x-dropdown align="right" width="64">
                     <x-slot name="trigger">
-                        <button class="flex items-center gap-4 py-2 px-3 rounded-xl bg-white/10 border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all duration-300 group shadow-lg shadow-black/20">
+                        <button class="flex items-center gap-4 py-2 px-3 rounded-xl bg-white/10 border border-white/20 hover:border-white/40 hover:bg-white/15 group shadow-lg transition-all">
                             <div class="relative">
                                 @if(Auth::user()->profile_photo_path)
                                     <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" class="h-10 w-10 rounded-lg object-cover shadow-2xl ring-2 ring-white/10 group-hover:ring-rose-gold transition-all duration-500">

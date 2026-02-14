@@ -102,7 +102,7 @@ class EventBookingController extends Controller
             ]);
         }
 
-        if ($request->has('force_conflict') && $conflict) {
+        if ($request->has('force_conflict')) {
             $validated['conflict_status'] = 'requested';
             $validated['status'] = 'pending';
         }
@@ -167,7 +167,13 @@ class EventBookingController extends Controller
             $oldStatus = $event->status;
             $newStatus = $request->status;
             
-            $event->update(['status' => $newStatus]);
+            $updateData = ['status' => $newStatus];
+             // If status is cancelled, also save the cancellation reason
+            if ($newStatus === 'cancelled' && $request->has('cancellation_reason')) {
+                $updateData['cancellation_reason'] = $request->input('cancellation_reason');
+            }
+            
+            $event->update($updateData);
             
             // Send WhatsApp notification to customer if status changed to approved, rejected, or cancelled
             /*
@@ -269,7 +275,8 @@ class EventBookingController extends Controller
             if ($action === 'approve') {
                 $event->update([
                     'conflict_status' => 'approved',
-                    'status' => 'approved', // Auto-approve booking if conflict is approved? Or keep pending? Let's approve for now as it's an "Override"
+                    'status' => 'approved',
+                    'conflict_note' => $request->input('conflict_note'),
                 ]);
                 Notification::send($staff, new BookingStatusUpdated($event, 'conflict', 'approved'));
                 
@@ -287,6 +294,7 @@ class EventBookingController extends Controller
                 $event->update([
                     'conflict_status' => 'rejected',
                     'status' => 'rejected',
+                    'conflict_note' => $request->input('conflict_note'),
                 ]);
                 Notification::send($staff, new BookingStatusUpdated($event, 'conflict', 'rejected'));
                 
