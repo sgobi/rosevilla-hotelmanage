@@ -197,52 +197,76 @@
                                         </a>
 
                                         @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
-                                            <div x-data="{ open: false }" class="relative w-full">
-                                                <button @click="open = !open" 
+                                            <div x-data="{ open: false }" class="w-full">
+                                                <button @click="open = true" 
                                                         class="w-full bg-rose-50 text-rose-600 border border-rose-100 px-6 py-4 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:bg-rose-100 text-center active:scale-95 leading-none flex items-center justify-center gap-2">
-                                                    Reset Data
+                                                    Manage Data
                                                 </button>
                                                 
-                                                <div x-show="open" @click.away="open = false" x-cloak
-                                                     class="absolute right-0 bottom-full mb-3 w-72 bg-white border border-rose-100 rounded-3xl p-6 shadow-[0_20px_50px_rgba(225,29,72,0.15)] z-[100] ring-1 ring-black ring-opacity-5">
-                                                    <div class="flex items-center gap-3 mb-4 text-left">
-                                                        <div class="h-8 w-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                                        </div>
-                                                        <div>
-                                                            <h4 class="text-[10px] font-black text-gray-900 uppercase tracking-widest leading-none">Reset Event Ops</h4>
-                                                            <p class="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-1">Clears Start/End & Payments</p>
+                                                <template x-teleport="body">
+                                                    <div x-show="open" x-cloak
+                                                         class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
+                                                        
+                                                        <div @click.away="open = false" 
+                                                             class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                            
+                                                            <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                <div class="flex items-center gap-4">
+                                                                    <div class="h-12 w-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Event Operations</h4>
+                                                                        <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Advanced Administrative Terminal</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button @click="open = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                    <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                </button>
+                                                            </div>
+
+                                                            <div class="p-8 space-y-8">
+                                                                {{-- Operational Reset --}}
+                                                                <form action="{{ route('admin.event-front-desk.reset', $booking) }}" method="POST" class="space-y-4">
+                                                                    @csrf
+                                                                    <div class="space-y-2.5">
+                                                                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Safe Reset (In/Out/Pay)</label>
+                                                                        <input type="password" name="password" required placeholder="Verify Identity" 
+                                                                               class="w-full border-gray-100 rounded-2xl text-[13px] bg-gray-50/50 py-4 px-6 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 font-bold transition-all placeholder:text-gray-300">
+                                                                    </div>
+                                                                    <button type="submit" 
+                                                                            onclick="return confirm('Clear all operations for this event? The booking stays approved.')"
+                                                                            class="w-full bg-rose-50 text-rose-600 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95 text-center">
+                                                                        Full Operational Reset
+                                                                    </button>
+                                                                </form>
+
+                                                                <div class="relative flex items-center justify-center">
+                                                                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-100"></div></div>
+                                                                    <span class="relative bg-white px-4 text-[9px] font-black text-gray-300 uppercase tracking-widest text-center">OR DESTROY RECORD</span>
+                                                                </div>
+
+                                                                {{-- Permanent Delete --}}
+                                                                <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" class="space-y-4">
+                                                                    @csrf @method('DELETE')
+                                                                    <div class="space-y-2.5">
+                                                                        <label class="text-[10px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                                        <input type="password" name="password" required placeholder="Confirm Destruction" 
+                                                                               class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
+                                                                    </div>
+                                                                    <button type="submit" 
+                                                                            onclick="return confirm('CRITICAL: Permanently delete this event?')"
+                                                                            class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 text-center">
+                                                                        Delete Record Permanently
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                            <div class="bg-gray-50/50 p-6 text-center">
+                                                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Verified Administrative Operation</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-
-                                                    <form action="{{ route('admin.event-front-desk.reset', $booking) }}" method="POST" class="space-y-4 mb-6 pb-6 border-b border-rose-50">
-                                                        @csrf
-                                                        <div class="space-y-2 text-left">
-                                                            <label class="text-[9px] font-black text-rose-500 uppercase tracking-widest px-1">Admin Validation (Reset)</label>
-                                                            <input type="password" name="password" required placeholder="Verify Password" 
-                                                                   class="w-full border-gray-100 rounded-2xl text-[11px] bg-rose-50/30 py-3.5 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 placeholder-rose-200 font-bold">
-                                                        </div>
-                                                        <button type="submit" 
-                                                                onclick="return confirm('This will clear all start/completion times and recorded payments for this event. The booking will remain approved. Proceed?')"
-                                                                class="w-full bg-rose-50 text-rose-600 border border-rose-100 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition shadow-sm">
-                                                            Operational Reset
-                                                        </button>
-                                                    </form>
-
-                                                    <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" class="space-y-4">
-                                                        @csrf @method('DELETE')
-                                                        <div class="space-y-2 text-left">
-                                                            <label class="text-[9px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
-                                                            <input type="password" name="password" required placeholder="Verify Password" 
-                                                                   class="w-full border-gray-100 rounded-2xl text-[11px] bg-red-50/30 py-3.5 focus:ring-2 focus:ring-red-500 focus:border-red-500 placeholder-red-200 font-bold">
-                                                        </div>
-                                                        <button type="submit" 
-                                                                onclick="return confirm('CRITICAL: This will permanently delete this event booking and all associated payments from the database. This cannot be undone. Proceed?')"
-                                                                class="w-full bg-red-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition shadow-lg shadow-red-100 text-center">
-                                                            Delete Record
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                </template>
                                             </div>
                                         @endif
                                     </div>
