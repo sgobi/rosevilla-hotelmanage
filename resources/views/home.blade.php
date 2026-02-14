@@ -121,10 +121,22 @@
                     <a href="#reservation" class="ml-6 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[0.7rem] font-black uppercase px-8 py-4 tracking-[0.2em] transition-all duration-500 shadow-[0_10px_30px_-10px_rgba(179,142,93,0.5)] hover:shadow-xl active:scale-95 rounded-2xl">
                         {{ __('Reserve Now') }}
                     </a>
+
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="ml-4 bg-white/10 hover:bg-white hover:text-gray-900 text-white text-[0.6rem] font-black uppercase px-6 py-3.5 tracking-[0.2em] transition-all duration-500 border border-white/20 rounded-2xl flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            {{ __('Staff Portal') }}
+                        </a>
+                    @endauth
                 </nav>
 
                 <!-- Mobile Menu Button -->
-                <div class="flex items-center lg:hidden">
+                <div class="flex items-center lg:hidden gap-3">
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="p-3 rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 active:scale-90 transition-all">
+                            <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </a>
+                    @endauth
                     <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="bg-white/10 p-3 rounded-xl border border-white/10 text-white hover:text-rose-gold transition-all">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path :class="mobileMenuOpen ? 'hidden' : 'inline-flex'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
@@ -136,47 +148,104 @@
         </div>
 
         <!-- Mobile Menu Container -->
-        <div x-show="mobileMenuOpen" x-cloak
-             x-transition:enter="transition ease-out duration-500" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             class="fixed inset-0 z-[100] bg-[#0d0d0d] flex flex-col overflow-y-auto">
-            
-            <div class="flex justify-end p-6">
-                <button @click="mobileMenuOpen = false" class="p-3 rounded-xl bg-white/5 border border-white/10 text-white hover:text-rose-gold">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <div class="px-8 py-12 flex flex-col items-center space-y-10 text-center flex-grow">
-                @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'Contact' => '#contact'] as $label => $link)
-                    <a href="{{ $link }}" @click="mobileMenuOpen = false" class="text-white hover:text-rose-gold uppercase text-2xl tracking-[0.15em] font-serif transition-all duration-300 hover:scale-110 active:scale-95 border-b border-transparent hover:border-rose-gold/30 pb-1">{{ __($label) }}</a>
-                @endforeach
+        <template x-teleport="body">
+            <div x-show="mobileMenuOpen" x-cloak
+                 x-transition:enter="transition ease-out duration-500" 
+                 x-transition:enter-start="opacity-0 translate-y-[-20px]" 
+                 x-transition:enter-end="opacity-100 translate-y-0" 
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 translate-y-[-20px]"
+                 class="fixed inset-0 z-[200] bg-[#0d0d0d] flex flex-col">
                 
-                <div class="pt-12 border-t border-white/10 w-full flex flex-col items-center gap-8">
-                    <div class="flex flex-col gap-6 items-center">
-                        <div class="flex flex-wrap justify-center gap-4">
-                            @foreach(['en' => 'EN', 'fr' => 'FR', 'hi' => 'HI', 'si' => 'සිං', 'ta' => 'தம'] as $code => $label)
-                                <a href="{{ route('lang.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-lg font-black uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $label }}</a>
-                            @endforeach
-                        </div>
-                        <div class="flex flex-wrap justify-center gap-4 border-t border-white/10 pt-6 w-full max-w-xs">
-                            @foreach(['LKR', 'USD', 'EUR', 'CAD', 'INR'] as $code)
-                                <a href="{{ route('currency.switch', $code) }}" class="text-white/60 hover:text-rose-gold text-sm font-black uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-b-2 border-rose-gold' : '' }} font-sans">{{ $code }}</a>
-                            @endforeach
+                <!-- Mobile Menu Header -->
+                <div class="flex items-center justify-between p-6 border-b border-white/5 bg-[#121212]">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
+                        <div class="flex flex-col">
+                            <span class="text-white text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-1">Rose Villa</span>
+                            <span class="text-rose-gold text-[7px] font-black uppercase tracking-[0.4em] leading-none">Heritage Homes</span>
                         </div>
                     </div>
-                    
-                    <a href="#reservation" @click="mobileMenuOpen = false" class="w-full max-w-sm bg-rose-gold text-white text-[11px] font-black uppercase px-6 py-6 tracking-[0.3em] rounded-2xl shadow-2xl transition-all active:scale-95 border-b-4 border-black/20 hover:brightness-110">
-                        {{ __('CLAIM YOUR SANCTUARY') }}
-                    </a>
+                    <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:text-rose-gold transition-all active:scale-90">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Body -->
+                <div class="flex-grow overflow-y-auto bg-gradient-to-b from-[#0d0d0d] to-[#121212] px-6 py-8">
+                    <div class="grid grid-cols-1 gap-4">
+                        @php
+                            $menuItems = [
+                                ['label' => 'About', 'link' => '#about', 'sub' => 'Our Heritage', 'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                                ['label' => 'Rooms', 'link' => '#rooms', 'sub' => 'Luxury Stay', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                                ['label' => 'Gallery', 'link' => '#gallery', 'sub' => 'Visual Tour', 'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                                ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
+                                ['label' => 'Events', 'link' => '#events', 'sub' => 'Celebrations', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z'],
+                                ['label' => 'Contact', 'link' => '#contact', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                            ];
+                        @endphp
+
+                        @foreach($menuItems as $item)
+                            <a href="{{ $item['link'] }}" @click="mobileMenuOpen = false" class="group flex items-center justify-between p-5 rounded-[1.5rem] bg-white/5 border border-white/5 hover:bg-white/10 hover:border-rose-gold/20 transition-all duration-300">
+                                <div class="flex items-center gap-5">
+                                    <div class="w-12 h-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-rose-gold group-hover:bg-rose-gold group-hover:text-white transition-all duration-300 shadow-xl border border-white/5 shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-serif text-white group-hover:text-rose-gold transition-colors">{{ __($item['label']) }}</h3>
+                                        <p class="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">{{ __($item['sub']) }}</p>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-white/10 group-hover:text-rose-gold group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                            </a>
+                        @endforeach
+
+                        @auth
+                            <div class="mt-4 pt-4 border-t border-white/5">
+                                <a href="{{ route('dashboard') }}" class="flex items-center justify-between p-5 rounded-[1.5rem] bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+                                    <div class="flex items-center gap-5">
+                                        <div class="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+                                            <svg class="w-6 h-6 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-black text-white uppercase tracking-wider">Management</h3>
+                                            <p class="text-[8px] font-black text-emerald-400 uppercase tracking-[0.2em] mt-1 italic">Administrative Portal</p>
+                                        </div>
+                                    </div>
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                </a>
+                            </div>
+                        @endauth
+                    </div>
+
+                    <!-- Locales & Currency (Mobile) -->
+                    <div class="mt-8 space-y-6 bg-white/5 rounded-[2rem] p-6 border border-white/5">
+                        <div class="space-y-4 text-center">
+                            <p class="text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">Language</p>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                @foreach(['en' => 'EN', 'fr' => 'FR', 'hi' => 'HI', 'si' => 'සිං', 'ta' => 'தம'] as $code => $label)
+                                    <a href="{{ route('lang.switch', $code) }}" class="px-4 py-2.5 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest {{ app()->getLocale() == $code ? 'bg-rose-gold text-white shadow-lg' : 'text-white/60 hover:text-white bg-white/5' }}">{{ $label }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-6 border-t border-white/5 text-center">
+                            <p class="text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">Currency</p>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                @foreach(['LKR', 'USD', 'EUR', 'CAD', 'INR'] as $code)
+                                    <a href="{{ route('currency.switch', $code) }}" class="px-4 py-2.5 rounded-xl transition-all font-black text-[9px] uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'bg-white text-gray-900' : 'text-white/60 hover:text-white bg-white/5' }}">{{ $code }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center pb-8">
+                         <p class="text-[9px] text-white/20 uppercase tracking-[0.6em] font-black italic">Rose Villa Heritage Homes</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="p-12 text-center">
-                 <p class="text-[10px] text-white/20 uppercase tracking-[0.5em] font-black">Rose Villa Heritage</p>
-            </div>
-        </div>
+        </template>
     </header>
 
     <!-- Hero Section -->
@@ -917,37 +986,39 @@
     </footer>
 
     <!-- Lightbox Modal -->
-    <div id="lightbox" class="fixed inset-0 bg-black/95 z-50 hidden items-center justify-center p-4 transition-opacity duration-300">
-        <!-- Close Button -->
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-rose-gold transition-colors z-10 group">
-            <svg class="w-8 h-8 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-
-        <!-- Previous Button -->
-        <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-rose-gold transition-colors z-10 group">
-            <svg class="w-10 h-10 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
-
-        <!-- Next Button -->
-        <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-rose-gold transition-colors z-10 group">
-            <svg class="w-10 h-10 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
-
-        <!-- Image Container -->
-        <div class="max-w-6xl max-h-[90vh] w-full h-full flex flex-col items-center justify-center">
-            <img id="lightboxImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
-            
-            <!-- Image Info -->
-            <div class="mt-4 text-center">
-                <p id="lightboxCounter" class="text-white text-sm uppercase tracking-wider"></p>
-                <p id="lightboxTitle" class="text-rose-gold text-xs uppercase tracking-widest mt-1"></p>
+    <div id="lightbox" class="fixed inset-0 bg-black/98 z-[200] hidden flex-col transition-opacity duration-300">
+        <!-- Lightbox Header -->
+        <div class="flex items-center justify-between p-6 md:p-10 z-10 bg-gradient-to-b from-black/80 to-transparent">
+            <div class="flex flex-col">
+                <h4 id="lightboxTitle" class="text-white font-serif text-xl md:text-2xl uppercase tracking-[0.2em]">Rooms</h4>
+                <p id="lightboxCounter" class="text-rose-gold text-[10px] font-black uppercase tracking-[0.4em] mt-2">1 / 5</p>
             </div>
+            <button onclick="closeLightbox()" class="p-4 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all duration-500 group">
+                <svg class="w-6 h-6 transform group-hover:rotate-90 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Display -->
+        <div class="flex-grow flex items-center justify-center p-4 relative">
+            <!-- Navigation -->
+            <button onclick="navigateLightbox(-1)" class="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-14 h-14 md:w-20 md:h-20 rounded-full border border-white/10 bg-white/5 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 z-20 group">
+                <svg class="w-6 h-6 md:w-8 md:h-8 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button onclick="navigateLightbox(1)" class="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 w-14 h-14 md:w-20 md:h-20 rounded-full border border-white/10 bg-white/5 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 z-20 group">
+                <svg class="w-6 h-6 md:w-8 md:h-8 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Image -->
+            <div class="w-full h-full flex items-center justify-center">
+                <img id="lightboxImage" src="" alt="Gallery Image" class="max-w-full max-h-full object-contain shadow-[0_50px_100px_rgba(0,0,0,0.5)] rounded-2xl border border-white/5">
+            </div>
+        </div>
+
+        <!-- Lightbox Footer -->
+        <div class="p-8 text-center bg-gradient-to-t from-black/50 to-transparent">
+            <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.5em] opacity-50">Rose Villa Heritage Preview</span>
         </div>
     </div>
 

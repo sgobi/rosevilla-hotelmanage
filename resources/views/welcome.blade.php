@@ -77,24 +77,75 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
-        <div x-show="mobileMenuOpen" 
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-2"
-             @click.away="mobileMenuOpen = false"
-             class="md:hidden bg-rose-primary border-t border-rose-800">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#home" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Home</a>
-                <a href="#about" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">The Villa</a>
-                <a href="#rooms" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Rooms</a>
-                <a href="#experiences" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Experiences</a>
-                <a href="#contact" class="block px-3 py-2 text-white hover:text-rose-accent uppercase text-sm tracking-wider font-semibold">Contact</a>
+        <!-- Mobile Menu Container -->
+        <template x-teleport="body">
+            <div x-show="mobileMenuOpen" x-cloak
+                 x-transition:enter="transition ease-out duration-500" 
+                 x-transition:enter-start="opacity-0 translate-y-[-20px]" 
+                 x-transition:enter-end="opacity-100 translate-y-0" 
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 translate-y-[-20px]"
+                 class="fixed inset-0 z-[100] bg-rose-primary flex flex-col">
+                
+                <!-- Mobile Menu Header -->
+                <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+                    <div class="flex items-center gap-3">
+                        <span class="text-white text-lg font-serif tracking-[0.2em] uppercase">Rose Villa</span>
+                    </div>
+                    <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/10 border border-white/10 text-white transition-all active:scale-90">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Body -->
+                <div class="flex-grow overflow-y-auto px-6 py-8 space-y-4">
+                    @php
+                        $welcomeItems = [
+                            ['label' => 'The Villa', 'link' => '#about', 'sub' => 'Our Sanctuary', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
+                            ['label' => 'Rooms', 'link' => '#rooms', 'sub' => 'Heritage Chambers', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                            ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Jaffna Flavours', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
+                            ['label' => 'Contact', 'link' => '#contact', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                        ];
+                    @endphp
+
+                    @foreach($welcomeItems as $item)
+                        <a href="{{ $item['link'] }}" @click="mobileMenuOpen = false" class="group flex items-center justify-between p-5 rounded-[1.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div class="flex items-center gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-rose-accent group-hover:bg-white group-hover:text-rose-primary transition-all duration-300 shadow-xl shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-serif text-white group-hover:text-rose-accent transition-colors">{{ __($item['label']) }}</h3>
+                                    <p class="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">{{ __($item['sub']) }}</p>
+                                </div>
+                            </div>
+                            <svg class="w-4 h-4 text-white/20 group-hover:text-white transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    @endforeach
+
+                    @auth
+                        <div class="mt-6 pt-6 border-t border-white/10 space-y-3">
+                            <a href="{{ route('dashboard') }}" class="flex items-center gap-4 p-4 rounded-xl bg-emerald-500/20 text-emerald-100 border border-emerald-500/30">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                <span class="font-black uppercase tracking-widest text-xs">Dashboard</span>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-4 p-4 rounded-xl bg-white/5 text-white/60 border border-white/10">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                    <span class="font-black uppercase tracking-widest text-[10px]">Sign Out</span>
+                                </button>
+                            </form>
+                        </div>
+                    @endauth
+
+                    <div class="mt-8 text-center pb-8">
+                         <p class="text-[9px] text-white/30 uppercase tracking-[0.6em] font-black italic">Rose Villa Heritage</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </template>
     </header>
 
     <!-- Hero Section -->
