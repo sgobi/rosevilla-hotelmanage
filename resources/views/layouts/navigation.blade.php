@@ -196,7 +196,11 @@
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
                 <x-responsive-nav-link :href="route('admin.front-desk.index')" :active="request()->routeIs('admin.front-desk.*')" class="text-indigo-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-indigo-500 transition-colors py-4 flex items-center gap-2">
                     <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
-                    Front Desk (Check In/Out)
+                    Room Front Desk (Check In/Out)
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.event-front-desk.index')" :active="request()->routeIs('admin.event-front-desk.*')" class="text-amber-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-amber-500 transition-colors py-4 flex items-center gap-2">
+                    <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                    Event Front Desk (Arrival/Compl.)
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Room Reservations</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.events.index')" :active="request()->routeIs('admin.events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Event Bookings</x-responsive-nav-link>

@@ -443,12 +443,48 @@
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 </a>
                                                 
-                                                <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" onsubmit="return confirm('Permanently delete this event?')">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete">
+                                                <div x-data="{ showDelete: false }" class="relative">
+                                                    <button @click="showDelete = !showDelete" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                     </button>
-                                                </form>
+
+                                                    <div x-show="showDelete" x-cloak @click.away="showDelete = false" 
+                                                         class="absolute right-0 bottom-full mb-2 w-72 bg-white border border-rose-100 rounded-2xl p-6 shadow-2xl z-[100] ring-1 ring-black ring-opacity-5">
+                                                        <div class="mb-5 border-b border-rose-50 pb-3">
+                                                            <h4 class="text-[10px] font-black text-rose-600 uppercase tracking-widest leading-none">Management Terminal</h4>
+                                                            <p class="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-1">Advanced Data Controls</p>
+                                                        </div>
+
+                                                        {{-- Operational Reset --}}
+                                                        @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
+                                                            <form action="{{ route('admin.event-front-desk.reset', $booking) }}" method="POST" class="mb-6 pb-6 border-b border-rose-50">
+                                                                @csrf
+                                                                <div class="flex flex-col gap-2">
+                                                                    <label class="text-[9px] font-black text-rose-400 uppercase tracking-widest px-1">Safe Reset (In/Out/Pay)</label>
+                                                                    <input type="password" name="password" required placeholder="Verify Password" 
+                                                                           class="w-full border-gray-100 rounded-xl text-[11px] bg-rose-50/20 py-2 focus:ring-2 focus:ring-rose-500">
+                                                                    <button type="submit" onclick="return confirm('Reset all operational data (check-in/out/payments) for this event?')"
+                                                                            class="w-full bg-rose-50 text-rose-600 border border-rose-100 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-100 transition">
+                                                                        Operational Reset
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        @endif
+
+                                                        {{-- Permanent Delete --}}
+                                                        <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" class="space-y-3">
+                                                            @csrf @method('DELETE')
+                                                            <div class="flex flex-col gap-2">
+                                                                <label class="text-[9px] font-black text-rose-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                                <input type="password" name="password" required placeholder="Verify Password" 
+                                                                       class="w-full border-gray-100 rounded-xl text-[11px] bg-rose-50/20 py-2 focus:ring-2 focus:ring-rose-500">
+                                                                <button type="submit" class="w-full bg-rose-600 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-700 transition shadow-md shadow-rose-200">
+                                                                    Delete Record
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

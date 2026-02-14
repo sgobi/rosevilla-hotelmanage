@@ -158,6 +158,75 @@
                     {{ $users->links() }}
                 </div>
             </div>
+
+            {{-- System Maintenance --}}
+            @if(auth()->user()->isAdmin())
+                <div class="bg-white shadow rounded-[2.5rem] border border-rose-100 overflow-hidden mt-12">
+                    <div class="px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-6">
+                            <div class="h-16 w-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100 shadow-sm">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">System Maintenance</h3>
+                                <p class="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mt-1">Foundational Data Destruction</p>
+                                <p class="text-xs text-gray-500 mt-2 max-w-md font-bold italic">Permanently clear all reservation, event, and transactional data. This is typically used to clear test data before a production launch.</p>
+                            </div>
+                        </div>
+
+                        <div x-data="{ showWipeModal: false }">
+                            <button @click="showWipeModal = true" 
+                                    class="bg-rose-600 text-white px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-rose-200 active:scale-95 leading-none">
+                                Factory Reset Data
+                            </button>
+
+                            <template x-teleport="body">
+                                <div x-show="showWipeModal" x-cloak 
+                                     class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-gray-900/95 backdrop-blur-md">
+                                    <div @click.away="showWipeModal = false" 
+                                         class="bg-white rounded-[3rem] p-10 max-w-xl w-full border border-rose-100 shadow-[0_50px_100px_-20px_rgba(225,29,72,0.3)]">
+                                        
+                                        <div class="flex items-center gap-4 mb-8">
+                                            <div class="h-14 w-14 bg-rose-100 text-rose-600 rounded-[1.25rem] flex items-center justify-center">
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-2xl font-black text-gray-900 tracking-tight">Confirm Mass Deletion</h4>
+                                                <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest leading-none mt-1">This operation cannot be reversed</p>
+                                            </div>
+                                        </div>
+
+                                        <p class="text-sm text-gray-600 mb-8 font-bold italic leading-relaxed">
+                                            Warning: This will permanently delete <span class="text-rose-600 underline">ALL</span> room reservations, event bookings, payment records, and system notifications. The system will be returned to a fresh state.
+                                        </p>
+
+                                        <form action="{{ route('admin.maintenance.wipe-all') }}" method="POST" class="space-y-6">
+                                            @csrf
+                                            <div class="space-y-3">
+                                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Master Admin Password</label>
+                                                <input type="password" name="password" required placeholder="Verification Required" 
+                                                       class="w-full border-gray-100 rounded-2xl text-lg font-black bg-rose-50/20 py-5 px-6 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all placeholder:text-rose-200">
+                                            </div>
+
+                                            <div class="flex flex-col gap-3 pt-4">
+                                                <button type="submit" 
+                                                        onclick="return confirm('FINAL WARNING: Are you absolutely certain you want to WIPE THE ENTIRE SYSTEM?')"
+                                                        class="w-full bg-rose-600 text-white py-6 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition shadow-2xl shadow-rose-200">
+                                                    Yes, Wipe All Records
+                                                </button>
+                                                <button type="button" @click="showWipeModal = false" 
+                                                        class="w-full bg-white text-gray-400 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-gray-900 transition-colors">
+                                                    Cancel Operation
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

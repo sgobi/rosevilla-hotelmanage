@@ -519,6 +519,21 @@
                                                                 <label class="block text-[10px] font-bold text-rose-500 uppercase tracking-widest">Danger Zone</label>
                                                                 <span class="text-[9px] text-rose-400 italic">Auth Required</span>
                                                             </div>
+
+                                                            {{-- Reset Data (Partial Deletion) --}}
+                                                            @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
+                                                                <form action="{{ route('admin.front-desk.reset', $reservation) }}" method="POST" class="mb-4 pb-4 border-b border-rose-100/30">
+                                                                    @csrf
+                                                                    <div class="flex flex-col gap-2">
+                                                                        <input type="password" name="password" required placeholder="Password for Reset" 
+                                                                               class="w-full border-gray-100 rounded-xl text-[10px] bg-white pr-10 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 placeholder-rose-200 py-2">
+                                                                        <button type="submit" onclick="return confirm('Clear all check-in/out & payment data for this stay?')"
+                                                                                class="w-full bg-white text-rose-600 border border-rose-100 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider hover:bg-rose-50 transition">
+                                                                            Reset Operations
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @endif
                                                             <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="space-y-3">
                                                                 @csrf @method('DELETE')
                                                                 <div class="relative">

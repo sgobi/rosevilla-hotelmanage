@@ -372,6 +372,56 @@
                                             <svg class="w-4 h-4 text-gray-300 group-hover/btn:text-rose-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                                             Bill Info
                                         </a>
+
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
+                                            <div x-data="{ open: false }" class="relative w-full">
+                                                <button @click="open = !open" 
+                                                        class="w-full bg-rose-50 text-rose-600 border border-rose-100 px-6 py-4 rounded-[1.5rem] text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:bg-rose-100 text-center active:scale-95 leading-none flex items-center justify-center gap-2">
+                                                    Reset Data
+                                                </button>
+                                                
+                                                <div x-show="open" @click.away="open = false" x-cloak
+                                                     class="absolute right-0 bottom-full mb-3 w-72 bg-white border border-rose-100 rounded-3xl p-6 shadow-[0_20px_50px_rgba(225,29,72,0.15)] z-[100] ring-1 ring-black ring-opacity-5">
+                                                    <div class="flex items-center gap-3 mb-4">
+                                                        <div class="h-8 w-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="text-[10px] font-black text-gray-900 uppercase tracking-widest">Reset Operations</h4>
+                                                            <p class="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Clears In/Out & Payments</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <form action="{{ route('admin.front-desk.reset', $res) }}" method="POST" class="space-y-4 mb-6 pb-6 border-b border-rose-50">
+                                                        @csrf
+                                                        <div class="space-y-2">
+                                                            <label class="text-[9px] font-black text-rose-500 uppercase tracking-widest px-1">Admin Validation (Reset)</label>
+                                                            <input type="password" name="password" required placeholder="Verify Password" 
+                                                                   class="w-full border-gray-100 rounded-2xl text-[11px] bg-rose-50/30 py-3.5 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 placeholder-rose-200 font-bold">
+                                                        </div>
+                                                        <button type="submit" 
+                                                                onclick="return confirm('This will clear all check-in/out times and recorded payments for this stay. The reservation will remain approved. Proceed?')"
+                                                                class="w-full bg-rose-50 text-rose-600 border border-rose-100 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition shadow-sm">
+                                                            Full Reset
+                                                        </button>
+                                                    </form>
+
+                                                    <form action="{{ route('admin.reservations.destroy', $res) }}" method="POST" class="space-y-4">
+                                                        @csrf @method('DELETE')
+                                                        <div class="space-y-2">
+                                                            <label class="text-[9px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                            <input type="password" name="password" required placeholder="Verify Password" 
+                                                                   class="w-full border-gray-200 rounded-2xl text-[11px] bg-red-50/30 py-3.5 focus:ring-2 focus:ring-red-500 focus:border-red-500 placeholder-red-200 font-bold">
+                                                        </div>
+                                                        <button type="submit" 
+                                                                onclick="return confirm('CRITICAL: This will permanently delete this reservation and all associated data from the database. This cannot be undone. Proceed?')"
+                                                                class="w-full bg-red-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition shadow-lg shadow-red-100">
+                                                            Delete Record
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

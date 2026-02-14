@@ -58,6 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('front-desk/{reservation}/final-payment', [FrontDeskController::class, 'recordFinalPayment'])->name('front-desk.final-payment');
             Route::post('front-desk/{reservation}/check-in', [FrontDeskController::class, 'checkIn'])->name('front-desk.check-in');
             Route::post('front-desk/{reservation}/check-out', [FrontDeskController::class, 'checkOut'])->name('front-desk.check-out');
+            Route::post('front-desk/{reservation}/reset', [FrontDeskController::class, 'resetData'])->name('front-desk.reset');
 
             // Event Front Desk
             Route::get('event-front-desk', [EventFrontDeskController::class, 'index'])->name('event-front-desk.index');
@@ -65,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('event-front-desk/{eventBooking}/final-payment', [EventFrontDeskController::class, 'recordFinalPayment'])->name('event-front-desk.final-payment');
             Route::post('event-front-desk/{eventBooking}/check-in', [EventFrontDeskController::class, 'checkIn'])->name('event-front-desk.check-in');
             Route::post('event-front-desk/{eventBooking}/check-out', [EventFrontDeskController::class, 'checkOut'])->name('event-front-desk.check-out');
+            Route::post('event-front-desk/{eventBooking}/reset', [EventFrontDeskController::class, 'resetData'])->name('event-front-desk.reset');
 
             Route::resource('events', EventBookingController::class);
             Route::get('events-calendar', [EventBookingController::class, 'calendar'])->name('events.calendar');
@@ -84,6 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
             Route::get('/reports/front-desk', [ReportController::class, 'frontDeskReport'])->name('reports.front-desk');
             Route::get('/reports/front-desk/print', [ReportController::class, 'frontDeskPrint'])->name('reports.front-desk-print');
+            Route::get('/reports/bookings', [ReportController::class, 'bookingStatusReport'])->name('reports.bookings');
         });
 
         // Admin Only
@@ -95,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('content', [ContentController::class, 'update'])->name('content.update');
             Route::resource('users', UserController::class)->except(['show']);
             Route::resource('home-events', HomeEventController::class)->except(['show']);
+            Route::post('maintenance/wipe-all', [\App\Http\Controllers\Admin\MaintenanceController::class, 'wipeAllData'])->name('maintenance.wipe-all');
         });
     });
 

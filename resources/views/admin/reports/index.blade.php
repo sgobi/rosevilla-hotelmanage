@@ -96,7 +96,24 @@
                         </div>
                         <div>
                             <h4 class="text-sm font-black text-white uppercase tracking-widest leading-none">Front Desk</h4>
-                            <p class="text-[10px] text-white/60 font-medium mt-1">Check-in & Occupancy Reports</p>
+                            <p class="text-[10px] text-white/60 font-medium mt-1">Check-in & Occupancy</p>
+                        </div>
+                        <div class="ml-auto">
+                            <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Status Report link -->
+                <div class="bg-amber-600 rounded-3xl p-6 shadow-xl flex-1 max-w-sm overflow-hidden group hover:bg-amber-700 transition-all cursor-pointer relative" onclick="window.location.href='{{ route('admin.reports.bookings') }}'">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="relative flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ring-1 ring-white/30 group-hover:rotate-12 transition-transform" style="background: rgba(255, 255, 255, 0.2);">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-white uppercase tracking-widest leading-none">Booking Logic</h4>
+                            <p class="text-[10px] text-white/60 font-medium mt-1">Status, Notes & Cancels</p>
                         </div>
                         <div class="ml-auto">
                             <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>

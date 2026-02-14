@@ -197,4 +197,65 @@ class ReportController extends Controller
 
         return view('admin.reports.front-desk-print', compact('checkIns', 'checkOuts', 'title', 'start', 'end'));
     }
+
+    public function bookingStatusReport(Request $request)
+    {
+        $status = $request->get('status', 'all');
+        $search = $request->get('search');
+
+        $resQuery = Reservation::with('room');
+        $eventQuery = EventBooking::query();
+
+        if ($status !== 'all') {
+            $resQuery->where('status', $status);
+            $eventQuery->where('status', $status);
+        }
+
+        $reservations = $resQuery->get()->map(function($item) {
+            $item->type = 'Room';
+            $item->display_name = $item->guest_name;
+            $item->details = $item->room->title ?? '-';
+            $item->notes = $item->additional_notes;
+            $item->special = $item->special_requirements;
+            $item->date = $item->check_in->format('M d, Y') . ' - ' . $item->check_out->format('M d, Y');
+            return $item;
+        });
+
+        $events = $eventQuery->get()->map(function($item) {
+            $item->type = 'Event';
+            $item->display_name = $item->customer_name;
+            $item->details = $item->event_type;
+            $item->notes = $item->message;
+            $item->special = $item->conflict_note;
+            $item->date = $item->event_date->format('M d, Y') . ' (' . $item->start_time->format('H:i') . ')';
+            return $item;
+        });
+
+        $allBookings = $reservations->concat($events);
+
+        if ($search) {
+            $search = strtolower($search);
+            $allBookings = $allBookings->filter(function($item) use ($search) {
+                return str_contains(strtolower($item->display_name), $search) ||
+                       str_contains(strtolower($item->type), $search) ||
+                       str_contains(strtolower($item->details), $search) ||
+                       str_contains(strtolower($item->notes ?? ''), $search) ||
+                       str_contains(strtolower($item->special ?? ''), $search) ||
+                       str_contains(strtolower($item->cancellation_reason ?? ''), $search);
+            });
+        }
+
+        $allBookings = $allBookings->sortByDesc('created_at');
+
+        // Pagination
+        $perPage = 15;
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
+        $pagedData = $allBookings->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $bookings = new LengthAwarePaginator($pagedData, $allBookings->count(), $perPage, $currentPage, [
+            'path' => Paginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]);
+
+        return view('admin.reports.bookings', compact('bookings', 'status', 'search'));
+    }
 }

@@ -93,4 +93,42 @@ class EventFrontDeskController extends Controller
 
         return back()->with('success', "Final payment recorded. Event departure for {$eventBooking->customer_name} is now authorized.");
     }
+
+    public function resetData(Request $request, EventBooking $eventBooking)
+    {
+        if (!auth()->user()->isAdmin() && !auth()->user()->isAccountant()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Operational reset failed.']);
+        }
+
+        $eventBooking->update([
+            'checked_in_at' => null,
+            'checked_out_at' => null,
+            'advance_amount' => 0,
+            'advance_payment_method' => null,
+            'advance_guest_name' => null,
+            'advance_nic_no' => null,
+            'advance_bank_name' => null,
+            'advance_bank_branch' => null,
+            'advance_paid_at' => null,
+            'final_payment_amount' => 0,
+            'final_payment_method' => null,
+            'final_guest_name' => null,
+            'final_nic_no' => null,
+            'final_bank_name' => null,
+            'final_bank_branch' => null,
+            'final_payment_at' => null,
+            'invoice_print_count' => 0,
+            'invoice_reprint_status' => null,
+        ]);
+
+        return back()->with('success', "Operational data reset for event: {$eventBooking->customer_name}.");
+    }
 }

@@ -351,8 +351,16 @@ class EventBookingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EventBooking $event)
+    public function destroy(Request $request, EventBooking $event)
     {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, auth()->user()->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Deletion failed.']);
+        }
+
         $event->delete();
         return redirect()->route('admin.events.index')->with('success', 'Event booking deleted successfully.');
     }
