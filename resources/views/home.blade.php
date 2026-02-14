@@ -160,12 +160,8 @@
                 
                 <!-- Mobile Menu Header -->
                 <div class="flex items-center justify-between p-6 border-b border-white/5 bg-[#121212]">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
-                        <div class="flex flex-col">
-                            <span class="text-white text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-1">Rose Villa</span>
-                            <span class="text-rose-gold text-[7px] font-black uppercase tracking-[0.4em] leading-none">Heritage Homes</span>
-                        </div>
+                    <div class="flex-grow flex justify-center pl-10">
+                        <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="h-12 w-auto drop-shadow-lg">
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:text-rose-gold transition-all active:scale-90">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>

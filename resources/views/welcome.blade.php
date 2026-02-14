@@ -90,8 +90,8 @@
                 
                 <!-- Mobile Menu Header -->
                 <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
-                    <div class="flex items-center gap-3">
-                        <span class="text-white text-lg font-serif tracking-[0.2em] uppercase">Rose Villa</span>
+                    <div class="flex-grow flex justify-center pl-10">
+                        <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="h-12 w-auto drop-shadow-lg">
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/10 border border-white/10 text-white transition-all active:scale-90">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
