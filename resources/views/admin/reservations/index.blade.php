@@ -6,13 +6,24 @@
                 <p class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] mt-1 italic">Guest Lifecycle & Occupancy Logs</p>
             </div>
             
-            <div class="flex items-center gap-3 bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100" style="background: #4f46e5;">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Active Database</p>
-                    <p class="text-xs font-black text-gray-900 tabular-nums">v4.2.0-STABLE</p>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.front-desk.index') }}" class="group bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 group-hover:rotate-6 transition-transform" style="background: #4f46e5;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1 text-left">Operations</p>
+                        <p class="text-xs font-black text-gray-900 uppercase">Front Desk Ops</p>
+                    </div>
+                </a>
+                <div class="hidden lg:flex items-center gap-3 bg-gray-900 px-5 py-2.5 rounded-2xl border border-gray-800 shadow-sm">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-white/50 uppercase tracking-widest leading-none mb-1 text-left">Terminal Status</p>
+                        <p class="text-xs font-black text-white uppercase tabular-nums">v4.2.0-STABLE</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,7 +65,7 @@
                         <button type="submit" class="hidden">Search</button>
                     </form>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto {{ $reservations->count() < 6 ? 'min-h-[650px]' : '' }}">
                     <table class="min-w-full text-sm text-left">
                         <thead class="text-xs uppercase text-gray-500 bg-gray-50/50">
                             @php
@@ -126,7 +137,7 @@
                                                      x-transition:enter="transition ease-out duration-200"
                                                      x-transition:enter-start="opacity-0 translate-y-1 scale-95"
                                                      x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                                     class="absolute left-0 {{ $loop->remaining < 2 ? 'bottom-full mb-2' : 'top-full mt-2' }} w-80 bg-gray-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl p-6 z-[100] border border-white/10 pointer-events-none ring-1 ring-black ring-opacity-5"
+                                                     class="absolute left-0 {{ ($loop->index > 3 && $loop->remaining < 3) ? 'bottom-full mb-3' : 'top-full mt-3' }} w-80 bg-gray-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl p-6 z-[100] border border-white/10 pointer-events-none ring-1 ring-black ring-opacity-5"
                                                      style="display: none;">
                                                     
                                                     <div class="space-y-6">
@@ -179,12 +190,12 @@
                                              <!-- Tooltip Popover -->
                                             <div x-show="show" x-cloak
                                                  x-transition:enter="transition ease-out duration-200"
-                                                 x-transition:enter-start="opacity-0 {{ $loop->remaining < 2 ? 'translate-y-1' : 'translate-y-1' }}"
+                                                 x-transition:enter-start="opacity-0 translate-y-1"
                                                  x-transition:enter-end="opacity-100 translate-y-0"
                                                  x-transition:leave="transition ease-in duration-150"
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
-                                                 class="absolute z-[100] {{ $loop->remaining < 2 ? 'bottom-full' : 'top-full' }} right-0 {{ $loop->remaining < 2 ? 'mb-3' : 'mt-3' }} w-72 bg-gray-900 text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                                                 class="absolute z-[100] {{ ($loop->index > 2 && $loop->remaining < 3) ? 'bottom-full mb-4' : 'top-full mt-4' }} right-0 w-72 bg-gray-900 text-white rounded-2xl p-5 shadow-2xl ring-1 ring-white/10 pointer-events-none"
                                                  style="display: none;">
                                                 
                                                 <div class="space-y-3 text-xs">
@@ -240,7 +251,7 @@
                                                 </div>
                                                 
                                                 <!-- Arrow -->
-                                                @if($loop->remaining < 2)
+                                                @if($loop->index > 2 && $loop->remaining < 3)
                                                     <div class="absolute -bottom-1.5 right-12 w-3 h-3 bg-gray-900/95 rotate-45 border-r border-b border-white/10"></div>
                                                 @else
                                                     <div class="absolute -top-1.5 right-12 w-3 h-3 bg-gray-900/95 rotate-45 border-l border-t border-white/10"></div>
@@ -285,275 +296,227 @@
                                                     @endif
                                                 </div>
 
-                                                <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
-                                                    @if($reservation->status === 'approved')
-                                                        @php
-                                                            $canPrint = false;
-                                                            $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant();
-                                                            $isStaff = auth()->user()->isStaff();
-                                                            if ($isAdmin) $canPrint = true;
-                                                            elseif ($isStaff) {
-                                                                if ($reservation->invoice_print_count === 0 || $reservation->invoice_reprint_status === 'approved') $canPrint = true;
-                                                            }
-                                                        @endphp
-                                                        @if($canPrint)
-                                                            <a href="{{ route('admin.invoices.show', $reservation) }}" target="_blank" 
-                                                               class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Download Invoice">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                                            </a>
-                                                        @endif
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
+                                                @if($reservation->status === 'approved')
+                                                    @php
+                                                        $canPrint = false;
+                                                        $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant();
+                                                        $isStaff = auth()->user()->isStaff();
+                                                        if ($isAdmin) $canPrint = true;
+                                                        elseif ($isStaff) {
+                                                            if ($reservation->invoice_print_count === 0 || $reservation->invoice_reprint_status === 'approved') $canPrint = true;
+                                                        }
+                                                    @endphp
+                                                    @if($canPrint)
+                                                        <a href="{{ route('admin.invoices.show', $reservation) }}" target="_blank" 
+                                                           class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Download Invoice">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                                        </a>
                                                     @endif
+                                                @endif
 
-                                                    @if(auth()->user()->isAdmin() || auth()->user()->isAccountant() || auth()->user()->isStaff())
-                                                        <button @click="editing = !editing" 
-                                                                :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
-                                                                class="p-2 rounded-lg transition-all" title="Manage Details">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                        </button>
-                                                    @endif
-                                                </div>
-                                            </div>
+                                                <button @click="editing = !editing" 
+                                                        :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
+                                                        class="p-2 rounded-lg transition-all" title="Manage Details">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                </button>
 
-                                            <!-- Unified Edit Form (Experimental / User Friendly) -->
-                                            <div x-show="editing" x-cloak @click.away="editing = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                                 class="bg-white border border-gray-200 rounded-2xl p-5 shadow-2xl text-left w-80 absolute right-0 mt-14 z-[100] ring-1 ring-black ring-opacity-5">
-                                                <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
-                                                    <div>
-                                                        <h4 class="text-sm font-bold text-gray-900">Manage Reservation</h4>
-                                                        <p class="text-[10px] text-gray-500 mt-0.5">Quickly update status or discount</p>
-                                                    </div>
-                                                    <button @click="editing = false" class="text-gray-400 hover:text-gray-600 bg-gray-50 p-1 rounded-md transition-colors">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                    </button>
-                                                </div>
-
-                                                <div class="space-y-5">
-                                                    <div>
-                                                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Update Status</label>
+                                                {{-- Management Terminal Modal --}}
+                                                <template x-teleport="body">
+                                                    <div x-show="editing" x-cloak
+                                                         class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
                                                         
-                                                        @if($reservation->status_update_requested)
-                                                            <div class="bg-amber-50 rounded-xl p-3 border border-amber-100 mb-3 shadow-sm">
-                                                                <div class="flex items-center gap-2 mb-2">
-                                                                    <div class="p-1 bg-amber-100 text-amber-600 rounded-lg">
-                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                        <div @click.away="editing = false" 
+                                                             class="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                            
+                                                            <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                <div class="flex items-center gap-4">
+                                                                    <div class="h-12 w-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                                                     </div>
                                                                     <div>
-                                                                        <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Status Change Requested</p>
-                                                                        <p class="text-[10px] text-amber-600">to {{ ucfirst($reservation->status_update_requested) }}</p>
+                                                                        <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Management Terminal</h4>
+                                                                        <p class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Status, Financials & Lifecycle Control</p>
                                                                     </div>
                                                                 </div>
-
-                                                                @if(auth()->user()->isAdmin())
-                                                                    <div class="flex gap-2">
-                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                            @csrf @method('PUT')
-                                                                            <input type="hidden" name="status_change_action" value="approve">
-                                                                            <button class="w-full bg-indigo-600 text-white py-1.5 rounded-lg text-[10px] font-bold hover:bg-indigo-700 transition shadow-sm">Approve</button>
-                                                                        </form>
-                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                            @csrf @method('PUT')
-                                                                            <input type="hidden" name="status_change_action" value="reject">
-                                                                            <button class="w-full bg-white text-rose-500 border border-rose-100 py-1.5 rounded-lg text-[10px] font-bold hover:bg-rose-50 transition">Reject</button>
-                                                                        </form>
-                                                                    </div>
-                                                                @else
-                                                                    <div class="text-[10px] text-amber-600 font-medium italic bg-amber-100/50 p-2 rounded-lg text-center">
-                                                                        Waiting for Admin approval...
-                                                                    </div>
-                                                                @endif
+                                                                <button @click="editing = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                    <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                </button>
                                                             </div>
-                                                        @elseif(auth()->user()->isStaff() && ($reservation->status === 'approved' || $reservation->status === 'cancelled'))
-                                                            <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 text-center opacity-75">
-                                                                <div class="flex items-center justify-center gap-2 mb-1">
-                                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                                                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Update Locked</span>
-                                                                </div>
-                                                                <p class="text-[9px] text-gray-400">Status is finalized.</p>
-                                                            </div>
-                                                        @else
-                                                            <div x-data="{ status: '{{ $reservation->status }}' }">
-                                                                <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex flex-col gap-2">
-                                                                    @csrf @method('PUT')
-                                                                    <div class="flex gap-2">
-                                                                         <select x-model="status" name="status" class="flex-1 border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                                                                             @foreach(['pending','approved','cancelled'] as $status)
-                                                                                 <option value="{{ $status }}">{{ ucfirst($status) }}</option>
-                                                                             @endforeach
-                                                                         </select>
-                                                                         <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Set</button>
-                                                                    </div>
-                                                                    <div x-show="status === 'cancelled'" x-transition class="mt-2">
-                                                                        <textarea name="cancellation_reason" rows="2" class="w-full border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-rose-50 placeholder-rose-300" placeholder="Reason for cancellation (optional)..."></textarea>
-                                                                    </div>
-                                                                </form>
-                                                                @if($reservation->status === 'cancelled' && $reservation->cancellation_reason)
-                                                                    <div class="mt-2 p-2 bg-rose-50 border border-rose-100 rounded-lg">
-                                                                        <p class="text-[9px] text-rose-800 font-bold uppercase mb-1">Cancellation Reason:</p>
-                                                                        <p class="text-[10px] text-rose-600 italic">"{{ $reservation->cancellation_reason }}"</p>
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                        @endif
-                                                    </div>
 
+                                                            <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                                                                {{-- Status Control --}}
+                                                                <div class="space-y-4">
+                                                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Global Status Protocol</label>
+                                                                    
+                                                                    @if($reservation->status_update_requested)
+                                                                        <div class="bg-amber-50 rounded-[1.5rem] p-6 border border-amber-100 shadow-sm">
+                                                                            <div class="flex items-center gap-4 mb-4">
+                                                                                <div class="h-10 w-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+                                                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p class="text-[10px] font-black text-amber-800 uppercase tracking-widest">Override Requested</p>
+                                                                                    <p class="text-xs font-bold text-amber-600">Level: {{ ucfirst($reservation->status_update_requested) }}</p>
+                                                                                </div>
+                                                                            </div>
 
-
-
-
-                                                    @php $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); @endphp
-                                                    @if(($isAdmin || $reservation->status === 'pending') && $reservation->status !== 'cancelled')
-                                                        {{-- Discount Management --}}
-                                                    <div class="mb-5">
-                                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">Discount Management</label>
-
-                                                        @if($reservation->discount_percentage > 0)
-                                                            <div class="mb-3">
-                                                                @if($reservation->discount_status === 'approved')
-                                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                                        Approved
-                                                                    </span>
-                                                                @elseif($reservation->discount_status === 'rejected')
-                                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100">
-                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                                        Rejected
-                                                                    </span>
-                                                                @else
-                                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100">
-                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                                        Pending Approval
-                                                                    </span>
-                                                                @endif
-
-                                                                @if($reservation->discount_status === 'pending' && $isAdmin)
-                                                                    <div class="mt-2 flex gap-2 relative z-10">
-                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                            @csrf @method('PUT')
-                                                                            <input type="hidden" name="discount_action" value="approve">
-                                                                            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 uppercase transition-colors shadow-sm shadow-indigo-200 flex items-center justify-center gap-1">
-                                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                                                Approve
-                                                                            </button>
-                                                                        </form>
-                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                            @csrf @method('PUT')
-                                                                            <input type="hidden" name="discount_action" value="reject">
-                                                                            <button class="w-full bg-white text-rose-500 border border-rose-100 py-2 rounded-lg text-xs font-bold hover:bg-rose-50 uppercase transition-colors flex items-center justify-center gap-1">
-                                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                                                Reject
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                        @endif
-
-                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex gap-2 items-center">
-                                                            @csrf @method('PUT')
-                                                            <div class="relative flex-1 group">
-                                                                <input type="number" name="discount_percentage" min="0" max="100" value="{{ $reservation->discount_percentage }}" class="w-full border-gray-200 rounded-xl text-xs bg-gray-50 focus:bg-white pl-3 pr-8 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-bold text-gray-700" placeholder="0">
-                                                                <span class="absolute right-3 top-2.5 text-xs font-bold text-gray-400 group-hover:text-indigo-400 transition-colors">%</span>
-                                                            </div>
-                                                            <button class="bg-indigo-600 text-white border border-transparent px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200">
-                                                                {{ $isAdmin ? 'Set' : 'Suggest' }}
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                    @endif
-
-                                                    {{-- Reprint Control --}}
-                                                    @if($reservation->status === 'approved')
-                                                        <div class="pt-5 border-t border-gray-100 mt-5">
-                                                            <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">Invoice Printing</label>
-                                                            
-                                                            @if($reservation->invoice_reprint_status === 'requested')
-                                                                <div class="bg-orange-50 rounded-xl p-3 border border-orange-100 shadow-sm relative overflow-hidden">
-                                                                    <div class="flex items-center gap-2 mb-3">
-                                                                        <div class="p-1.5 bg-orange-100 text-orange-600 rounded-lg">
-                                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                            @if(auth()->user()->isAdmin())
+                                                                                <div class="flex gap-3">
+                                                                                    <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                                        @csrf @method('PUT')
+                                                                                        <input type="hidden" name="status_change_action" value="approve">
+                                                                                        <button class="w-full bg-indigo-600 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-indigo-100 active:scale-95 leading-none">Authorize</button>
+                                                                                    </form>
+                                                                                    <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                                        @csrf @method('PUT')
+                                                                                        <input type="hidden" name="status_change_action" value="reject">
+                                                                                        <button class="w-full bg-white text-rose-500 border-2 border-rose-100 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all active:scale-95 leading-none">Deny</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            @else
+                                                                                <div class="text-[10px] font-black text-amber-400 uppercase text-center py-4 bg-white/50 rounded-xl italic">Awaiting Terminal Command from Administrator</div>
+                                                                            @endif
                                                                         </div>
-                                                                        <p class="text-xs font-bold text-orange-800 uppercase tracking-wide">Reprint Requested</p>
-                                                                    </div>
-
-                                                                    @if(auth()->user()->isAdmin())
-                                                                        <div class="flex gap-2">
-                                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                                @csrf @method('PUT')
-                                                                                <input type="hidden" name="reprint_action" value="approve">
-                                                                                <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 flex items-center justify-center gap-1">
-                                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                                                    Approve
-                                                                                </button>
-                                                                            </form>
-                                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
-                                                                                @csrf @method('PUT')
-                                                                                <input type="hidden" name="reprint_action" value="reject">
-                                                                                <button class="w-full bg-white text-rose-500 border border-rose-100 py-2 rounded-lg text-xs font-bold hover:bg-rose-50 transition flex items-center justify-center gap-1">
-                                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                                                    Reject
-                                                                                </button>
-                                                                            </form>
+                                                                    @elseif(auth()->user()->isStaff() && ($reservation->status === 'approved' || $reservation->status === 'cancelled'))
+                                                                        <div class="bg-gray-50 rounded-[1.5rem] p-6 border border-gray-100 text-center flex items-center justify-center gap-3">
+                                                                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                                                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Protocol Finalized & Locked</span>
                                                                         </div>
                                                                     @else
-                                                                        <div class="text-xs text-orange-600 font-medium italic bg-orange-100/50 p-2 rounded-lg text-center">
-                                                                            Waiting for Admin approval...
+                                                                        <div x-data="{ status: '{{ $reservation->status }}' }">
+                                                                            <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="space-y-4">
+                                                                                @csrf @method('PUT')
+                                                                                <div class="flex gap-3">
+                                                                                     <select x-model="status" name="status" class="flex-1 border-gray-100 rounded-2xl text-[13px] bg-gray-50/50 py-4 px-6 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 font-bold transition-all">
+                                                                                         @foreach(['pending','approved','cancelled'] as $status)
+                                                                                             <option value="{{ $status }}">{{ ucfirst($status) }}</option>
+                                                                                         @endforeach
+                                                                                     </select>
+                                                                                     <button class="bg-indigo-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-indigo-100 active:scale-95 leading-none">Execute</button>
+                                                                                </div>
+                                                                                <div x-show="status === 'cancelled'" x-transition class="animate-fade-in-down">
+                                                                                    <textarea name="cancellation_reason" rows="2" class="w-full border-gray-100 rounded-2xl text-[13px] bg-rose-50/30 py-4 px-6 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 font-bold transition-all placeholder:text-rose-200" placeholder="State reason for cancellation..."></textarea>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
                                                                     @endif
                                                                 </div>
-                                                            @elseif($reservation->invoice_print_count > 0 && $reservation->invoice_reprint_status !== 'approved' && !auth()->user()->isAdmin())
-                                                                <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST">
-                                                                    @csrf @method('PUT')
-                                                                    <input type="hidden" name="reprint_action" value="request">
-                                                                    <button type="submit" class="w-full bg-gray-50 text-gray-600 border border-gray-200 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2 group">
-                                                                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                                                        Request Reprint
-                                                                    </button>
-                                                                </form>
-                                                            @endif
-                                                        </div>
-                                                    @endif
 
-                                                    @if(auth()->user()->isAdmin() || auth()->user()->isAccountant() || $reservation->status === 'pending')
-                                                        <div class="pt-5 border-t border-rose-100 mt-5">
-                                                            <div class="flex items-center justify-between mb-2">
-                                                                <label class="block text-[10px] font-bold text-rose-500 uppercase tracking-widest">Danger Zone</label>
-                                                                <span class="text-[9px] text-rose-400 italic">Auth Required</span>
-                                                            </div>
+                                                                {{-- Financial Adjustments --}}
+                                                                @php $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); @endphp
+                                                                @if(($isAdmin || $reservation->status === 'pending') && $reservation->status !== 'cancelled')
+                                                                    <div class="space-y-4 bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50">
+                                                                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Financial Discounts</label>
 
-                                                            {{-- Reset Data (Partial Deletion) --}}
-                                                            @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
-                                                                <form action="{{ route('admin.front-desk.reset', $reservation) }}" method="POST" class="mb-4 pb-4 border-b border-rose-100/30">
-                                                                    @csrf
-                                                                    <div class="flex flex-col gap-2">
-                                                                        <input type="password" name="password" required placeholder="Password for Reset" 
-                                                                               class="w-full border-gray-100 rounded-xl text-[10px] bg-white pr-10 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 placeholder-rose-200 py-2">
-                                                                        <button type="submit" onclick="return confirm('Clear all check-in/out & payment data for this stay?')"
-                                                                                class="w-full bg-white text-rose-600 border border-rose-100 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider hover:bg-rose-50 transition">
-                                                                            Reset Operations
+                                                                        @if($reservation->discount_percentage > 0)
+                                                                            <div class="flex items-center gap-3 mb-4">
+                                                                                @if($reservation->discount_status === 'approved')
+                                                                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-200">Authorized: {{ number_format($reservation->discount_percentage, 1) }}%</span>
+                                                                                @elseif($reservation->discount_status === 'rejected')
+                                                                                     <span class="px-3 py-1 bg-rose-100 text-rose-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-rose-200">Denied</span>
+                                                                                @else
+                                                                                    <span class="px-3 py-1 bg-amber-100 text-amber-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-amber-200 animate-pulse">Pending Review: {{ number_format($reservation->discount_percentage, 1) }}%</span>
+                                                                                @endif
+
+                                                                                @if($reservation->discount_status === 'pending' && $isAdmin)
+                                                                                    <div class="flex gap-2">
+                                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="discount_action" value="approve">
+                                                                                            <button class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all">Grant</button>
+                                                                                        </form>
+                                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="discount_action" value="reject">
+                                                                                            <button class="px-3 py-1 bg-white text-rose-600 border border-rose-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all">Revoke</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+
+                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="space-y-4">
+                                                                            @csrf @method('PUT')
+                                                                            <div class="flex gap-3">
+                                                                                <div class="relative flex-1">
+                                                                                    <input type="number" name="discount_percentage" min="0" max="100" value="{{ $reservation->discount_percentage }}" class="w-full border-gray-100 rounded-2xl text-[13px] bg-white py-4 px-6 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 font-bold transition-all tabular-nums" placeholder="Percentage %">
+                                                                                    <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300 tracking-widest">%</span>
+                                                                                </div>
+                                                                                <button class="bg-gray-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all leading-none">{{ $isAdmin ? 'Apply' : 'Suggest' }}</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                @endif
+
+                                                                {{-- Hardware Interface: Printer --}}
+                                                                @if($reservation->status === 'approved')
+                                                                    <div class="space-y-4 bg-gray-900 text-white p-6 rounded-[2rem] border border-white/10">
+                                                                        <label class="text-[10px] font-black text-white/30 uppercase tracking-widest px-1">Hardware Interface: Invoice Clearance</label>
+                                                                        
+                                                                        @if($reservation->invoice_reprint_status === 'requested')
+                                                                            <div class="bg-white/5 rounded-2xl p-5 border border-white/10">
+                                                                                <p class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                                                    Manual Reprint Request Detected
+                                                                                </p>
+                                                                                @if(auth()->user()->isAdmin())
+                                                                                    <div class="flex gap-3">
+                                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="reprint_action" value="approve">
+                                                                                            <button class="w-full bg-white text-gray-900 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all active:scale-95 leading-none">Authorize</button>
+                                                                                        </form>
+                                                                                        <form method="POST" action="{{ route('admin.reservations.update', $reservation) }}" class="flex-1">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="reprint_action" value="reject">
+                                                                                            <button class="w-full bg-transparent border border-white/20 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all active:scale-95 leading-none">Deny</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @else
+                                                                                    <div class="text-[10px] font-black text-white/40 uppercase text-center py-4 bg-white/5 rounded-xl italic">Awaiting Terminal Command from Administrator</div>
+                                                                                @endif
+                                                                            </div>
+                                                                        @elseif($reservation->invoice_print_count > 0 && $reservation->invoice_reprint_status !== 'approved' && !auth()->user()->isAdmin())
+                                                                            <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST">
+                                                                                @csrf @method('PUT')
+                                                                                <input type="hidden" name="reprint_action" value="request">
+                                                                                <button type="submit" class="w-full bg-white text-gray-900 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all shadow-xl active:scale-95 leading-none">Request Reprint Token</button>
+                                                                            </form>
+                                                                        @else
+                                                                            <div class="text-[10px] font-black text-emerald-400 uppercase text-center py-4 bg-emerald-400/5 rounded-xl tracking-widest">Printer Status: Ready for Initialization</div>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
+
+                                                                {{-- Danger Zone --}}
+                                                                <div class="pt-4 space-y-4">
+                                                                    <div class="flex items-center gap-2 px-1">
+                                                                        <div class="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
+                                                                        <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Restricted Operations</label>
+                                                                    </div>
+                                                                    
+
+
+                                                                    <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="space-y-4">
+                                                                        @csrf @method('DELETE')
+                                                                        <div class="space-y-2.5">
+                                                                            <input type="password" name="password" required placeholder="Confirm Destruction" 
+                                                                                   class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
+                                                                        </div>
+                                                                        <button type="submit" onclick="return confirm('CRITICAL: Permanently delete this reservation?')"
+                                                                                class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 leading-none">
+                                                                            Delete Permanent Record
                                                                         </button>
-                                                                    </div>
-                                                                </form>
-                                                            @endif
-                                                            <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="space-y-3">
-                                                                @csrf @method('DELETE')
-                                                                <div class="relative">
-                                                                    <input type="password" name="password" required placeholder="Enter password to delete" 
-                                                                           class="w-full border-gray-200 rounded-xl text-xs bg-rose-50/30 pr-10 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 placeholder-rose-300">
-                                                                    <div class="absolute right-3 top-2.5 text-rose-400/50">
-                                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                                                    </div>
+                                                                    </form>
                                                                 </div>
-                                                                @error('password')
-                                                                    <p class="text-[9px] text-rose-600 font-bold mt-1 px-1">{{ $message }}</p>
-                                                                @enderror
-                                                                <button type="submit" class="w-full bg-rose-600 text-white py-2 rounded-xl text-[10px] font-bold hover:bg-rose-700 transition shadow-md shadow-rose-200 flex items-center justify-center gap-2">
-                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                                    Permanently Delete
-                                                                </button>
-                                                            </form>
+                                                            </div>
+                                                            <div class="bg-gray-50/50 p-6 text-center border-t border-gray-50">
+                                                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">System Integrity Verified • Terminal {{ auth()->id() }}</p>
+                                                            </div>
                                                         </div>
-                                                    @endif
-                                                </div>
+                                                    </div>
+                                                </template>
                                             </div>
                                         </div>
                                     </td>
