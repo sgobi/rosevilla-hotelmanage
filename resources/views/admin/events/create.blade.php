@@ -24,7 +24,7 @@
                                     <p class="mt-1 text-sm text-rose-600">{{ $errors->first('conflict') }}</p>
                                     @if($errors->has('conflict_details'))
                                         <div class="mt-2 text-xs text-rose-500 bg-rose-100 p-2 rounded">
-                                            Time: {{ \Carbon\Carbon::parse($errors->first('conflict_details')->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($errors->first('conflict_details')->end_time)->format('h:i A') }}
+                                            Time: {{ $errors->first('conflict_details') }}
                                         </div>
                                     @endif
                                 </div>

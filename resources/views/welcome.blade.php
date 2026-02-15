@@ -251,55 +251,7 @@
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-rose-dark text-white py-16 border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                <!-- Col 1 -->
-                <div>
-                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Rose Villa</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        A heritage home in Jaffna offering a unique blend of history, culture, and luxury living.
-                    </p>
-                </div>
-                 <!-- Col 2 -->
-                 <div>
-                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Navigation</h4>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">Home</a></li>
-                        <li><a href="#" class="hover:text-white transition">The Villa</a></li>
-                        <li><a href="#" class="hover:text-white transition">Rooms</a></li>
-                        <li><a href="#" class="hover:text-white transition">Gallery</a></li>
-                    </ul>
-                </div>
-                 <!-- Col 3 -->
-                 <div>
-                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Contact</h4>
-                    <address class="not-italic">
-                        <ul class="space-y-3 text-sm text-gray-400">
-                            <li>123 Heritage Lane, Jaffna</li>
-                            <li><a href="tel:+94771234567" class="hover:text-white transition">+94 77 123 4567</a></li>
-                            <li><a href="mailto:info@rosevilla.com" class="hover:text-white transition">info@rosevilla.com</a></li>
-                        </ul>
-                    </address>
-                </div>
-                 <!-- Col 4 -->
-                 <div>
-                    <h4 class="font-serif text-lg mb-6 uppercase tracking-widest text-rose-gold">Follow Us</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Facebook"><i class="fab fa-facebook-f"></i> FB</a>
-                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Instagram"><i class="fab fa-instagram"></i> IG</a>
-                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Twitter"><i class="fab fa-twitter"></i> TW</a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500 uppercase tracking-widest">
-                <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.</p>
-                <div class="mt-4 text-xs font-semibold text-white normal-case opacity-90">
-                    Powered by Gobikrishna Subramaniyam (BEng (Hons)) | Mobile: <a href="tel:+94766383402" class="text-rose-gold hover:text-white transition">+94 76 638 3402</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <x-footer />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">

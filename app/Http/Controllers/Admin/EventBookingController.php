@@ -15,9 +15,34 @@ class EventBookingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $bookings = EventBooking::latest()->get();
+        $query = EventBooking::query();
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('customer_name', 'like', "%{$search}%")
+                  ->orWhere('customer_email', 'like', "%{$search}%")
+                  ->orWhere('customer_phone', 'like', "%{$search}%")
+                  ->orWhere('event_type', 'like', "%{$search}%");
+            });
+        }
+
+        // Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'created_at');
+        $direction = $request->get('direction', 'desc');
+        
+        $query->orderBy($sort, $direction);
+
+        $bookings = $query->paginate(15)->withQueryString();
+
         return view('admin.events.index', compact('bookings'));
     }
 
@@ -86,7 +111,7 @@ class EventBookingController extends Controller
         ]);
 
         // Check for conflicts
-        $conflict = EventBooking::where('event_date', $validated['event_date'])
+        $conflict = EventBooking::whereDate('event_date', $validated['event_date'])
             ->where('status', '!=', 'cancelled')
             ->where('status', '!=', 'rejected')
             ->where(function ($query) use ($validated) {
@@ -98,7 +123,7 @@ class EventBookingController extends Controller
         if ($conflict && !$request->has('force_conflict')) {
             return back()->withInput()->withErrors([
                 'conflict' => 'This time slot overlaps with an existing booking (' . $conflict->event_type . ').',
-                'conflict_details' => $conflict
+                'conflict_details' => $conflict->start_time->format('h:i A') . ' - ' . $conflict->end_time->format('h:i A')
             ]);
         }
 
@@ -325,7 +350,7 @@ class EventBookingController extends Controller
         ]);
 
         // Check for conflicts excluding this event
-        $conflict = EventBooking::where('event_date', $validated['event_date'])
+        $conflict = EventBooking::whereDate('event_date', $validated['event_date'])
             ->where('id', '!=', $event->id)
             ->where('status', '!=', 'cancelled')
             ->where('status', '!=', 'rejected')
@@ -337,7 +362,8 @@ class EventBookingController extends Controller
 
         if ($conflict) {
              return back()->withInput()->withErrors([
-                'conflict' => 'This time slot overlaps with an existing booking (' . $conflict->event_type . ').',
+                 'conflict' => 'This time slot overlaps with an existing booking (' . $conflict->event_type . ').',
+                 'conflict_details' => $conflict->start_time->format('h:i A') . ' - ' . $conflict->end_time->format('h:i A')
             ]);
         }
 

@@ -90,7 +90,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa Heritage Homes is centrally located at 123 Heritage Lane, Jaffna, in the Northern Province of Sri Lanka. We are situated in the historic heart of Jaffna, within walking distance of major cultural landmarks including Jaffna Fort, Nallur Kandaswamy Temple, and the Jaffna Public Library. The property is approximately 15 minutes from Jaffna International Airport (KKS) and easily accessible from all parts of the city.
+                                    <strong>A:</strong> Rosevilla Heritage Homes is centrally located in Jaffna, Sri Lanka. We are situated in the historic heart of Jaffna, within walking distance of major cultural landmarks including Jaffna Fort, Nallur Kandaswamy Temple, and the Jaffna Public Library. The property is approximately 15 minutes from Jaffna International Airport (KKS) and easily accessible from all parts of the city.
                                 </p>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Booking at Rose Villa is simple and convenient. You can: (1) Book directly through our website reservation form for the best rates, (2) Call us at +94 77 123 4567 to speak with our concierge team, (3) Email us at info@rosevilla.com with your preferred dates, or (4) Book through major travel platforms like Booking.com, Agoda, or Expedia. We recommend booking directly for exclusive perks and personalized service.
+                                    <strong>A:</strong> Booking at Rose Villa is simple and convenient. You can: (1) Book directly through our website reservation form for the best rates, (2) Call us at +94 76 319 3311 or +47 915 38 193 to speak with our concierge team, (3) Email us at stay@rosevillaheritagehomes.com with your preferred dates, or (4) Book through major travel platforms like Booking.com, Agoda, or Expedia. We recommend booking directly for exclusive perks and personalized service.
                                 </p>
                             </div>
                         </div>
@@ -490,13 +490,21 @@
                     Our concierge team is here to help you 24/7
                 </p>
                 <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                    <a href="tel:+94771234567" class="inline-flex items-center gap-3 bg-white text-rose-primary px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-rose-gold hover:text-white transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                        </svg>
-                        Call Us
-                    </a>
-                    <a href="mailto:info@rosevilla.com" class="inline-flex items-center gap-3 bg-white text-rose-primary px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-rose-gold hover:text-white transition">
+                    <div class="flex flex-col gap-2">
+                        <a href="tel:+94763193311" class="inline-flex items-center gap-3 bg-white text-rose-primary px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-rose-gold hover:text-white transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            +94 76 319 3311
+                        </a>
+                        <a href="tel:+4791538193" class="inline-flex items-center gap-3 bg-white text-rose-primary px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-rose-gold hover:text-white transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            +47 915 38 193
+                        </a>
+                    </div>
+                    <a href="mailto:stay@rosevillaheritagehomes.com" class="inline-flex items-center gap-3 bg-white text-rose-primary px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-rose-gold hover:text-white transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
@@ -512,14 +520,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-rose-dark text-white py-12 border-t border-rose-gold/20">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm">&copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.</p>
-            <p class="mt-3 text-xs text-gray-400">
-                Powered by Gobikrishna Subramaniyam (BEng Hons) | Mobile: <a href="tel:+94766383402" class="text-rose-gold hover:text-white transition">+94 76 638 3402</a>
-            </p>
-        </div>
-    </footer>
+    <x-footer />
 
 </body>
 </html>

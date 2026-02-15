@@ -19,7 +19,7 @@ class FixConflictsSeeder extends Seeder
         foreach ($bookings as $booking) {
             // Check for conflicts excluding this event
             $hasConflict = EventBooking::where('id', '!=', $booking->id)
-                ->where('event_date', $booking->event_date)
+                ->whereDate('event_date', $booking->event_date)
                 ->where('status', '!=', 'cancelled')
                 ->where('status', '!=', 'rejected')
                 ->where(function ($query) use ($booking) {
