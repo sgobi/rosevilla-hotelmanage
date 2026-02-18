@@ -8,9 +8,7 @@
                 <!-- Logo Area -->
                 <div class="shrink-0 flex items-center pr-6 lg:pr-12">
                     <a href="{{ route('dashboard') }}" class="transition-all duration-500 hover:scale-105 active:scale-95 group flex items-center gap-4">
-                        <img src="{{ asset('images/logo.png') }}" 
-                             alt="Rose Villa Logo" 
-                             class="block h-10 lg:h-12 w-auto drop-shadow-[0_0_15px_rgba(179,142,93,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(179,142,93,0.5)]">
+                        <x-application-logo :iconOnly="true" class="h-12 w-auto text-rose-gold drop-shadow-[0_0_15px_rgba(179,142,93,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(179,142,93,0.5)]" />
                         <div class="hidden sm:flex flex-col">
                             <span class="text-white text-[13px] font-black uppercase tracking-[0.2em] leading-none mb-1">Rose Villa</span>
                             <span class="text-rose-gold text-[8px] font-black uppercase tracking-[0.4em] leading-none">Administration</span>

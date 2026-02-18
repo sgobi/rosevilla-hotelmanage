@@ -11,7 +11,7 @@
             <!-- Brand Column -->
             <div class="space-y-8 flex flex-col items-center md:items-start text-center md:text-left">
                 <a href="{{ route('home') }}" class="inline-block transform hover:scale-105 transition-transform duration-500">
-                    <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="h-20 w-auto filter brightness-0 invert opacity-90">
+                    <x-application-logo class="w-40 h-auto" />
                 </a>
                 <p class="text-gray-400 text-sm leading-relaxed font-light italic">
                     "A sanctuary of heritage and luxury in the heart of Jaffna. Experience the timeless charm of our colonial home."
@@ -56,7 +56,7 @@
             </div>
 
             <!-- Contact Column -->
-            <div class="flex flex-col items-center md:items-start text-center md:text-left">
+            <div class="flex flex-col items-center md:items-start text-center md::text-left">
                 <h4 class="font-serif text-lg text-rose-gold mb-10 uppercase tracking-[0.2em] relative inline-block">
                     Concierge
                     <span class="absolute -bottom-2 left-0 w-8 h-px bg-rose-gold/50"></span>

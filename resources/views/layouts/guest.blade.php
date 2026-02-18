@@ -39,7 +39,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div class="mb-8 transform hover:scale-105 transition-transform duration-500">
                 <a href="/">
-                    <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="w-32 h-auto">
+                    <x-application-logo :dark="true" class="w-48 h-auto" />
                 </a>
             </div>
 

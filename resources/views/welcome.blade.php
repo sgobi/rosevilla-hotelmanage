@@ -45,10 +45,9 @@
             class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
                 <div class="flex-shrink-0">
-                    <a href="#" class="text-white font-serif text-2xl tracking-widest uppercase hover:text-rose-accent transition">
-                        Rose Villa
+                    <a href="{{ route('home') }}" class="block transform transition hover:scale-105">
+                         <x-application-logo class="w-40 h-auto" />
                     </a>
                 </div>
                 
@@ -91,7 +90,7 @@
                 <!-- Mobile Menu Header -->
                 <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
                     <div class="flex-grow flex justify-center pl-10">
-                        <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="h-12 w-auto drop-shadow-lg">
+                        <x-application-logo class="w-24 h-auto" />
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/10 border border-white/10 text-white transition-all active:scale-90">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>

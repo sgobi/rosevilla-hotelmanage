@@ -62,11 +62,9 @@
                 <!-- Logo -->
                 <div class="flex-shrink-0">
                     <a href="{{ route('home') }}" class="block transition-all duration-500 hover:brightness-110 active:scale-95">
-                         <img src="{{ asset('images/logo.png') }}" 
-                              alt="Rose Villa Logo" 
-                              class="h-12 lg:h-16 transition-all duration-700 filter drop-shadow-md"
-                              :class="{ 'h-10': scrolled, 'h-12 lg:h-16': !scrolled }"
-                              loading="eager">
+                         <x-application-logo 
+                               class="transition-all duration-700"
+                               ::class="{ 'scale-75': scrolled }" />
                     </a>
                 </div>
                 
@@ -161,7 +159,7 @@
                 <!-- Mobile Menu Header -->
                 <div class="flex items-center justify-between p-6 border-b border-white/5 bg-[#121212]">
                     <div class="flex-grow flex justify-center pl-10">
-                        <img src="{{ asset('images/logo.png') }}" alt="Rose Villa Logo" class="h-12 w-auto drop-shadow-lg">
+                        <x-application-logo class="w-32 h-auto" />
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:text-rose-gold transition-all active:scale-90">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -331,32 +329,7 @@
                 {{ $content['about_text'] ?? __("Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.") }}
             </p>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mt-16 text-[10px] font-black uppercase tracking-[0.3em] text-rose-gold/80">
-                <div class="flex flex-col items-center group">
-                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    </div>
-                    <span class="group-hover:text-white transition-colors">{{ __('Heritage Living') }}</span>
-                </div>
-                <div class="flex flex-col items-center group">
-                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:-rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </div>
-                    <span class="group-hover:text-white transition-colors">{{ __('Authentic Cuisine') }}</span>
-                </div>
-                <div class="flex flex-col items-center group">
-                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </div>
-                    <span class="group-hover:text-white transition-colors">{{ __('Lush Gardens') }}</span>
-                </div>
-                <div class="flex flex-col items-center group">
-                    <div class="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-rose-gold group-hover:border-rose-gold group-hover:text-white group-hover:-rotate-12 transition-all duration-700 text-rose-gold shadow-2xl">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <span class="group-hover:text-white transition-colors">{{ __('Curated Tours') }}</span>
-                </div>
-            </div>
+
         </div>
     </section>
 
