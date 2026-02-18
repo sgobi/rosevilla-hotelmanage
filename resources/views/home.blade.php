@@ -74,31 +74,58 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3 relative">
                 <div class="flex justify-between items-center">
                     <!-- Transport Links -->
-                    <div class="flex items-center gap-4 md:gap-10">
+                    <div class="flex items-center gap-4 md:gap-7 lg:gap-8">
                         <!-- Jaffna Town -->
-                        <div class="flex items-center gap-3 group/item cursor-default">
+                        <div class="flex items-center gap-2.5 group/item cursor-default">
                             <div class="relative">
-                                <span class="text-xl md:text-2xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
+                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
                                 <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-[8px] md:text-[9px] font-black text-rose-gold/60 uppercase tracking-[0.3em] mb-0.5">{{ __('Jaffna Town') }}</span>
-                                <span class="text-[10px] md:text-[11px] font-bold text-white uppercase tracking-wider">{{ __('10-15 Mins') }} <span class="text-white/40 font-light lowercase text-[9px]">{{ __('reach time') }}</span></span>
+                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Town') }}</span>
+                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
                             </div>
                         </div>
 
-                        <!-- Separator -->
-                        <div class="hidden sm:block w-px h-8 bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+                        <div class="h-6 w-px bg-white/10 hidden sm:block"></div>
 
                         <!-- Palaly Airport -->
-                        <div class="flex items-center gap-3 group/item cursor-default">
+                        <div class="flex items-center gap-2.5 group/item cursor-default">
                             <div class="relative">
-                                <span class="text-xl md:text-2xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
+                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
                                 <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-[8px] md:text-[9px] font-black text-rose-gold/60 uppercase tracking-[0.3em] mb-0.5">{{ __('Palaly International Airport') }}</span>
-                                <span class="text-[10px] md:text-[11px] font-bold text-white uppercase tracking-wider">{{ __('15-20 Mins') }} <span class="text-white/40 font-light lowercase text-[9px]">{{ __('reach time') }}</span></span>
+                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Airport') }}</span>
+                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="h-6 w-px bg-white/10 hidden lg:block"></div>
+
+                        <!-- Railway Station -->
+                        <div class="flex items-center gap-2.5 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-6">🚆</span>
+                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Railway') }}</span>
+                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="h-6 w-px bg-white/10 hidden xl:block"></div>
+
+                        <!-- Bus Stand -->
+                        <div class="flex items-center gap-2.5 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-6">🚌</span>
+                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Bus Stand') }}</span>
+                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
                             </div>
                         </div>
                     </div>
@@ -138,47 +165,48 @@
                     </a>
                 </div>
                 
-                <!-- Navigation -->
-                <nav class="hidden lg:flex space-x-6 xl:space-x-8 items-center">
-                    @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Contact' => '#contact'] as $label => $link)
-                        <a href="{{ $link }}" class="relative text-xs tracking-widest font-black uppercase transition-all duration-300 hover:text-rose-gold group" aria-label="{{ $label }}">
-                            {{ __($label) }}
-                            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-rose-gold transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                    @endforeach
-                    
+                <!-- Navigation Links (Centered) -->
+                <nav class="hidden md:flex flex-grow justify-center px-8">
+                    <div class="flex items-center gap-x-8 lg:gap-x-16">
+                        @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Contact Us' => '#concierge'] as $label => $link)
+                            <a href="{{ $link }}" class="relative text-[12px] tracking-[0.2em] font-black text-white uppercase transition-all duration-300 hover:text-rose-gold group drop-shadow-md whitespace-nowrap" aria-label="{{ $label }}">
+                                {{ __($label) }}
+                                <span class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-rose-gold transition-all duration-500 group-hover:w-full rounded-full shadow-[0_0_8px_rgba(179,142,93,0.8)]"></span>
+                            </a>
+                        @endforeach
+                    </div>
+                </nav>
+
+                <!-- Action Buttons (Right) -->
+                <div class="hidden md:flex items-center gap-x-3 lg:gap-x-5 flex-shrink-0">
                     <!-- Currency Switcher -->
-                    <div class="relative group ml-4" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/20">
-                            <span class="opacity-100">
-                                {{ session('currency', 'LKR') }}
-                            </span>
+                    <div class="relative group" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2.5 rounded-full bg-white/20">
+                            {{ session('currency', 'LKR') }}
                             <svg class="w-3 h-3 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div x-show="open" x-cloak @click.away="open = false" 
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="absolute right-0 mt-4 w-40 bg-white rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                             class="absolute right-0 mt-4 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
                             @foreach(['LKR' => 'Sri Lankan Rupee', 'USD' => 'US Dollar', 'EUR' => 'Euro', 'CAD' => 'Canadian Dollar', 'INR' => 'Indian Rupee'] as $code => $name)
-                                <a href="{{ route('currency.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }} ({{ $code }})</a>
+                                <a href="{{ route('currency.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ session('currency', 'LKR') == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }}</a>
                             @endforeach
                         </div>
                     </div>
 
                     <!-- Language Switcher -->
-                    <div class="relative group ml-4" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2 rounded-full bg-white/20">
-                            <span class="opacity-100 uppercase">
-                                {{ app()->getLocale() }}
-                            </span>
+                    <div class="relative group" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-rose-gold text-[0.65rem] font-black uppercase transition border border-white/20 px-3.5 py-2.5 rounded-full bg-white/20">
+                            {{ strtoupper(app()->getLocale()) }}
                             <svg class="w-3 h-3 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div x-show="open" x-cloak @click.away="open = false" 
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="absolute right-0 mt-4 w-40 bg-white rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
+                             class="absolute right-0 mt-4 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden py-2 z-50 border border-gray-100">
                             @foreach(['en' => 'English', 'fr' => 'Français', 'hi' => 'हिन्दी', 'si' => 'සිංහල', 'ta' => 'தமிழ்'] as $code => $name)
                                 <a href="{{ route('lang.switch', $code) }}" class="block px-5 py-3 text-[10px] font-black text-gray-800 hover:bg-rose-50 hover:text-rose-primary transition uppercase tracking-widest {{ app()->getLocale() == $code ? 'text-rose-gold border-r-4 border-rose-gold' : '' }}">{{ $name }}</a>
                             @endforeach
@@ -186,20 +214,20 @@
                     </div>
 
                     <!-- Book Now Button -->
-                    <a href="#reservation" class="ml-6 bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[0.7rem] font-black uppercase px-8 py-4 tracking-[0.2em] transition-all duration-500 shadow-[0_10px_30px_-10px_rgba(179,142,93,0.5)] hover:shadow-xl active:scale-95 rounded-2xl">
+                    <a href="#reservation" class="bg-rose-gold hover:bg-white hover:text-rose-primary text-white text-[11px] font-black uppercase px-7 py-3 tracking-[0.1em] transition-all duration-500 shadow-[0_10px_30px_-10px_rgba(179,142,93,0.5)] hover:shadow-xl active:scale-95 rounded-xl border border-rose-gold hover:border-white whitespace-nowrap">
                         {{ __('Reserve Now') }}
                     </a>
 
                     @auth
-                        <a href="{{ route('dashboard') }}" class="ml-4 bg-white/10 hover:bg-white hover:text-gray-900 text-white text-[0.6rem] font-black uppercase px-6 py-3.5 tracking-[0.2em] transition-all duration-500 border border-white/20 rounded-2xl flex items-center gap-2">
+                        <a href="{{ route('dashboard') }}" class="bg-white/10 hover:bg-white hover:text-gray-900 text-white text-[10px] font-black uppercase px-4 py-3 tracking-[0.1em] transition-all duration-500 border border-white/20 rounded-xl flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                             {{ __('Staff Portal') }}
                         </a>
                     @endauth
-                </nav>
+                </div>
 
                 <!-- Mobile Menu Button -->
-                <div class="flex items-center lg:hidden gap-3">
+                <div class="flex items-center md:hidden gap-3">
                     @auth
                         <a href="{{ route('dashboard') }}" class="p-3 rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 active:scale-90 transition-all">
                             <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -246,7 +274,7 @@
                                 ['label' => 'Gallery', 'link' => '#gallery', 'sub' => 'Visual Tour', 'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
                                 ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
                                 ['label' => 'Events', 'link' => '#events', 'sub' => 'Celebrations', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z'],
-                                ['label' => 'Contact', 'link' => '#contact', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                                ['label' => 'Contact Us', 'link' => '#concierge', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                             ];
                         @endphp
 
@@ -940,7 +968,7 @@
                     <div>
                         <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Jaffna Town') }}</h4>
                         <p class="text-gray-500 text-sm font-light leading-relaxed">
-                            {{ __('Approximately 10 to 15 minutes by car or Tuk-Tuk, depending on traffic conditions.') }}
+                            {{ __('Approximately :time by car or Tuk-Tuk, depending on traffic conditions.', ['time' => $content['reach_time_jaffna'] ?? '10 to 15 minutes']) }}
                         </p>
                     </div>
                 </div>
@@ -952,7 +980,7 @@
                     <div>
                         <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Palaly Airport') }}</h4>
                         <p class="text-gray-500 text-sm font-light leading-relaxed">
-                            {{ __('Approximately 15 to 20 minutes reaching time to the villa from Jaffna International Airport.') }}
+                            {{ __('Approximately :time reaching time to the villa from Jaffna International Airport.', ['time' => $content['reach_time_airport'] ?? '15 to 20 minutes']) }}
                         </p>
                     </div>
                 </div>

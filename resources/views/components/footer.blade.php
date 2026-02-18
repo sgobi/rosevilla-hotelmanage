@@ -9,7 +9,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
             <!-- Brand Column -->
-            <div class="space-y-8 flex flex-col items-center md:items-start text-center md:text-left">
+            <div id="contact" class="space-y-8 flex flex-col items-center md:items-start text-center md:text-left">
                 <a href="{{ route('home') }}" class="inline-block transform hover:scale-105 transition-transform duration-500">
                     <x-application-logo class="w-40 h-auto" />
                 </a>
@@ -56,7 +56,7 @@
             </div>
 
             <!-- Contact Column -->
-            <div class="flex flex-col items-center md:items-start text-center md::text-left">
+            <div id="concierge" class="flex flex-col items-center md:items-start text-center md::text-left">
                 <h4 class="font-serif text-lg text-rose-gold mb-10 uppercase tracking-[0.2em] relative inline-block">
                     Concierge
                     <span class="absolute -bottom-2 left-0 w-8 h-px bg-rose-gold/50"></span>
@@ -78,6 +78,12 @@
                             <a href="tel:+94763193311" class="text-gray-400 group-hover:text-white transition-colors">+94 76 319 3311</a>
                             <a href="tel:+4791538193" class="text-gray-400 group-hover:text-white transition-colors">+47 915 38 193</a>
                         </div>
+                    </li>
+                    <li class="flex flex-col md:flex-row items-center md:items-start gap-4 group">
+                        <div class="text-rose-gold shrink-0 mt-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </div>
+                        <a href="mailto:stay@rosevillaheritagehomes.com" class="text-gray-400 group-hover:text-white transition-colors break-all">stay@rosevillaheritagehomes.com</a>
                     </li>
                 </ul>
             </div>

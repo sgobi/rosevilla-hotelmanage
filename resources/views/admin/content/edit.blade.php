@@ -87,6 +87,22 @@
                             <span>Your Location Gmap URL (Embed Iframe URL)</span>
                             <input name="map_embed" class="w-full border rounded px-3 py-2" value="{{ old('map_embed', $content['map_embed'] ?? '') }}" placeholder="Paste the 'src' link from Google Maps Share > Embed a map">
                         </label>
+                        <label class="text-sm text-gray-700 space-y-1">
+                            <span>Reach time from Jaffna Town</span>
+                            <input name="reach_time_jaffna" class="w-full border rounded px-3 py-2" value="{{ old('reach_time_jaffna', $content['reach_time_jaffna'] ?? '10-15 Mins') }}" placeholder="e.g. 10-15 Mins">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
+                            <span>Reach time from Palaly Airport</span>
+                            <input name="reach_time_airport" class="w-full border rounded px-3 py-2" value="{{ old('reach_time_airport', $content['reach_time_airport'] ?? '15-20 Mins') }}" placeholder="e.g. 15-20 Mins">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
+                            <span>Reach time from Railway Station</span>
+                            <input name="reach_time_railway" class="w-full border rounded px-3 py-2" value="{{ old('reach_time_railway', $content['reach_time_railway'] ?? '5-10 Mins') }}" placeholder="e.g. 5-10 Mins">
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1">
+                            <span>Reach time from Bus Stand</span>
+                            <input name="reach_time_bus" class="w-full border rounded px-3 py-2" value="{{ old('reach_time_bus', $content['reach_time_bus'] ?? '5-10 Mins') }}" placeholder="e.g. 5-10 Mins">
+                        </label>
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
                             <span>Invoice Signature</span>
                             @if($content['signature_path'] ?? null)

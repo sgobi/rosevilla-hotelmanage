@@ -5,9 +5,11 @@
         $logoPath = \App\Models\ContentSetting::getValue('logo_path');
     @endphp
 
-    @if($logoPath && !$iconOnly)
-        <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" class="h-full w-auto">
+    @if($logoPath)
+        {{-- Use uploaded logo if available --}}
+        <img src="{{ asset('storage/' . $logoPath) }}" alt="Rose Villa Logo" {{ $attributes->merge(['class' => 'h-full w-auto object-contain transition-all duration-700']) }}>
     @else
+        {{-- Fallback to SVG/CSS logo --}}
         <div class="relative flex flex-col items-center">
             @if($iconOnly)
                 <!-- Just the icon for navigation/etc -->
@@ -17,12 +19,12 @@
                     <path d="M50 60C50 60 65 50 65 45C65 40 60 38 55 42L50 45L45 42C40 38 35 40 35 45C35 50 50 60 50 60Z" fill="currentColor"/>
                 </svg>
             @else
-                <!-- Full Layout as per screenshot: ROSE [Icon] VILLA -->
+                <!-- Full Layout: ROSE [Icon] VILLA -->
                 <div class="flex flex-col items-center">
                     <div class="flex items-center gap-4 sm:gap-6">
                         <span class="font-serif text-2xl sm:text-4xl {{ $dark ? 'text-gray-900' : 'text-white' }} uppercase tracking-[0.2em] leading-none">Rose</span>
                         
-                        <!-- Central Rose Icon (Sketch Style) -->
+                        <!-- Central Rose Icon -->
                         <div class="w-12 h-12 sm:w-16 sm:h-16 text-rose-gold">
                             <svg viewBox="0 0 100 100" class="w-full h-full fill-none stroke-current" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 85C30 75 15 60 15 40C15 25 30 15 50 30C70 15 85 25 85 40C85 60 70 75 50 85Z" stroke-width="1.5" stroke-linecap="round"/>
