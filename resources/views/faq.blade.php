@@ -295,7 +295,22 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa is approximately 12 kilometers (7.5 miles) from Jaffna International Airport (Palaly Airport - KKS), which is about a 15-20 minute drive depending on traffic. We offer airport transfer services for your convenience at competitive rates. Please arrange this at the time of booking.
+                                    <strong>A:</strong> Rose Villa is approximately 12 kilometers (7.5 miles) from Jaffna International Airport (Palaly Airport - KKS). The reaching time to the villa is approximately 15 to 20 minutes by road. We offer airport transfer services for your convenience at competitive rates.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 14 -->
+                    <div class="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                        <h3 class="text-xl font-bold text-rose-accent mb-4 flex items-start gap-3" itemprop="name">
+                            <span class="text-rose-gold">Q:</span>
+                            How far is the villa from Jaffna Town center?
+                        </h3>
+                        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                            <div itemprop="text">
+                                <p class="text-gray-700 leading-relaxed ml-8">
+                                    <strong>A:</strong> Rose Villa is located approximately 6-8 kilometers from Jaffna Town center. The travel time is approximately 10 to 15 minutes by car or Tuk-Tuk, depending on traffic conditions.
                                 </p>
                             </div>
                         </div>

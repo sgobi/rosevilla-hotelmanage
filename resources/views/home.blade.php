@@ -55,9 +55,79 @@
     <!-- Header -->
     <header x-data="{ scrolled: false, mobileMenuOpen: false }" 
             @scroll.window="scrolled = (window.pageYOffset > 50)"
-            :class="{ 'bg-[#1a1c1e] shadow-xl py-3': scrolled, 'bg-gradient-to-b from-black/70 to-transparent py-4 lg:py-6': !scrolled }"
-            class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5 py-4 lg:py-6" style="transform: translateZ(0);">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            :class="{ 'bg-[#1a1c1e] shadow-xl py-3': scrolled, 'bg-gradient-to-b from-black/70 to-transparent py-0': !scrolled }"
+            class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5" style="transform: translateZ(0);">
+        
+        <!-- Premium Top Navigation Bar (Hidden on scroll) -->
+        <div x-show="!scrolled" 
+             x-transition:enter="transition ease-out duration-700" 
+             x-transition:enter-start="opacity-0 -translate-y-full" 
+             x-transition:enter-end="opacity-100 translate-y-0" 
+             x-transition:leave="transition ease-in duration-500" 
+             x-transition:leave-start="opacity-100 translate-y-0" 
+             x-transition:leave-end="opacity-0 -translate-y-full"
+             class="relative bg-black/40 backdrop-blur-xl border-b border-white/10 z-[60] overflow-hidden group/topbar">
+            
+            <!-- Animated Background Glow -->
+            <div class="absolute inset-0 bg-gradient-to-r from-rose-gold/5 via-transparent to-rose-gold/5 opacity-0 group-hover/topbar:opacity-100 transition-opacity duration-1000"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3 relative">
+                <div class="flex justify-between items-center">
+                    <!-- Transport Links -->
+                    <div class="flex items-center gap-4 md:gap-10">
+                        <!-- Jaffna Town -->
+                        <div class="flex items-center gap-3 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-xl md:text-2xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
+                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] md:text-[9px] font-black text-rose-gold/60 uppercase tracking-[0.3em] mb-0.5">{{ __('Jaffna Town') }}</span>
+                                <span class="text-[10px] md:text-[11px] font-bold text-white uppercase tracking-wider">{{ __('10-15 Mins') }} <span class="text-white/40 font-light lowercase text-[9px]">{{ __('reach time') }}</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="hidden sm:block w-px h-8 bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+
+                        <!-- Palaly Airport -->
+                        <div class="flex items-center gap-3 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-xl md:text-2xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
+                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] md:text-[9px] font-black text-rose-gold/60 uppercase tracking-[0.3em] mb-0.5">{{ __('Palaly International Airport') }}</span>
+                                <span class="text-[10px] md:text-[11px] font-bold text-white uppercase tracking-wider">{{ __('15-20 Mins') }} <span class="text-white/40 font-light lowercase text-[9px]">{{ __('reach time') }}</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status & Call to Action -->
+                    <div class="hidden xl:flex items-center gap-6">
+                        <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 group/status">
+                            <div class="relative">
+                                <span class="flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                            </div>
+                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
+                        </div>
+                        <div class="w-px h-4 bg-white/10"></div>
+                        <a href="#contact" class="text-[9px] font-black text-rose-gold uppercase tracking-[0.4em] hover:text-white transition-colors duration-500 flex items-center gap-2 group/request">
+                            {{ __('Request Transfer') }}
+                            <svg class="w-3 h-3 group-hover/request:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Border Shine -->
+            <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-gold/30 to-transparent"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6 transition-all duration-500" :class="{ 'lg:py-3': scrolled }">
             <div class="flex justify-between items-center text-white">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
@@ -859,6 +929,33 @@
             
             <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 h-[500px]">
                 <iframe src="{{ $content['map_embed'] ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7864.813244882406!2d80.00654078217246!3d9.73158141202129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2snl!4v1769480636437!5m2!1sen!2snl' }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+
+            <!-- Travel Times -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-500">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/10 flex items-center justify-center text-rose-gold text-3xl group-hover:scale-110 transition-transform duration-500">
+                        🚗
+                    </div>
+                    <div>
+                        <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Jaffna Town') }}</h4>
+                        <p class="text-gray-500 text-sm font-light leading-relaxed">
+                            {{ __('Approximately 10 to 15 minutes by car or Tuk-Tuk, depending on traffic conditions.') }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-500">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/10 flex items-center justify-center text-rose-gold text-3xl group-hover:scale-110 transition-transform duration-500">
+                        ✈️
+                    </div>
+                    <div>
+                        <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Palaly Airport') }}</h4>
+                        <p class="text-gray-500 text-sm font-light leading-relaxed">
+                            {{ __('Approximately 15 to 20 minutes reaching time to the villa from Jaffna International Airport.') }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
