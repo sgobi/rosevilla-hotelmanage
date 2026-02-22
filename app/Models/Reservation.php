@@ -94,9 +94,8 @@ class Reservation extends Model
     {
         static::creating(function ($reservation) {
             if ($reservation->room_id && $reservation->check_in && $reservation->check_out) {
-                $days = $reservation->check_in->diffInDays($reservation->check_out);
-                // Ensure at least 1 night
-                $days = $days > 0 ? $days : 1;
+                // Calculation: inclusive of both check-in and check-out dates
+                $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
                 
                 $room = Room::find($reservation->room_id);
                 if ($room) {

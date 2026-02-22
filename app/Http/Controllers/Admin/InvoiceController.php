@@ -39,11 +39,10 @@ class InvoiceController extends Controller
 
         $content = ContentSetting::pluck('value', 'key');
         
-        // Calculate nights logic for display if needed
-        $nights = $reservation->check_in->diffInDays($reservation->check_out);
-        $nights = $nights > 0 ? $nights : 1;
+        // Calculate days logic (inclusive)
+        $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
 
-        return view('admin.invoices.show', compact('reservation', 'content', 'nights'));
+        return view('admin.invoices.show', compact('reservation', 'content', 'days'));
     }
 
     public function showEvent(EventBooking $event)

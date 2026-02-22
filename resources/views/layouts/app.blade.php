@@ -18,6 +18,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style> [x-cloak] { display: none !important; } </style>
         @stack('styles')
     </head>
@@ -40,5 +41,20 @@
             </main>
         </div>
         @stack('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                flatpickr('input[type="date"]', {
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    dateFormat: "Y-m-d",
+                    onReady: function(selectedDates, dateStr, instance) {
+                        if (instance.altInput) {
+                            instance.altInput.className = instance.input.className;
+                        }
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

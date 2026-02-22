@@ -39,10 +39,46 @@
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         [x-cloak] { display: none !important; }
         .page-fade-in { opacity: 0; transition: opacity 0.8s ease-out; }
         .page-fade-in.ready { opacity: 1; }
+
+        /* Custom Flatpickr Styling */
+        .flatpickr-calendar {
+            background: #ffffff !important;
+            border-radius: 2rem !important;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2) !important;
+            border: 1px solid rgba(179, 142, 93, 0.1) !important;
+            padding: 1rem !important;
+            font-family: inherit !important;
+        }
+        .flatpickr-day.selected {
+            background: #b38e5d !important;
+            border-color: #b38e5d !important;
+            border-radius: 1rem !important;
+        }
+        .flatpickr-day:hover {
+            background: #f8f5f2 !important;
+            border-radius: 1rem !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #1a1c1e !important;
+            fill: #1a1c1e !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+        }
+        .flatpickr-weekday {
+            color: #b38e5d !important;
+            font-weight: 800 !important;
+            font-size: 10px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+        }
     </style>
 </head>
 <body class="font-sans text-rose-text antialiased bg-white page-fade-in" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 100)" :class="{ 'ready': ready }">
@@ -376,19 +412,20 @@
                     <div class="flex-1 grid grid-cols-3 gap-3 p-1">
                         <div class="relative group">
                             <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Check In') }}</label>
-                            <input type="date" name="check_in" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
+                            <input type="text" name="check_in" id="hero_check_in" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
                         </div>
                         <div class="relative group border-l border-white/10">
                             <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Check Out') }}</label>
-                            <input type="date" name="check_out" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
+                            <input type="text" name="check_out" id="hero_check_out" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none">
                         </div>
                         <div class="relative group border-l border-white/10">
                             <label class="absolute top-3 left-6 text-[10px] font-black text-rose-gold uppercase tracking-[0.2em] transition-all group-focus-within:text-white">{{ __('Guests') }}</label>
-                            <select name="guests" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer appearance-none hover:bg-white/10 outline-none px-6">
+                            <select name="guests" onchange="window.dispatchEvent(new CustomEvent('set-guests', { detail: { count: this.value } }))" class="w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer appearance-none hover:bg-white/10 outline-none px-6">
                                 <option value="1" class="bg-rose-dark">1 {{ __('Guest') }}</option>
                                 <option value="2" class="bg-rose-dark">2 {{ __('Guests') }}</option>
                                 <option value="3" class="bg-rose-dark">3 {{ __('Guests') }}</option>
-                                <option value="4" class="bg-rose-dark">4+ {{ __('Guests') }}</option>
+                                <option value="4" class="bg-rose-dark">4 {{ __('Guests') }}</option>
+                                <option value="5" class="bg-rose-dark">5 {{ __('Guests') }}</option>
                             </select>
                         </div>
                     </div>
@@ -491,7 +528,7 @@
                                 </p>
                                 
                                 <div class="flex items-center gap-8 pt-8 border-t border-gray-100">
-                                    <a href="#reservation" onclick="document.getElementById('room_id').value='{{ $room->id }}'" 
+                                    <a href="#reservation" onclick="window.dispatchEvent(new CustomEvent('set-room', { detail: { id: '{{ $room->id }}' } }))" 
                                        class="group/btn relative inline-flex items-center gap-4 px-10 py-5 bg-rose-accent text-white rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(145,108,82,0.3)] active:scale-95">
                                         <span class="absolute inset-0 w-full h-full bg-rose-gold transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></span>
                                         <span class="relative text-sm font-black uppercase tracking-[0.2em] z-10">{{ __('Reserve Room') }}</span>
@@ -686,17 +723,24 @@
                             if (params.get('check_out')) this.checkOut = params.get('check_out');
                             if (params.get('guests')) this.guests = params.get('guests');
                         },
-                        get nights() {
+                        get days() {
                             if (!this.checkIn || !this.checkOut) return 0;
                             const start = new Date(this.checkIn);
                             const end = new Date(this.checkOut);
                             if (isNaN(start) || isNaN(end)) return 0;
                             const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                            return diff > 0 ? diff : 0;
+                            return diff >= 0 ? diff + 1 : 0;
                         },
                         get estimatedTotal() {
-                            if (!this.roomId || this.nights === 0) return 0;
-                            const subtotal = this.rooms[this.roomId].price * this.nights;
+                            if (!this.roomId) return 0;
+                            const price = this.rooms[this.roomId].price;
+                            if (this.days === 0) {
+                                return (price * this.exchangeRate).toLocaleString(undefined, {
+                                    minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                    maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                                }) + ' / day';
+                            }
+                            const subtotal = price * this.days;
                             const totalLkr = subtotal + (subtotal * this.taxRate / 100);
                             return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
                                 minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
@@ -706,6 +750,7 @@
                         specialReq: '',
                         additionalNotes: ''
                       }"
+                      @set-guests.window="guests = $event.detail.count"
                       @set-room.window="roomId = $event.detail.id; $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
                     @csrf
                     
@@ -760,16 +805,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                                 <div class="space-y-3">
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-In') }} <span class="text-rose-gold">*</span></label>
-                                    <input type="date" name="check_in" x-model="checkIn" required 
-                                           :min="new Date().toISOString().split('T')[0]"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900">
+                                    <input type="text" name="check_in" id="res_check_in" x-model="checkIn" required 
+                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
                                 <div class="space-y-3">
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-Out') }} <span class="text-rose-gold">*</span></label>
-                                    <input type="date" name="check_out" x-model="checkOut" required 
-                                           :min="checkIn || new Date().toISOString().split('T')[0]"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900">
+                                    <input type="text" name="check_out" id="res_check_out" x-model="checkOut" required 
+                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
                                 <div class="space-y-3">
@@ -787,7 +830,7 @@
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Guest Count') }}</label>
                                     <select name="guests" x-model="guests" required 
                                             class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
-                                        @foreach(range(1, 8) as $i)
+                                        @foreach(range(1, 5) as $i)
                                             <option value="{{ $i }}" class="bg-white">{{ $i }} {{ $i > 1 ? 'People' : 'Person' }}</option>
                                         @endforeach
                                     </select>
@@ -800,7 +843,7 @@
                                 </div>
                             </div>
 
-                            <div x-show="nights > 0 && roomId" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
+                            <div x-show="roomId" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
                                  class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative">
                                 <div class="absolute -right-12 -top-12 w-64 h-64 bg-rose-gold/5 rounded-full blur-3xl"></div>
                                 <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-rose-accent/5 rounded-full blur-2xl"></div>
@@ -819,8 +862,8 @@
                                             <div class="text-center">
                                                 <p class="text-[9px] uppercase font-black text-gray-400 tracking-[0.3em] mb-2">Duration</p>
                                                 <p class="text-4xl font-serif text-rose-accent flex items-baseline gap-1">
-                                                    <span x-text="nights"></span> 
-                                                    <span class="text-[10px] uppercase font-black text-rose-gold tracking-widest" x-text="nights === 1 ? 'Night' : 'Nights'"></span>
+                                                    <span x-text="days"></span> 
+                                                    <span class="text-[10px] uppercase font-black text-rose-gold tracking-widest" x-text="days === 1 ? 'Day' : 'Days'"></span>
                                                 </p>
                                             </div>
 
@@ -869,8 +912,8 @@
 
                             <div class="flex flex-col items-center pt-8" x-show="roomId" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
                                 <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
-                                        :class="(!checkIn || !checkOut || nights < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
-                                        :disabled="!checkIn || !checkOut || nights < 1">
+                                        :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
+                                        :disabled="!checkIn || !checkOut || days < 1">
                                     <div class="absolute inset-0 bg-gradient-to-r from-rose-accent via-rose-gold to-rose-accent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
                                     <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10">{{ __('Inquire Reservation') }}</span>
                                     <svg class="relative w-6 h-6 ml-6 transform group-hover:translate-x-3 transition-transform duration-700 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -1128,7 +1171,77 @@
         });
 
         // Smooth image transitions
-        document.getElementById('lightboxImage').style.transition = 'opacity 0.15s ease-in-out';
+        const lightboxImg = document.getElementById('lightboxImage');
+        if (lightboxImg) lightboxImg.style.transition = 'opacity 0.15s ease-in-out';
+    </script>
+
+    <!-- Flatpickr Initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hero Section Configuration
+            const heroConfig = {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d / m / Y",
+                minDate: "today",
+                altInputClass: "w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none"
+            };
+
+            const heroCheckIn = flatpickr("#hero_check_in", {
+                ...heroConfig,
+                onChange: function(selectedDates, dateStr) {
+                    heroCheckOut.set("minDate", dateStr);
+                    resCheckIn.setDate(dateStr, true);
+                }
+            });
+            const heroCheckOut = flatpickr("#hero_check_out", {
+                ...heroConfig,
+                onChange: function(selectedDates, dateStr) {
+                    resCheckOut.setDate(dateStr, true);
+                }
+            });
+
+            // Reservation Section Configuration
+            const resConfig = {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d / m / Y",
+                minDate: "today",
+                altInputClass: "w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+            };
+
+            const resCheckIn = flatpickr("#res_check_in", {
+                ...resConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    resCheckOut.set("minDate", dateStr);
+                    heroCheckIn.setDate(dateStr);
+                    // Update Alpine.js model
+                    instance.input.dispatchEvent(new Event('input'));
+                }
+            });
+            const resCheckOut = flatpickr("#res_check_out", {
+                ...resConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    heroCheckOut.setDate(dateStr);
+                    // Update Alpine.js model
+                    instance.input.dispatchEvent(new Event('input'));
+                }
+            });
+
+            // Sync with URL parameters if present
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('check_in')) {
+                const date = params.get('check_in');
+                heroCheckIn.setDate(date);
+                resCheckIn.setDate(date);
+            }
+            if (params.get('check_out')) {
+                const date = params.get('check_out');
+                heroCheckOut.setDate(date);
+                resCheckOut.setDate(date);
+            }
+        });
     </script>
 </body>
 </html>
