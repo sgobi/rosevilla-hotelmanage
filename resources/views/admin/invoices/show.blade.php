@@ -170,17 +170,9 @@
                 <span class="details-label">Check-out</span>
                 <span class="col-span-3">: {{ $reservation->check_out->format('d-m-Y') }}</span>
             </div>
-            @php
-                $nights = \Carbon\Carbon::parse($reservation->check_in)->diffInDays(\Carbon\Carbon::parse($reservation->check_out));
-                $roomsCount = count($reservation->room_ids ?? ($reservation->room_id ? [1] : []));
-            @endphp
             <div class="details-row">
-                <span class="details-label">Number of Nights</span>
-                <span>: {{ $nights }}</span>
-            </div>
-            <div class="details-row">
-                <span class="details-label">Number of Rooms</span>
-                <span>: {{ $roomsCount }}</span>
+                <span class="details-label">Name of Rooms</span>
+                <span class="col-span-3">: {{ $reservation->rooms()->pluck('title')->implode(', ') }}</span>
             </div>
             <div class="details-row">
                 <span class="details-label">Number of Persons</span>

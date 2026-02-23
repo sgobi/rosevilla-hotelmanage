@@ -538,6 +538,7 @@
     <!-- Rooms Section -->
     <section id="rooms" class="py-24 bg-[#f8f5f2] overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @php $taxFactor = 1 + (\App\Models\ContentSetting::getValue('tax_percentage', 0) / 100); @endphp
             <div class="text-center mb-20">
                 <span class="text-rose-gold text-xs font-bold tracking-[0.2em] uppercase block mb-3">{{ __('Sanctuary') }}</span>
                 <h2 class="font-serif text-4xl md:text-5xl text-rose-accent mb-6 uppercase tracking-wide">{{ __('Our Rooms') }}</h2>
@@ -561,7 +562,7 @@
                                          <span class="text-[11px] font-black text-rose-gold uppercase tracking-[0.2em] mb-2.5">{{ __('Starting from') }}</span>
                                          <div class="flex items-baseline gap-2">
                                             <span class="text-2xl font-serif text-rose-accent uppercase">
-                                                {{ \App\Helpers\CurrencyHelper::format($room->price_per_night) }}
+                                                {{ \App\Helpers\CurrencyHelper::format($room->price_per_night * $taxFactor) }}
                                             </span>
                                          </div>
                                     </div>
@@ -816,7 +817,8 @@
                             if (isNaN(totalPrice) || totalPrice === 0) return 0;
 
                             if (this.days === 0) {
-                                return (totalPrice * this.exchangeRate).toLocaleString(undefined, {
+                                const perDayWithTax = totalPrice + (totalPrice * this.taxRate / 100);
+                                return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
                                     minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
                                     maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
                                 }) + ' / day';
@@ -909,7 +911,7 @@
                                                 </div>
                                                 <div class="flex flex-col">
                                                     <span class="text-xs font-black text-gray-900 uppercase tracking-widest">{{ $r->title }}</span>
-                                                    <span class="text-[10px] font-bold text-rose-gold uppercase opacity-70">{{ \App\Helpers\CurrencyHelper::format($r->price_per_night) }} / day</span>
+                                                    <span class="text-[10px] font-bold text-rose-gold uppercase opacity-70">{{ \App\Helpers\CurrencyHelper::format($r->price_per_night * $taxFactor) }} / day</span>
                                                 </div>
                                             </label>
                                         @endforeach

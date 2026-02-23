@@ -94,7 +94,7 @@ class Reservation extends Model
 
     protected static function booted()
     {
-        static::creating(function ($reservation) {
+        static::saving(function ($reservation) {
             if ($reservation->check_in && $reservation->check_out) {
                 $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
                 $totalPrice = 0;
@@ -113,10 +113,18 @@ class Reservation extends Model
 
                 if ($totalPrice > 0) {
                     $reservation->total_price = $totalPrice;
-                    $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
-                    $reservation->tax_percentage = $taxRate;
-                    $reservation->tax_amount = ($reservation->total_price * $taxRate) / 100;
                 }
+                
+                // Recalculate tax based on the net price (Total - Approved Discount)
+                $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
+                $reservation->tax_percentage = $taxRate;
+                
+                $taxableAmount = $reservation->total_price;
+                if ($reservation->discount_status === 'approved' && $reservation->discount_percentage > 0) {
+                    $taxableAmount = $reservation->total_price - $reservation->discount_amount;
+                }
+                
+                $reservation->tax_amount = ($taxableAmount * $taxRate) / 100;
             }
         });
     }

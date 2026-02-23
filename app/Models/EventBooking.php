@@ -69,14 +69,17 @@ class EventBooking extends Model
     protected static function booted()
     {
         static::saving(function ($booking) {
-            // Apply current tax rate
-            // Note: We use the current system tax rate whenever the booking is saved.
-            // If total_price is set, calculate tax.
+            // Apply current tax rate on the net price (Total - Approved Discount)
             $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
             $booking->tax_percentage = $taxRate;
             
-            if ($booking->total_price > 0) {
-                $booking->tax_amount = ($booking->total_price * $taxRate) / 100;
+            $taxableAmount = $booking->total_price;
+            if ($booking->discount_status === 'approved' && $booking->discount_percentage > 0) {
+                $taxableAmount = $booking->total_price - $booking->discount_amount;
+            }
+
+            if ($taxableAmount > 0) {
+                $booking->tax_amount = ($taxableAmount * $taxRate) / 100;
             } else {
                 $booking->tax_amount = 0;
             }
@@ -90,7 +93,7 @@ class EventBooking extends Model
 
     public function getDiscountAmountAttribute()
     {
-        if ($this->discount_percentage > 0 && $this->total_price > 0) {
+        if ($this->discount_status === 'approved' && $this->discount_percentage > 0 && $this->total_price > 0) {
             return ($this->total_price * $this->discount_percentage) / 100;
         }
         return 0;
