@@ -3,289 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $reservation->id }} - Rose Villa</title>
+    <title>Reservation Confirmation #{{ $reservation->id }} - Rose Villa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         @page {
             size: A4;
-            margin: 15mm;
+            margin: 0;
         }
         body { 
             font-family: 'Inter', sans-serif;
-            color: #1f2937;
+            color: #000000;
             background-color: #f3f4f6;
+            -webkit-print-color-adjust: exact;
         }
-        .invoice-page {
+        .invoice-container {
             background: white;
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto;
-            padding: 20mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            padding: 25mm 20mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            position: relative;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #e5e7eb;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f9fafb;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
-            font-weight: 600;
-        }
-        .header-title {
-            font-size: 28px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 10px;
-            color: #111827;
-        }
-        .header-meta {
-            text-align: center;
-            font-size: 14px;
-            color: #4b5563;
-            margin-bottom: 30px;
-        }
-        .section-title {
-            font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 10px;
+        .serif {
+            font-family: 'Crimson Pro', serif;
         }
         @media print {
-            body { background: white; }
-            .invoice-page { 
+            body { background: white; margin: 0; }
+            .invoice-container { 
                 box-shadow: none; 
                 margin: 0;
                 width: 100%;
+                padding: 15mm 15mm;
             }
             .no-print { display: none; }
+        }
+        .double-line {
+            border-top: 3px double #000;
+            margin: 15px 0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr 140px 1fr;
+            gap: 10px 20px;
+            margin-bottom: 30px;
+        }
+        .info-label {
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .info-value {
+            font-size: 13px;
+        }
+        .details-list {
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
+        .details-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 150px 1fr;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        .details-label {
+            font-weight: 700;
+        }
+        .details-separator {
+            width: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="no-print fixed top-6 right-6 z-50">
+    <div class="no-print fixed top-6 right-6 z-50 flex gap-4">
+        <a href="{{ route('dashboard') }}" class="bg-white text-gray-900 border border-gray-200 px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-gray-50 transition">
+            Back to Dashboard
+        </a>
         <button onclick="window.print()" class="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-black transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            Print Invoice
+            Print Confirmation
         </button>
     </div>
 
-    <div class="invoice-page">
-        {{-- Logo Section --}}
-        <div class="flex justify-center mb-4">
-            <h2 class="text-2xl font-black uppercase tracking-[0.1em] text-gray-900 border-b-2 border-gray-900 pb-2">Rosevilla Heritage Homes</h2>
-        </div>
-
-        {{-- Title --}}
-        <h1 class="header-title">Invoice</h1>
-        <div class="header-meta">
-            <strong>Invoice Number:</strong> {{ str_pad($reservation->id, 6, '0', STR_PAD_LEFT) }} | 
-            <strong>Invoice Date:</strong> {{ now()->format('F d, Y') }}
-        </div>
-
-        {{-- Customer Info Table --}}
-        <table>
-            <thead>
-                <tr>
-                    <th class="text-center">Customer Name</th>
-                    <th class="text-center">Customer Address</th>
-                    <th class="text-center">Contact Number</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center font-bold text-lg capitalize">{{ strtolower($reservation->guest_name) }}</td>
-                    <td class="text-center text-gray-600 capitalize">{{ strtolower($reservation->address ?? 'N/A') }}</td>
-                    <td class="text-center font-bold">{{ $reservation->phone }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Service Breakdown Table --}}
-        <table>
-            <thead>
-                <tr>
-                    <th>Service Description and Charges</th>
-                    <th class="text-right">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $checkIn = \Carbon\Carbon::parse($reservation->check_in);
-                    $checkOut = \Carbon\Carbon::parse($reservation->check_out);
-                    $days = $checkIn->diffInDays($checkOut) + 1;
-                @endphp
-                <tr>
-                    <td>
-                        <div class="font-bold text-gray-900">Room Accommodation ({{ $days }} days)</div>
-                        @foreach($reservation->rooms() as $room)
-                            <div class="text-xs text-gray-500 mt-0.5">{{ $room->title }} &times; {{ $days }} days @ LKR {{ number_format($room->price_per_night, 2) }}</div>
-                        @endforeach
-                    </td>
-                    <td class="text-right font-medium">LKR {{ number_format($reservation->total_price, 2) }}</td>
-                </tr>
-                {{-- Dynamic rows can be added here in future --}}
-                <tr class="font-bold bg-gray-50/30">
-                    <td>Subtotal</td>
-                    <td class="text-right">LKR {{ number_format($reservation->total_price, 2) }}</td>
-                </tr>
-                
-                @if($reservation->discount_status === 'approved' && $reservation->discount_percentage > 0)
-                    @php 
-                        $discount = ($reservation->total_price * $reservation->discount_percentage) / 100;
-                        $final = $reservation->total_price - $discount;
-                    @endphp
-                    <tr>
-                        <td class="text-emerald-700">Discount ({{ $reservation->discount_percentage }}%)</td>
-                        <td class="text-right text-emerald-700">- LKR {{ number_format($discount, 2) }}</td>
-                    </tr>
-                @else
-                    @php $final = $reservation->total_price; @endphp
-                @endif
-
-                <tr>
-                    <td>Tax ({{ number_format($reservation->tax_percentage, 1) }}%)</td>
-                    <td class="text-right">LKR {{ number_format($reservation->tax_amount, 2) }}</td>
-                </tr>
-                <tr class="font-bold border-t border-gray-200">
-                    <td class="text-xs uppercase tracking-wider text-gray-500">Gross Invoice Amount</td>
-                    <td class="text-right text-lg">LKR {{ number_format($reservation->final_price, 2) }}</td>
-                </tr>
-
-                {{-- Payment Deductions --}}
-                @if($reservation->advance_paid_at)
-                    <tr class="text-indigo-700 bg-indigo-50/20">
-                        <td class="flex items-center gap-3 py-4">
-                             <div class="h-6 w-6 bg-indigo-600/10 rounded-full flex items-center justify-center">
-                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                             </div>
-                             <div>
-                                <p class="text-xs font-black uppercase tracking-widest leading-none">Advance Deposit Received</p>
-                                <p class="text-[9px] opacity-70 mt-1 uppercase">Method: {{ $reservation->advance_payment_method }} • Recorded {{ $reservation->advance_paid_at->format('M d, Y') }}</p>
-                             </div>
-                        </td>
-                        <td class="text-right font-black">- LKR {{ number_format($reservation->advance_amount, 2) }}</td>
-                    </tr>
-                @endif
-
-                @if($reservation->final_payment_at)
-                    <tr class="text-indigo-700 bg-indigo-50/20">
-                        <td class="flex items-center gap-3 py-4">
-                             <div class="h-6 w-6 bg-indigo-600/10 rounded-full flex items-center justify-center">
-                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                             </div>
-                             <div>
-                                <p class="text-xs font-black uppercase tracking-widest leading-none">Final Balance Settlement</p>
-                                <p class="text-[9px] opacity-70 mt-1 uppercase">Method: {{ $reservation->final_payment_method }} • Recorded {{ $reservation->final_payment_at->format('M d, Y') }}</p>
-                             </div>
-                        </td>
-                        <td class="text-right font-black">- LKR {{ number_format($reservation->final_payment_amount, 2) }}</td>
-                    </tr>
-                @endif
-
-                @php
-                    $paid = ($reservation->advance_amount ?? 0) + ($reservation->final_payment_amount ?? 0);
-                    $balance = $reservation->final_price - $paid;
-                    $isFullyPaid = $balance <= 0.01;
-                @endphp
-
-                <tr class="font-black border-t-2 border-gray-900 {{ $isFullyPaid ? 'bg-emerald-50 text-emerald-800' : 'bg-gray-50' }} uppercase tracking-tight">
-                    <td class="text-lg py-6 flex items-center gap-4">
-                        {{ $isFullyPaid ? 'Settlement Complete' : 'Net Balance Outstanding' }}
-                        @if($isFullyPaid)
-                            <span class="bg-emerald-600 text-white text-[10px] px-3 py-1 rounded-full shadow-lg shadow-emerald-200">OFFICIAL PAID</span>
-                        @endif
-                    </td>
-                    <td class="text-right text-2xl py-6 {{ $isFullyPaid ? 'text-emerald-700' : 'text-rose-600' }}">
-                        LKR {{ number_format(max(0, $balance), 2) }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Payment Information Table --}}
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Payment Information</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Payment Method</td>
-                    <td class="font-medium">Direct Transfer / Cash</td>
-                </tr>
-                <tr>
-                    <td>Payment Due</td>
-                    <td class="font-medium">Upon Check-in</td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Special Requests & Notes Section --}}
-        @if($reservation->special_requirements || $reservation->additional_notes || $reservation->message)
-            <div class="mt-8 p-8 bg-gray-50 rounded-[2rem] border border-gray-200">
-                <h4 class="section-title text-gray-900 border-b border-gray-200 pb-3 mb-6 uppercase tracking-widest text-xs">Guest Preferences & Special Requests</h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    @if($reservation->special_requirements)
-                        <div class="space-y-2">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Special Requirements</p>
-                            <p class="text-sm text-gray-700 leading-relaxed italic">"{{ $reservation->special_requirements }}"</p>
-                        </div>
-                    @endif
-
-                    @if($reservation->additional_notes)
-                        <div class="space-y-2">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Additional Notes</p>
-                            <p class="text-sm text-gray-700 leading-relaxed italic">"{{ $reservation->additional_notes }}"</p>
-                        </div>
-                    @endif
-
-                    @if(!$reservation->special_requirements && !$reservation->additional_notes && $reservation->message)
-                        <div class="md:col-span-2 space-y-2">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Requests & Notes</p>
-                            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line italic">"{{ $reservation->message }}"</p>
-                        </div>
-                    @endif
+    <div class="invoice-container">
+        {{-- Header Section --}}
+        <div class="flex justify-between items-start mb-10">
+            <div class="flex flex-col items-center">
+                <img src="{{ asset('storage/logos/invoice logo.png') }}" alt="Rose Villa Logo" class="w-72 h-auto">
+            </div>
+            <div class="text-right text-[10px] leading-relaxed mt-4 uppercase tracking-widest font-black text-black">
+                <div class="flex justify-end gap-2">
+                    <span class="w-20 text-right">HOTEL TEL</span>
+                    <span>:</span>
+                    <span class="w-48 text-left">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
                 </div>
+                <div class="flex justify-end gap-2">
+                    <span class="w-20 text-right">EMAIL</span>
+                    <span>:</span>
+                    <span class="w-48 text-left uppercase">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <span class="w-20 text-right">WEBSITE</span>
+                    <span>:</span>
+                    <span class="w-48 text-left uppercase">www.rosevillaheritagehomes.com</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Meta Data --}}
+        <div class="space-y-1 mb-6">
+            <div class="flex gap-4">
+                <span class="info-label w-32">Date</span>
+                <span class="info-label">:</span>
+                <span class="info-value">{{ now()->format('d m Y') }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="flex gap-4">
+                    <span class="info-label w-32">From</span>
+                    <span class="info-label">:</span>
+                    <span class="info-value">Reservation Office</span>
+                </div>
+                <div class="flex gap-4 mr-[140px]">
+                    <span class="info-label w-24">Contact No.</span>
+                    <span class="info-label">:</span>
+                    <span class="info-value">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="flex gap-4">
+                    <span class="info-label w-32">Subject</span>
+                    <span class="info-label">:</span>
+                    <span class="info-value">Reservation Confirmation</span>
+                </div>
+                <div class="flex gap-4 mr-[140px]">
+                    <span class="info-label w-24">Pages</span>
+                    <span class="info-label">:</span>
+                    <span class="info-value">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-black mb-6"></div>
+
+        {{-- Greeting --}}
+        <div class="mb-6 text-[14px] leading-relaxed">
+            <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong>. We are happy to confirm the following details</p>
+        </div>
+
+        {{-- Main Details --}}
+        <div class="details-list space-y-1">
+            <div class="details-row">
+                <span class="details-label">Confirmation Number</span>
+                <span>: <strong>{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}</strong></span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Guest Name</span>
+                <span class="capitalize">: {{ strtolower($reservation->guest_name) }}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Check-in</span>
+                <span class="col-span-3">: {{ $reservation->check_in->format('d-m-Y') }}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Check-out</span>
+                <span class="col-span-3">: {{ $reservation->check_out->format('d-m-Y') }}</span>
+            </div>
+            @php
+                $nights = \Carbon\Carbon::parse($reservation->check_in)->diffInDays(\Carbon\Carbon::parse($reservation->check_out));
+                $roomsCount = count($reservation->room_ids ?? ($reservation->room_id ? [1] : []));
+            @endphp
+            <div class="details-row">
+                <span class="details-label">Number of Nights</span>
+                <span>: {{ $nights }}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Number of Rooms</span>
+                <span>: {{ $roomsCount }}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Number of Persons</span>
+                <span>: {{ $reservation->guests }}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">Room Rate</span>
+                <span>: LKR {{ number_format($reservation->total_price, 2) }}</span>
+            </div>
+            
+            @if($reservation->tax_amount > 0)
+                <div class="details-row">
+                    <span class="details-label">Taxes ({{ number_format($reservation->tax_percentage, 1) }}%)</span>
+                    <span>: LKR {{ number_format($reservation->tax_amount, 2) }}</span>
+                </div>
+            @endif
+
+            @if($reservation->discount_percentage > 0 && $reservation->discount_status === 'approved')
+                <div class="details-row text-black">
+                    <span class="details-label">Discount ({{ $reservation->discount_percentage }}%)</span>
+                    <span>: - LKR {{ number_format(($reservation->total_price * $reservation->discount_percentage) / 100, 2) }}</span>
+                </div>
+            @endif
+        </div>
+
+        <div class="border-t border-black my-4"></div>
+        <div class="details-row py-1 font-bold text-[16px]">
+            <span>Gross Amount</span>
+            <span>: LKR {{ number_format($reservation->final_price, 2) }}</span>
+        </div>
+        <div class="border-b border-black mb-8"></div>
+
+        @if($reservation->advance_amount > 0)
+            <div class="details-row text-black">
+                <span class="details-label">Advance Paid</span>
+                <span>: - LKR {{ number_format($reservation->advance_amount, 2) }}</span>
+            </div>
+            <div class="details-row font-bold mb-8">
+                <span class="details-label">Balance Payable</span>
+                <span>: LKR {{ number_format($reservation->final_price - $reservation->advance_amount, 2) }}</span>
             </div>
         @endif
 
-        {{-- Terms and Conditions --}}
+        <div class="text-[13px] leading-relaxed space-y-4 text-black italic">
+            <p>Should you need to cancel your booking, please do so up to 72 hours prior to your scheduled arrival day to avoid late cancellation or no-show charges (one night charge of room, tax and service charge against the guarantee deposit).</p>
+            
+            <div class="not-italic">
+                <p class="font-bold mb-1">Note:</p>
+                <p>1. Early arrival requests are based on an availability of serviced rooms on the day of arrival only. Early arrival fees may apply.</p>
+                <p>2. Late check-out requests are based on hotel room availability on the day of departure only. Late check-out fees may apply.</p>
+            </div>
+
+            <p class="not-italic">If you require any information prior to your arrival, please visit our website <a href="https://www.rosevillaheritagehomes.com" class="text-black font-semibold">www.rosevillaheritagehomes.com</a> or contact our customer service at <span class="font-semibold">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</span>.</p>
+            
+            <p class="font-bold not-italic">We are looking forward to welcoming you to the Rose Villa Heritage Homes.</p>
+        </div>
+
+        {{-- Footer Signature --}}
         <div class="mt-8">
-            <h4 class="section-title">Terms and Conditions:</h4>
-            <div class="text-sm text-gray-600 space-y-2 leading-relaxed">
-                <p>All prices are subject to change without notice. Payment is due upon arrival. Cancellations must be made 48 hours in advance to avoid charges. For any inquiries, please contact <strong>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage') }}</strong> at <strong>{{ $content['contact_email'] ?? 'info@rosevilla.com' }}</strong>.</p>
-            </div>
-        </div>
-
-        {{-- Signature --}}
-        @if($content['signature_path'] ?? null)
-            <div class="mt-12 flex justify-end">
-                <div class="text-center">
-                    <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 mx-auto mb-2 opacity-90">
-                    <div class="border-t border-gray-300 pt-2 px-8">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Authorized Signature</p>
-                    </div>
+            <p class="font-bold text-[14px]">Reservation Officer</p>
+            @if($content['signature_path'] ?? null)
+                <div class="mt-2">
+                    <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 w-auto object-contain">
+                </div>
+            @else
+                <div class="h-16"></div> {{-- Placeholder space --}}
+            @endif
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="text-[10px] uppercase tracking-widest text-black font-bold space-y-1">
+                    <p>Hotel Tel : {{ $content['contact_phone'] ?? '+94 76 319 3311' }}</p>
+                    <p>Email : {{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</p>
+                    <p>WWW : www.rosevillaheritagehomes.com</p>
                 </div>
             </div>
-        @endif
-
-        {{-- Footer Branding --}}
-        <div class="mt-16 pt-8 border-t border-gray-100 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-            Rose Villa Heritage Homes - Jaffna, Sri Lanka
         </div>
     </div>
 

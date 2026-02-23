@@ -488,6 +488,11 @@
                                 <option value="3" class="bg-rose-dark">3 {{ __('Guests') }}</option>
                                 <option value="4" class="bg-rose-dark">4 {{ __('Guests') }}</option>
                                 <option value="5" class="bg-rose-dark">5 {{ __('Guests') }}</option>
+                                <option value="6" class="bg-rose-dark">6 {{ __('Guests') }}</option>
+                                <option value="7" class="bg-rose-dark">7 {{ __('Guests') }}</option>
+                                <option value="8" class="bg-rose-dark">8 {{ __('Guests') }}</option>
+                                <option value="9" class="bg-rose-dark">9 {{ __('Guests') }}</option>
+                                <option value="10" class="bg-rose-dark">10 {{ __('Guests') }}</option>
                             </select>
                         </div>
                     </div>
@@ -784,6 +789,12 @@
                             if (params.get('check_in')) this.checkIn = params.get('check_in');
                             if (params.get('check_out')) this.checkOut = params.get('check_out');
                             if (params.get('guests')) this.guests = params.get('guests');
+
+                            this.$watch('roomId', (value) => {
+                                if (value.length <= 1 && this.guests > 5) {
+                                    this.guests = 5;
+                                }
+                            });
                         },
                         get days() {
                             if (!this.checkIn || !this.checkOut) return 0;
@@ -909,8 +920,10 @@
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Guest Count') }}</label>
                                     <select name="guests" x-model="guests" required 
                                             class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
-                                        @foreach(range(1, 5) as $i)
-                                            <option value="{{ $i }}" class="bg-white">{{ $i }} {{ $i > 1 ? 'People' : 'Person' }}</option>
+                                        @foreach(range(1, 10) as $i)
+                                            <option value="{{ $i }}" class="bg-white" {!! $i > 5 ? 'x-show="roomId.length > 1"' : '' !!}>
+                                                {{ $i }} {{ $i > 1 ? 'People' : 'Person' }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
