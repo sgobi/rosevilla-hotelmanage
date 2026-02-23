@@ -54,6 +54,10 @@
                                 <div class="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)] group-hover/item:scale-125 transition-transform duration-500"></div>
                                 <span class="text-gray-300 group-hover/item:text-white">Room Front Desk</span>
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.front-desk.calendar')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/5 hover:text-rose-gold transition-all duration-500 flex items-center gap-4 px-8 group/item">
+                                <div class="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.6)] group-hover/item:scale-125 transition-transform duration-500"></div>
+                                <span class="text-gray-300 group-hover/item:text-white">Reservation Planning</span>
+                            </x-dropdown-link>
                             <x-dropdown-link :href="route('admin.event-front-desk.index')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/5 hover:text-rose-gold transition-all duration-500 flex items-center gap-4 px-8 group/item">
                                 <div class="h-2 w-2 rounded-full bg-rose-gold shadow-[0_0_15px_rgba(217,179,108,0.6)] group-hover/item:scale-125 transition-transform duration-500"></div>
                                 <span class="text-gray-300 group-hover/item:text-white">Event Front Desk</span>

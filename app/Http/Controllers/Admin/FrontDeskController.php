@@ -46,6 +46,55 @@ class FrontDeskController extends Controller
         return view('admin.front-desk.index', compact('activeReservations', 'arrivingToday', 'departingToday'));
     }
 
+    public function calendar()
+    {
+        return view('admin.front-desk.calendar');
+    }
+
+    public function apiEvents()
+    {
+        $reservations = Reservation::with('room')
+            ->where('status', '!=', 'cancelled')
+            ->get()
+            ->map(function ($reservation) {
+                $statusColor = '#3b82f6'; // Default blue
+                
+                if ($reservation->checked_out_at) {
+                    $statusColor = '#6b7280'; // gray (spent)
+                } elseif ($reservation->checked_in_at) {
+                    $statusColor = '#10b981'; // green (in-house)
+                } elseif ($reservation->status === 'approved') {
+                    $statusColor = '#f59e0b'; // amber (confirmed)
+                } elseif ($reservation->status === 'pending') {
+                    $statusColor = '#ef4444'; // red (needs attention)
+                }
+
+                $rooms = $reservation->rooms();
+                $roomText = $rooms->pluck('title')->implode(', ') ?: 'Room';
+                $nights = $reservation->check_in->diffInDays($reservation->check_out);
+                
+                return [
+                    'id' => $reservation->id,
+                    'title' => "({$nights}N) {$roomText} - {$reservation->guest_name}",
+                    'start' => $reservation->check_in->format('Y-m-d'),
+                    'end' => $reservation->check_out->addDay()->format('Y-m-d'), 
+                    'backgroundColor' => $statusColor,
+                    'borderColor' => $statusColor,
+                    'textColor' => '#ffffff',
+                    'url' => route('admin.front-desk.index', ['search' => $reservation->guest_name]),
+                    'allDay' => true,
+                    'extendedProps' => [
+                        'guest' => $reservation->guest_name,
+                        'rooms' => $roomText,
+                        'nights' => $nights,
+                        'status' => $reservation->status,
+                    ]
+                ];
+            });
+
+        return response()->json($reservations);
+    }
+
     public function checkIn(Reservation $reservation)
     {
         if (!$reservation->advance_paid_at) {

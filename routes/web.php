@@ -54,6 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             
             // Front Desk
             Route::get('front-desk', [FrontDeskController::class, 'index'])->name('front-desk.index');
+            Route::get('front-desk-calendar', [FrontDeskController::class, 'calendar'])->name('front-desk.calendar');
+            Route::get('api/reservations-calendar', [FrontDeskController::class, 'apiEvents'])->name('front-desk.api');
             Route::post('front-desk/{reservation}/advance', [FrontDeskController::class, 'recordAdvance'])->name('front-desk.advance');
             Route::post('front-desk/{reservation}/final-payment', [FrontDeskController::class, 'recordFinalPayment'])->name('front-desk.final-payment');
             Route::post('front-desk/{reservation}/check-in', [FrontDeskController::class, 'checkIn'])->name('front-desk.check-in');
