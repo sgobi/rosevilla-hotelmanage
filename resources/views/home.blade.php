@@ -45,39 +45,101 @@
         .page-fade-in { opacity: 0; transition: opacity 0.8s ease-out; }
         .page-fade-in.ready { opacity: 1; }
 
-        /* Custom Flatpickr Styling */
+        /* Custom Flatpickr Styling - Masterpiece Edition */
         .flatpickr-calendar {
             background: #ffffff !important;
-            border-radius: 2rem !important;
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2) !important;
-            border: 1px solid rgba(179, 142, 93, 0.1) !important;
-            padding: 1rem !important;
+            border-radius: 2.5rem !important;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.25) !important;
+            border: 1px solid rgba(179, 142, 93, 0.2) !important;
+            padding: 1.5rem !important;
             font-family: inherit !important;
+            margin-top: 10px !important;
+            width: 350px !important; /* Explicit width to fit padding + 7 days */
         }
-        .flatpickr-day.selected {
-            background: #b38e5d !important;
-            border-color: #b38e5d !important;
-            border-radius: 1rem !important;
+        .flatpickr-innerContainer {
+            width: 100% !important;
         }
-        .flatpickr-day:hover {
-            background: #f8f5f2 !important;
-            border-radius: 1rem !important;
+        .flatpickr-rContainer {
+            width: 100% !important;
         }
-        .flatpickr-months .flatpickr-month {
+        .flatpickr-days {
+            width: 100% !important;
+        }
+        .dayContainer {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        .flatpickr-months {
+            margin-bottom: 1.5rem !important;
+        }
+        .flatpickr-months .flatpickr-prev-month, 
+        .flatpickr-months .flatpickr-next-month {
+            padding: 15px !important;
+            color: #b38e5d !important;
+            fill: #b38e5d !important;
+        }
+        .flatpickr-months .flatpickr-prev-month:hover, 
+        .flatpickr-months .flatpickr-next-month:hover {
             color: #1a1c1e !important;
-            fill: #1a1c1e !important;
+        }
+        .flatpickr-current-month {
+            font-size: 110% !important;
+            color: #1a1c1e !important;
+            padding: 0 !important;
         }
         .flatpickr-current-month .flatpickr-monthDropdown-months {
-            font-weight: 800 !important;
+            font-weight: 900 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.1em !important;
+            color: #1a1c1e !important;
         }
+        .numInputWrapper span.arrowUp:after { border-bottom-color: #b38e5d !important; }
+        .numInputWrapper span.arrowDown:after { border-top-color: #b38e5d !important; }
+        .cur-year { font-weight: 400 !important; color: #1a1c1e !important; }
         .flatpickr-weekday {
             color: #b38e5d !important;
-            font-weight: 800 !important;
+            font-weight: 900 !important;
             font-size: 10px !important;
             text-transform: uppercase !important;
             letter-spacing: 0.1em !important;
+            opacity: 0.8 !important;
+        }
+        .flatpickr-day {
+            color: #1a1c1e !important;
+            font-weight: 700 !important;
+            border-radius: 1.25rem !important;
+            margin: 2px !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 2px solid transparent !important;
+            max-width: 38px !important;
+            height: 38px !important;
+            line-height: 34px !important;
+        }
+        .flatpickr-day.today {
+            border-color: rgba(179, 142, 93, 0.3) !important;
+            color: #b38e5d !important;
+        }
+        .flatpickr-day.selected {
+            background: linear-gradient(135deg, #b38e5d 0%, #d4b483 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 20px -5px rgba(179, 142, 93, 0.4) !important;
+            transform: scale(1.05) !important;
+        }
+        .flatpickr-day:hover {
+            background: #fdfaf7 !important;
+            border-color: #b38e5d !important;
+        }
+        .flatpickr-day.flatpickr-disabled {
+            color: #e5e7eb !important;
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+        }
+        .flatpickr-day.inRange {
+            background: #f8f5f2 !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
         }
     </style>
 </head>
@@ -710,7 +772,7 @@
                       x-data="{ 
                         checkIn: '', 
                         checkOut: '', 
-                        roomId: '',
+                        roomId: [],
                         guests: 1,
                         taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
                         exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
@@ -732,15 +794,23 @@
                             return diff >= 0 ? diff + 1 : 0;
                         },
                         get estimatedTotal() {
-                            if (!this.roomId) return 0;
-                            const price = this.rooms[this.roomId].price;
+                            if (this.roomId.length === 0) return 0;
+                            let totalPrice = 0;
+                            this.roomId.forEach(id => {
+                                if (this.rooms[id]) {
+                                    totalPrice += parseFloat(this.rooms[id].price);
+                                }
+                            });
+                            
+                            if (isNaN(totalPrice) || totalPrice === 0) return 0;
+
                             if (this.days === 0) {
-                                return (price * this.exchangeRate).toLocaleString(undefined, {
+                                return (totalPrice * this.exchangeRate).toLocaleString(undefined, {
                                     minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
                                     maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
                                 }) + ' / day';
                             }
-                            const subtotal = price * this.days;
+                            const subtotal = totalPrice * this.days;
                             const totalLkr = subtotal + (subtotal * this.taxRate / 100);
                             return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
                                 minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
@@ -750,8 +820,8 @@
                         specialReq: '',
                         additionalNotes: ''
                       }"
-                      @set-guests.window="guests = $event.detail.count"
-                      @set-room.window="roomId = $event.detail.id; $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
+                       @set-guests.window="guests = $event.detail.count"
+                       @set-room.window="if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
                     @csrf
                     
                     {{-- Section 1: Personal Details --}}
@@ -815,15 +885,24 @@
                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
-                                <div class="space-y-3">
-                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Room Type') }}</label>
-                                    <select name="room_id" id="room_id" x-model="roomId" 
-                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
-                                        <option value="" class="bg-white">{{ __('Any Collection') }}</option>
+                                <div class="space-y-4 md:col-span-2">
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Room Type Selection') }}</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         @foreach($rooms as $r)
-                                            <option value="{{ $r->id }}" class="bg-white">{{ $r->title }}</option>
+                                            <label class="relative flex items-center gap-4 p-6 bg-white border-2 rounded-[2rem] cursor-pointer transition-all duration-300 hover:border-rose-gold/50"
+                                                   :class="roomId.includes('{{ $r->id }}') ? 'border-rose-gold bg-rose-gold/5 ring-4 ring-rose-gold/5' : 'border-gray-100'">
+                                                <input type="checkbox" name="room_ids[]" value="{{ $r->id }}" x-model="roomId" class="hidden">
+                                                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
+                                                     :class="roomId.includes('{{ $r->id }}') ? 'border-rose-gold bg-rose-gold' : 'border-gray-200'">
+                                                    <svg x-show="roomId.includes('{{ $r->id }}')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs font-black text-gray-900 uppercase tracking-widest">{{ $r->title }}</span>
+                                                    <span class="text-[10px] font-bold text-rose-gold uppercase opacity-70">{{ \App\Helpers\CurrencyHelper::format($r->price_per_night) }} / day</span>
+                                                </div>
+                                            </label>
                                         @endforeach
-                                    </select>
+                                    </div>
                                 </div>
 
                                 <div class="space-y-3">
@@ -843,7 +922,7 @@
                                 </div>
                             </div>
 
-                            <div x-show="roomId" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
+                            <div x-show="roomId.length > 0" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
                                  class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative">
                                 <div class="absolute -right-12 -top-12 w-64 h-64 bg-rose-gold/5 rounded-full blur-3xl"></div>
                                 <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-rose-accent/5 rounded-full blur-2xl"></div>
@@ -852,9 +931,13 @@
                                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                                         <div class="flex items-center gap-6">
                                             <div class="w-1 h-16 bg-rose-gold rounded-full hidden md:block"></div>
-                                            <div class="text-left">
+                                            <div class="text-left max-w-[300px]">
                                                 <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70">Luxury Selection</p>
-                                                <h4 class="font-serif text-3xl text-rose-accent uppercase leading-tight" x-text="rooms[roomId].title"></h4>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <template x-for="id in roomId" :key="id">
+                                                        <span class="px-3 py-1 bg-rose-gold/10 text-rose-accent text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-gold/20" x-text="rooms[id].title"></span>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -910,7 +993,7 @@
                                           class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
                             </div>
 
-                            <div class="flex flex-col items-center pt-8" x-show="roomId" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
+                             <div class="flex flex-col items-center pt-8" x-show="roomId.length > 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
                                 <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
                                         :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
                                         :disabled="!checkIn || !checkOut || days < 1">

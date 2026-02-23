@@ -57,12 +57,18 @@ class HomeController extends Controller
             'address' => ['nullable', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:50'],
             'room_id' => ['nullable', 'exists:rooms,id'],
+            'room_ids' => ['nullable', 'array'],
+            'room_ids.*' => ['exists:rooms,id'],
             'check_in' => ['required', 'date'],
             'check_out' => ['required', 'date', 'after:check_in'],
             'guests' => ['required', 'integer', 'min:1', 'max:5'],
             'special_requirements' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],
         ]);
+
+        if (isset($data['room_id']) && !isset($data['room_ids'])) {
+            $data['room_ids'] = [$data['room_id']];
+        }
 
         $messageParts = [];
         if ($request->special_requirements) $messageParts[] = "Special Requirements: " . $request->special_requirements;

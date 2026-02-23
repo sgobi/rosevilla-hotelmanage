@@ -160,7 +160,7 @@
                                         </div>
                                         <div>
                                             <h4 class="font-black text-gray-900 text-xl tracking-tight leading-none group-hover:text-indigo-600 transition-colors">{{ $res->guest_name }}</h4>
-                                            <p class="text-xs font-black text-indigo-400 uppercase tracking-widest mt-2">{{ $res->room->title ?? 'Heritage Room' }} • {{ $res->guests }} Guests</p>
+                                            <p class="text-xs font-black text-indigo-400 uppercase tracking-widest mt-2">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }} • {{ $res->guests }} Guests</p>
                                             <div class="flex items-center mt-3 gap-3 text-[10px] font-bold text-gray-400">
                                                 @if($res->advance_paid_at)
                                                     <div class="flex items-center gap-1.5 text-emerald-600 font-black"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ADVANCE PAID</div>
@@ -296,7 +296,7 @@
                                                         <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-indigo-100">Fully Paid</span>
                                                     @endif
                                                 </div>
-                                                <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.1em] mt-2 italic">{{ $res->room->title ?? 'Heritage Room' }} ({{ $res->guests }} Adults)</p>
+                                                <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.1em] mt-2 italic">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }} ({{ $res->guests }} Adults)</p>
                                             </div>
                                         </div>
 

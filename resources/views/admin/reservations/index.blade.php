@@ -177,7 +177,7 @@
                                         {{ optional($reservation->check_in)->format('M d, Y') }} – {{ optional($reservation->check_out)->format('M d, Y') }}
                                     </td>
                                     <td class="px-6 py-3 text-gray-700">{{ $reservation->guests }}</td>
-                                    <td class="px-6 py-3 text-gray-700">{{ $reservation->room->title ?? 'Any' }}</td>
+                                    <td class="px-6 py-3 text-gray-700">{{ $reservation->rooms()->pluck('title')->implode(', ') ?: 'Any' }}</td>
                                     <td class="px-6 py-3">
                                         <div x-data="{ show: false }" class="relative">
                                             <div @mouseenter="show = true" @mouseleave="show = false" class="cursor-help inline-block">

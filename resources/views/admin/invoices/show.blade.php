@@ -128,7 +128,9 @@
                 <tr>
                     <td>
                         <div class="font-bold text-gray-900">Room Accommodation ({{ $days }} days)</div>
-                        <div class="text-xs text-gray-500 mt-0.5">{{ $reservation->room->title ?? 'Base Room' }} &times; {{ $days }} days @ LKR {{ number_format($reservation->room->price_per_night ?? 0, 2) }}</div>
+                        @foreach($reservation->rooms() as $room)
+                            <div class="text-xs text-gray-500 mt-0.5">{{ $room->title }} &times; {{ $days }} days @ LKR {{ number_format($room->price_per_night, 2) }}</div>
+                        @endforeach
                     </td>
                     <td class="text-right font-medium">LKR {{ number_format($reservation->total_price, 2) }}</td>
                 </tr>

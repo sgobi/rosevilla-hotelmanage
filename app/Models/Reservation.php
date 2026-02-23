@@ -12,6 +12,7 @@ class Reservation extends Model
 
     protected $fillable = [
         'room_id',
+        'room_ids',
         'guest_name',
         'email',
         'address',
@@ -53,6 +54,7 @@ class Reservation extends Model
     ];
 
     protected $casts = [
+        'room_ids' => 'array',
         'check_in' => 'date',
         'check_out' => 'date',
         'checked_in_at' => 'datetime',
@@ -93,21 +95,38 @@ class Reservation extends Model
     protected static function booted()
     {
         static::creating(function ($reservation) {
-            if ($reservation->room_id && $reservation->check_in && $reservation->check_out) {
-                // Calculation: inclusive of both check-in and check-out dates
+            if ($reservation->check_in && $reservation->check_out) {
                 $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
-                
-                $room = Room::find($reservation->room_id);
-                if ($room) {
-                    $reservation->total_price = $room->price_per_night * $days;
-                    
-                    // Apply current tax rate
+                $totalPrice = 0;
+
+                if ($reservation->room_ids) {
+                    $rooms = Room::whereIn('id', $reservation->room_ids)->get();
+                    foreach ($rooms as $room) {
+                        $totalPrice += $room->price_per_night * $days;
+                    }
+                } elseif ($reservation->room_id) {
+                    $room = Room::find($reservation->room_id);
+                    if ($room) {
+                        $totalPrice = $room->price_per_night * $days;
+                    }
+                }
+
+                if ($totalPrice > 0) {
+                    $reservation->total_price = $totalPrice;
                     $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
                     $reservation->tax_percentage = $taxRate;
                     $reservation->tax_amount = ($reservation->total_price * $taxRate) / 100;
                 }
             }
         });
+    }
+
+    public function rooms()
+    {
+        if ($this->room_ids) {
+            return Room::whereIn('id', $this->room_ids)->get();
+        }
+        return collect($this->room ? [$this->room] : []);
     }
 
     public function room(): BelongsTo

@@ -78,7 +78,7 @@
                             <tr>
                                 <td class="py-4 pr-4 font-bold text-gray-400 text-xs">#{{ $res->id }}</td>
                                 <td class="py-4 pr-4 font-black text-gray-900">{{ $res->guest_name }}</td>
-                                <td class="py-4 pr-4 text-xs font-bold text-gray-600">{{ $res->room->title ?? 'Heritage Room' }}</td>
+                                <td class="py-4 pr-4 text-xs font-bold text-gray-600">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }}</td>
                                 <td class="py-4 pr-4">
                                     <span class="font-black text-indigo-600 text-xs uppercase">{{ $res->checked_in_at->format('M d, H:i') }}</span>
                                 </td>
@@ -114,7 +114,7 @@
                             <tr>
                                 <td class="py-4 pr-4 font-bold text-gray-400 text-xs">#{{ $res->id }}</td>
                                 <td class="py-4 pr-4 font-black text-gray-900">{{ $res->guest_name }}</td>
-                                <td class="py-4 pr-4 text-xs font-bold text-gray-600">{{ $res->room->title ?? 'Heritage Room' }}</td>
+                                <td class="py-4 pr-4 text-xs font-bold text-gray-600">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }}</td>
                                 <td class="py-4 pr-4">
                                     <span class="font-black text-amber-600 text-xs uppercase">{{ $res->checked_out_at->format('M d, H:i') }}</span>
                                 </td>

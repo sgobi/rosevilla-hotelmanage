@@ -84,7 +84,7 @@
                                             <p class="text-[10px] text-gray-400 font-medium">#{{ $res->id }}</p>
                                         </td>
                                         <td class="px-8 py-4">
-                                            <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-tighter">{{ $res->room->title ?? 'Room' }}</span>
+                                            <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-tighter">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }}</span>
                                         </td>
                                         <td class="px-8 py-4">
                                             <p class="font-bold text-gray-600 text-[11px] leading-none">{{ $res->checked_in_at->format('M d, Y') }}</p>
@@ -123,7 +123,7 @@
                                             <p class="text-[10px] text-gray-400 font-medium">#{{ $res->id }}</p>
                                         </td>
                                         <td class="px-8 py-4">
-                                            <span class="px-2 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-tighter">{{ $res->room->title ?? 'Room' }}</span>
+                                            <span class="px-2 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-tighter">{{ $res->rooms()->pluck('title')->implode(' + ') ?: 'Room' }}</span>
                                         </td>
                                         <td class="px-8 py-4">
                                             <p class="font-bold text-gray-600 text-[11px] leading-none">{{ $res->checked_out_at->format('M d, Y') }}</p>
