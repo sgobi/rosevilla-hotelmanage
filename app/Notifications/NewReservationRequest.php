@@ -41,7 +41,7 @@ class NewReservationRequest extends Notification
         return [
             'reservation_id' => $this->reservation->id,
             'message' => 'New reservation request from ' . $this->reservation->guest_name,
-            'action_url' => route('admin.reservations.index'),
+            'action_url' => route('admin.reservations.index', [], false),
             'type' => 'new_reservation'
         ];
     }

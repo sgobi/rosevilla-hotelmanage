@@ -7,7 +7,7 @@
     <!-- SEO Meta Tags -->
     <title>FAQ - Rose Villa Heritage Homes | Your Questions Answered</title>
     <meta name="description" content="Find answers to frequently asked questions about Rose Villa Heritage Homes in Jaffna. Learn about booking, amenities, location, and our heritage experience.">
-    <meta name="keywords" content="Rose Villa FAQ, Jaffna hotel questions, heritage home booking, Rose Villa amenities, Jaffna accommodation help">
+    <meta name="keywords" content="Rose Villa FAQ, Jaffna accommodation questions, heritage home booking, Rose Villa amenities, Jaffna accommodation help">
     <meta name="author" content="Rose Villa Heritage Homes">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url('/faq') }}">
@@ -75,7 +75,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa Heritage Homes is a luxury boutique heritage hotel located in Jaffna, Sri Lanka. We are a beautifully restored colonial-era villa that combines authentic heritage architecture with modern luxury amenities. Our property offers an immersive cultural experience in the heart of Jaffna's historic district, perfect for travelers seeking authenticity, elegance, and a connection to Sri Lanka's rich colonial past.
+                                    <strong>A:</strong> Rose Villa Heritage Homes is a luxury heritage located in Jaffna, Sri Lanka. We are a beautifully restored colonial-era villa that combines authentic heritage architecture with modern luxury amenities. Our property offers an immersive cultural experience in the heart of Jaffna's historic district, perfect for travelers seeking authenticity, elegance, and a connection to Sri Lanka's rich colonial past.
                                 </p>
                             </div>
                         </div>
@@ -100,12 +100,12 @@
                     <div class="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
                         <h3 class="text-xl font-bold text-rose-accent mb-4 flex items-start gap-3" itemprop="name">
                             <span class="text-rose-gold">Q:</span>
-                            What makes Rose Villa different from other hotels in Jaffna?
+                            What makes Rose Villa different from other accommodations in Jaffna?
                         </h3>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa stands out as Jaffna's premier heritage accommodation for several reasons: (1) Authentic colonial architecture preserved from the 1800s, (2) Personalized boutique service with a maximum of 12 guests, (3) Curated cultural experiences including heritage tours and traditional cuisine, (4) Prime location in the historic district, (5) Blend of period charm with modern luxury amenities like air conditioning, Wi-Fi, and premium bedding, and (6) Commitment to sustainable tourism and cultural preservation.
+                                    <strong>A:</strong> Rose Villa stands out as Jaffna's premier heritage accommodation for several reasons: (1) Authentic colonial architecture preserved from the 1800s, (2) Personalized service with a maximum of 12 guests, (3) Curated cultural experiences including heritage tours and traditional cuisine, (4) Prime location in the historic district, (5) Blend of period charm with modern luxury amenities like air conditioning, Wi-Fi, and premium bedding, and (6) Commitment to sustainable tourism and cultural preservation.
                                 </p>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Booking at Rose Villa is simple and convenient. You can: (1) Book directly through our website reservation form for the best rates, (2) Call us at +94 77 123 4567 to speak with our concierge team, (3) Email us at info@rosevilla.com with your preferred dates, or (4) Book through major travel platforms like Booking.com, Agoda, or Expedia. We recommend booking directly for exclusive perks and personalized service.
+                                    <strong>A:</strong> Booking at Rose Villa is simple and convenient. You can: (1) Book directly through our website reservation form for the best rates, (2) Call us at +94 77 123 4567 to speak with our concierge team, or (3) Email us at info@rosevilla.com with your preferred dates. We recommend booking directly for exclusive perks and personalized service. Please note that we do not have agreements with travel platforms.
                                 </p>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa offers four distinct room categories: (1) Heritage Suite - Our premium offering with colonial four-poster beds and private balconies, (2) Deluxe Room - Spacious rooms with period furniture and modern bathrooms, (3) Classic Room - Comfortable accommodations with heritage charm, and (4) Garden View Room - Ground-floor rooms overlooking our lush courtyards. All rooms feature air conditioning, Wi-Fi, premium linens, and en-suite bathrooms.
+                                    <strong>A:</strong> Rose Villa offers unique and comfortable heritage accommodations. Please note that we do not have en-suite bathrooms directly inside the bedrooms.
                                 </p>
                             </div>
                         </div>
@@ -200,7 +200,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> All rooms at Rose Villa include: Air conditioning, High-speed Wi-Fi, Premium bedding and linens, En-suite bathroom with hot water, Complimentary toiletries, Mini-bar, Tea/coffee making facilities, Safe deposit box, Writing desk, and Daily housekeeping. Select rooms also feature balconies, bathtubs, and garden views.
+                                    <strong>A:</strong> Amenities vary by room, but typically include: Air conditioning, Wi-Fi, Premium bedding and linens, Complimentary toiletries, Tea/coffee making facilities, and Daily housekeeping. Note that bathrooms are accessible just outside the bedrooms.
                                 </p>
                             </div>
                         </div>
@@ -215,7 +215,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Yes, high-speed Wi-Fi is complimentary throughout the property, including all guest rooms, common areas, and gardens. We provide reliable connectivity suitable for video calls, streaming, and remote work. The network is secure and password-protected.
+                                    <strong>A:</strong> WiFi is free what internet provide per month additional will be charged.
                                 </p>
                             </div>
                         </div>
@@ -460,7 +460,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> We accept multiple payment methods for your convenience: Cash (Sri Lankan Rupees, US Dollars, Euros), Credit/Debit cards (Visa, Mastercard, American Express), Bank transfers, and Online payment platforms. A deposit may be required at the time of booking. Final payment can be settled upon check-out.
+                                    <strong>A:</strong> We accept Cash (Sri Lankan Rupees) and Bank transfers. A deposit may be required at the time of booking. Final payment can be settled upon check-out.
                                 </p>
                             </div>
                         </div>

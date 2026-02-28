@@ -62,8 +62,8 @@ class BookingStatusUpdated extends Notification
         // Determine if it's an event booking or reservation for the link
         $isEvent = isset($this->booking->event_type);
         $url = $isEvent 
-            ? route('admin.events.index') 
-            : route('admin.reservations.index');
+            ? route('admin.events.index', [], false) 
+            : route('admin.reservations.index', [], false);
 
         return [
             'booking_id' => $this->booking->id,

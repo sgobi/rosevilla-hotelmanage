@@ -1,0 +1,1 @@
+<?php require 'vendor/autoload.php'; \ = require_once 'bootstrap/app.php'; \->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); echo json_encode(\App\Models\Reservation::all()->toArray(), JSON_PRETTY_PRINT);

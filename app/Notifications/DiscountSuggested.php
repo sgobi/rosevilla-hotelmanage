@@ -44,7 +44,7 @@ class DiscountSuggested extends Notification
         return [
             'reservation_id' => $this->data['reservation_id'],
             'message' => $this->data['message'] ?? ('New discount suggestion: ' . $this->data['discount_percentage'] . '% for ' . $this->data['guest_name']),
-            'action_url' => route('admin.reservations.index'),
+            'action_url' => route('admin.reservations.index', [], false),
             'type' => $this->data['type'] ?? 'suggestion'
         ];
     }

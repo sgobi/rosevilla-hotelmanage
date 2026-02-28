@@ -51,7 +51,7 @@ class NewEventBookingRequest extends Notification
         return [
             'booking_id' => $this->booking->id,
             'message' => $message,
-            'action_url' => route('admin.events.index'), // Or show/edit route if preferred
+            'action_url' => route('admin.events.index', [], false), // Or show/edit route if preferred
             'type' => $this->type
         ];
     }

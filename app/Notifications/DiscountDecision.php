@@ -44,7 +44,7 @@ class DiscountDecision extends Notification
         return [
             'reservation_id' => $this->data['reservation_id'],
             'message' => 'Discount ' . $this->data['status'] . ': ' . $this->data['guest_name'],
-            'action_url' => route('admin.reservations.index'),
+            'action_url' => route('admin.reservations.index', [], false),
             'type' => 'decision',
             'status' => $this->data['status']
         ];

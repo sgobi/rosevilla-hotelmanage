@@ -46,11 +46,25 @@ class DashboardController extends Controller
             
             $url = $notification->data['action_url'] ?? route('dashboard');
             
+            // SECURITY: Ensure URL is relative to prevent redirects to 127.0.0.1 or external sites
+            // if it was saved during local development or has incorrect APP_URL config.
+            if (str_starts_with($url, 'http')) {
+                $parsed = parse_url($url);
+                $url = ($parsed['path'] ?? '/') . 
+                       (isset($parsed['query']) ? '?' . $parsed['query'] : '') . 
+                       (isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '');
+            }
+            
             // Try to append hash for specific row highlighting if ID exists
             if (isset($notification->data['reservation_id'])) {
-                $url .= '#reservation-' . $notification->data['reservation_id'];
+                // Ensure we don't duplicate the hash if it already exists
+                if (strpos($url, '#') === false) {
+                    $url .= '#reservation-' . $notification->data['reservation_id'];
+                }
             } elseif (isset($notification->data['booking_id'])) {
-                $url .= '#event-' . $notification->data['booking_id'];
+                if (strpos($url, '#') === false) {
+                    $url .= '#event-' . $notification->data['booking_id'];
+                }
             }
             
             return redirect($url);

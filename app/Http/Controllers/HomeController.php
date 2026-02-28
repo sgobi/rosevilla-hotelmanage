@@ -39,6 +39,24 @@ class HomeController extends Controller
 
         $homeEvents = HomeEvent::query()->orderBy('sort_order')->get();
 
+        $activeReservations = Reservation::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString())
+            ->get(['room_ids', 'room_id', 'check_in', 'check_out']);
+
+        $bookedDatesByRoom = [];
+        foreach ($activeReservations as $res) {
+            $rIds = !empty($res->room_ids) ? $res->room_ids : ($res->room_id ? [$res->room_id] : []);
+            foreach ($rIds as $rId) {
+                if (!isset($bookedDatesByRoom[$rId])) {
+                    $bookedDatesByRoom[$rId] = [];
+                }
+                $bookedDatesByRoom[$rId][] = [
+                    'check_in' => $res->check_in->format('Y-m-d'),
+                    'check_out' => $res->check_out->format('Y-m-d')
+                ];
+            }
+        }
+
         return view('home', [
             'content' => $content,
             'rooms' => $rooms,
@@ -46,6 +64,7 @@ class HomeController extends Controller
             'reviews' => $reviews,
             'landmarks' => $landmarks,
             'homeEvents' => $homeEvents,
+            'bookedDatesByRoom' => json_encode($bookedDatesByRoom),
         ]);
     }
 
@@ -65,6 +84,35 @@ class HomeController extends Controller
             'special_requirements' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],
         ]);
+
+        $requestedCheckIn = $data['check_in'];
+        $requestedCheckOut = $data['check_out'];
+        $roomIdsToCheck = isset($data['room_ids']) ? $data['room_ids'] : (isset($data['room_id']) ? [$data['room_id']] : []);
+
+        if (!empty($roomIdsToCheck)) {
+            $overlappingReservations = \App\Models\Reservation::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+                ->where(function ($query) use ($requestedCheckIn, $requestedCheckOut) {
+                    $query->whereDate('check_in', '<', $requestedCheckOut)
+                          ->whereDate('check_out', '>', $requestedCheckIn);
+                })->get();
+
+            $isAvailable = true;
+            foreach ($overlappingReservations as $res) {
+                $resRoomIds = !empty($res->room_ids) ? $res->room_ids : ($res->room_id ? [$res->room_id] : []);
+                foreach ($roomIdsToCheck as $rId) {
+                    if (in_array((string)$rId, array_map('strval', $resRoomIds))) {
+                        $isAvailable = false;
+                        break 2;
+                    }
+                }
+            }
+
+            if (!$isAvailable) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Sorry, one or more selected rooms are already booked for the chosen dates. Please adjust your check-in/check-out dates or select different rooms.');
+            }
+        }
 
         if (isset($data['room_id']) && !isset($data['room_ids'])) {
             $data['room_ids'] = [$data['room_id']];

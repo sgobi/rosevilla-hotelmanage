@@ -7,7 +7,7 @@
     <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-primary/5 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/2"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-20">
             <!-- Brand Column -->
             <div id="contact" class="space-y-8 flex flex-col items-center md:items-start text-center md:text-left">
                 <a href="{{ route('home') }}" class="inline-block transform hover:scale-105 transition-transform duration-500">
@@ -88,23 +88,6 @@
                 </ul>
             </div>
 
-            <!-- Currency Column -->
-            <div class="flex flex-col items-center md:items-start text-center md:text-left">
-                <h4 class="font-serif text-lg text-rose-gold mb-10 uppercase tracking-[0.2em] relative inline-block">
-                    Finance
-                    <span class="absolute -bottom-2 left-0 w-8 h-px bg-rose-gold/50"></span>
-                </h4>
-                <div class="w-full">
-                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-black mb-6">Select Currency</p>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                        @foreach(['LKR', 'USD', 'EUR', 'CAD', 'INR'] as $code)
-                            <a href="{{ route('currency.switch', $code) }}" class="group/curr relative px-4 py-2 border border-white/5 rounded-xl text-[11px] font-bold tracking-widest transition-all duration-500 hover:border-rose-gold/50 {{ session('currency', 'LKR') == $code ? 'bg-rose-gold text-white border-rose-gold shadow-lg shadow-rose-gold/20' : 'text-gray-500 hover:text-white' }}">
-                                {{ $code }}
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Bottom Bar -->

@@ -29,7 +29,7 @@
 
             <script>
                 setInterval(function() {
-                    fetch('{{ route('notifications.fetch') }}', {
+                    fetch('{{ route('notifications.fetch', [], false) }}', {
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'
                         }

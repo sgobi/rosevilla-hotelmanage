@@ -7,7 +7,7 @@
     <!-- SEO Meta Tags -->
     <title>Rose Villa Heritage Homes | Luxury Stay in Jaffna</title>
     <meta name="description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury. Book your stay for an unforgettable authentic experience.">
-    <meta name="keywords" content="Rose Villa, Heritage Home Jaffna, Luxury Hotel Jaffna, Boutique Hotel Sri Lanka, Jaffna Accommodation, Colonial Villa Jaffna, Best Places to Stay in Jaffna">
+    <meta name="keywords" content="Rose Villa, Heritage Home Jaffna, Luxury Heritage Home Jaffna, Heritage Home Sri Lanka, Jaffna Accommodation, Colonial Villa Jaffna, Best Places to Stay in Jaffna">
     <meta name="author" content="Rose Villa Heritage Homes">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">

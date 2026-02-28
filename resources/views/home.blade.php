@@ -11,7 +11,7 @@
 
     <title>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}</title>
     <meta name="description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
-    <meta name="keywords" content="Heritage Hotel Jaffna, Boutique Hotel Jaffna, Luxury Stay Jaffna, Colonial Villa Jaffna, Best Hotel in Jaffna, Jaffna Accommodation, Hotels in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Hotels near Jaffna Fort, Hotels near Nallur Temple, Northern Province Hotels, Sri Lanka Heritage Hotel, Boutique Hotels Sri Lanka, Jaffna Tourism, Wedding Venue Jaffna, Colonial Architecture Jaffna, Tamil Cuisine Jaffna, Jaffna Cultural Experience, Heritage Tours Jaffna">
+    <meta name="keywords" content="Heritage Home Jaffna, Accommodation Jaffna, Luxury Stay Jaffna, Colonial Villa Jaffna, Best Accommodation in Jaffna, Jaffna Accommodation, Accommodations in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Accommodations near Jaffna Fort, Accommodations near Nallur Temple, Northern Province Accommodations, Sri Lanka Heritage Home, Accommodations Sri Lanka, Jaffna Tourism, Wedding Venue Jaffna, Colonial Architecture Jaffna, Tamil Cuisine Jaffna, Jaffna Cultural Experience, Heritage Tours Jaffna">
     <meta name="geo.region" content="LK-41">
     <meta name="geo.placename" content="Jaffna">
     <meta name="geo.position" content="9.6615;80.0255">
@@ -156,101 +156,7 @@
             :class="{ 'bg-[#1a1c1e] shadow-xl py-3': scrolled, 'bg-gradient-to-b from-black/70 to-transparent py-0': !scrolled }"
             class="fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5" style="transform: translateZ(0);">
         
-        <!-- Premium Top Navigation Bar (Hidden on scroll) -->
-        <div x-show="!scrolled" 
-             x-transition:enter="transition ease-out duration-700" 
-             x-transition:enter-start="opacity-0 -translate-y-full" 
-             x-transition:enter-end="opacity-100 translate-y-0" 
-             x-transition:leave="transition ease-in duration-500" 
-             x-transition:leave-start="opacity-100 translate-y-0" 
-             x-transition:leave-end="opacity-0 -translate-y-full"
-             class="relative bg-black/40 backdrop-blur-xl border-b border-white/10 z-[60] overflow-hidden group/topbar">
-            
-            <!-- Animated Background Glow -->
-            <div class="absolute inset-0 bg-gradient-to-r from-rose-gold/5 via-transparent to-rose-gold/5 opacity-0 group-hover/topbar:opacity-100 transition-opacity duration-1000"></div>
-            
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3 relative">
-                <div class="flex justify-between items-center">
-                    <!-- Transport Links -->
-                    <div class="flex items-center gap-4 md:gap-7 lg:gap-8">
-                        <!-- Jaffna Town -->
-                        <div class="flex items-center gap-2.5 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
-                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Town') }}</span>
-                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
-                            </div>
-                        </div>
 
-                        <div class="h-6 w-px bg-white/10 hidden sm:block"></div>
-
-                        <!-- Palaly Airport -->
-                        <div class="flex items-center gap-2.5 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
-                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Airport') }}</span>
-                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="h-6 w-px bg-white/10 hidden lg:block"></div>
-
-                        <!-- Railway Station -->
-                        <div class="flex items-center gap-2.5 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-6">🚆</span>
-                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Railway') }}</span>
-                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="h-6 w-px bg-white/10 hidden xl:block"></div>
-
-                        <!-- Bus Stand -->
-                        <div class="flex items-center gap-2.5 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-lg md:text-xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-6">🚌</span>
-                                <div class="absolute -inset-1 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] md:text-[8px] font-black text-rose-gold/60 uppercase tracking-[0.2em] mb-0.5">{{ __('Bus Stand') }}</span>
-                                <span class="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Status & Call to Action -->
-                    <div class="hidden xl:flex items-center gap-6">
-                        <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 group/status">
-                            <div class="relative">
-                                <span class="flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                </span>
-                            </div>
-                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
-                        </div>
-                        <div class="w-px h-4 bg-white/10"></div>
-                        <a href="#contact" class="text-[9px] font-black text-rose-gold uppercase tracking-[0.4em] hover:text-white transition-colors duration-500 flex items-center gap-2 group/request">
-                            {{ __('Request Transfer') }}
-                            <svg class="w-3 h-3 group-hover/request:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bottom Border Shine -->
-            <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-gold/30 to-transparent"></div>
-        </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6 transition-all duration-500" :class="{ 'lg:py-3': scrolled }">
             <div class="flex justify-between items-center text-white">
@@ -771,6 +677,18 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-rose-500 shadow-xl p-8 rounded-2xl flex items-center gap-6 animate-fade-in-up">
+                    <div class="shrink-0 w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-sm">{{ __('Booking Unavailable') }}</h4>
+                        <p class="text-gray-500 text-sm mt-1">{{ session('error') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
                 
@@ -795,6 +713,7 @@
                                 if (value.length <= 1 && this.guests > 5) {
                                     this.guests = 5;
                                 }
+                                window.dispatchEvent(new CustomEvent('room-selected', { detail: value }));
                             });
                         },
                         get days() {
@@ -887,13 +806,13 @@
                         <div class="lg:col-span-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                                 <div class="space-y-3">
-                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-In') }} <span class="text-rose-gold">*</span></label>
+                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 {{ session('error') ? 'text-rose-600' : 'text-gray-900' }}">{{ __('Check-In') }} <span class="text-rose-gold">*</span></label>
                                     <input type="text" name="check_in" id="res_check_in" x-model="checkIn" required 
                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
                                 <div class="space-y-3">
-                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Check-Out') }} <span class="text-rose-gold">*</span></label>
+                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 {{ session('error') ? 'text-rose-600' : 'text-gray-900' }}">{{ __('Check-Out') }} <span class="text-rose-gold">*</span></label>
                                     <input type="text" name="check_out" id="res_check_out" x-model="checkOut" required 
                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
@@ -1101,28 +1020,82 @@
             </div>
 
             <!-- Travel Times -->
-            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-500">
-                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/10 flex items-center justify-center text-rose-gold text-3xl group-hover:scale-110 transition-transform duration-500">
-                        🚗
-                    </div>
-                    <div>
-                        <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Jaffna Town') }}</h4>
-                        <p class="text-gray-500 text-sm font-light leading-relaxed">
-                            {{ __('Approximately :time by car or Tuk-Tuk, depending on traffic conditions.', ['time' => $content['reach_time_jaffna'] ?? '10 to 15 minutes']) }}
-                        </p>
-                    </div>
-                </div>
+            <div class="mt-16 bg-[#1a1c1e] rounded-[2rem] p-8 md:p-12 shadow-2xl border border-gray-800 relative overflow-hidden group/transports">
+                <div class="absolute inset-0 bg-gradient-to-r from-rose-gold/5 via-transparent to-rose-gold/5 opacity-50"></div>
+                
+                <div class="relative flex flex-col xl:flex-row items-center justify-between gap-10">
+                    <!-- Transport Links -->
+                    <div class="flex flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-12 flex-grow">
+                        <!-- Jaffna Town -->
+                        <div class="flex items-center gap-4 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
+                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Town') }}</span>
+                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
+                            </div>
+                        </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-500">
-                    <div class="w-16 h-16 rounded-2xl bg-rose-gold/10 flex items-center justify-center text-rose-gold text-3xl group-hover:scale-110 transition-transform duration-500">
-                        ✈️
+                        <div class="h-10 w-px bg-white/10 hidden sm:block"></div>
+
+                        <!-- Palaly Airport -->
+                        <div class="flex items-center gap-4 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
+                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Airport') }}</span>
+                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="h-10 w-px bg-white/10 hidden md:block"></div>
+
+                        <!-- Railway Station -->
+                        <div class="flex items-center gap-4 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-6">🚆</span>
+                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Railway') }}</span>
+                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="h-10 w-px bg-white/10 hidden lg:block"></div>
+
+                        <!-- Bus Stand -->
+                        <div class="flex items-center gap-4 group/item cursor-default">
+                            <div class="relative">
+                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-6">🚌</span>
+                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Bus Stand') }}</span>
+                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-serif text-lg text-rose-accent uppercase tracking-wider mb-1">{{ __('From Palaly Airport') }}</h4>
-                        <p class="text-gray-500 text-sm font-light leading-relaxed">
-                            {{ __('Approximately :time reaching time to the villa from Jaffna International Airport.', ['time' => $content['reach_time_airport'] ?? '15 to 20 minutes']) }}
-                        </p>
+
+                    <!-- Status & Call to Action -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 xl:border-l xl:border-white/10 xl:pl-10">
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 group/status">
+                            <div class="relative">
+                                <span class="flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                            </div>
+                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
+                        </div>
+                        <a href="#contact" class="text-[10px] font-black text-rose-gold uppercase tracking-[0.4em] hover:text-white transition-colors duration-500 flex items-center gap-2 group/request whitespace-nowrap">
+                            {{ __('Request Transfer') }}
+                            <svg class="w-4 h-4 group-hover/request:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1277,12 +1250,39 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            window.bookedDatesByRoom = {!! $bookedDatesByRoom ?? '{}' !!};
+            window.selectedRoomIds = [];
+            
+            const disabledDatesFunc = function(date) {
+                if (!window.bookedDatesByRoom || window.selectedRoomIds.length === 0) return false;
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+                
+                for (let i = 0; i < window.selectedRoomIds.length; i++) {
+                    const rId = window.selectedRoomIds[i];
+                    if (window.bookedDatesByRoom[rId]) {
+                        for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
+                            const range = window.bookedDatesByRoom[rId][j];
+                            // The night before check_out is the last booked night. So date < check_out is disabled.
+                            if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            };
+
             // Hero Section Configuration
             const heroConfig = {
                 dateFormat: "Y-m-d",
                 altInput: true,
                 altFormat: "d / m / Y",
                 minDate: "today",
+                disable: [disabledDatesFunc],
                 altInputClass: "w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none"
             };
 
@@ -1306,7 +1306,8 @@
                 altInput: true,
                 altFormat: "d / m / Y",
                 minDate: "today",
-                altInputClass: "w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+                disable: [disabledDatesFunc],
+                altInputClass: "w-full px-8 py-6 bg-white border-2 {{ session('error') ? 'border-rose-500 text-rose-600 focus:border-rose-600 focus:ring-rose-500/20' : 'border-gray-100 focus:border-rose-gold focus:ring-rose-gold/5' }} rounded-3xl focus:ring-4 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
             };
 
             const resCheckIn = flatpickr("#res_check_in", {
@@ -1339,6 +1340,14 @@
                 heroCheckOut.setDate(date);
                 resCheckOut.setDate(date);
             }
+
+            window.addEventListener('room-selected', function(e) {
+                window.selectedRoomIds = Array.from(e.detail || []);
+                if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disabledDatesFunc]);
+                if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disabledDatesFunc]);
+                if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disabledDatesFunc]);
+                if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disabledDatesFunc]);
+            });
         });
     </script>
 </body>

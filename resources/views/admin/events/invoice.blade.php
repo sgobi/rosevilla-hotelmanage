@@ -85,7 +85,7 @@
             </div>
             <div class="text-right text-[10px] leading-relaxed mt-4 uppercase tracking-widest font-black text-black">
                 <div class="flex justify-end gap-2">
-                    <span class="w-20 text-right">HOTEL TEL</span>
+                    <span class="w-20 text-right">TEL</span>
                     <span>:</span>
                     <span class="w-48 text-left">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
                 </div>
@@ -228,7 +228,7 @@
             @endif
             <div class="mt-4 pt-4 border-t border-gray-200">
                 <div class="text-[10px] uppercase tracking-widest text-black font-bold space-y-1">
-                    <p>Hotel Tel : {{ $content['contact_phone'] ?? '+94 76 319 3311' }}</p>
+                    <p>Tel : {{ $content['contact_phone'] ?? '+94 76 319 3311' }}</p>
                     <p>Email : {{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</p>
                     <p>WWW : www.rosevillaheritagehomes.com</p>
                 </div>
