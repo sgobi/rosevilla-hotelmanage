@@ -90,7 +90,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa Heritage Homes is centrally located at 123 Heritage Lane, Jaffna, in the Northern Province of Sri Lanka. We are situated in the historic heart of Jaffna, within walking distance of major cultural landmarks including Jaffna Fort, Nallur Kandaswamy Temple, and the Jaffna Public Library. The property is approximately 15 minutes from Jaffna International Airport (KKS) and easily accessible from all parts of the city.
+                                    <strong>A:</strong> Rose Villa Heritage Homes is centrally nestled at 25, 1st Cross Love Lane, Church Lane, Uduvil, in the historic heart of Jaffna, Sri Lanka. Our prime location offers effortless access to the city's cultural treasures. Whether arriving by air or road, we are conveniently situated just 15 minutes from Jaffna International Airport (KKS) and are easily accessible from all major parts of the Northern Province.
                                 </p>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa stands out as Jaffna's premier heritage accommodation for several reasons: (1) Authentic colonial architecture preserved from the 1800s, (2) Personalized service with a maximum of 12 guests, (3) Curated cultural experiences including heritage tours and traditional cuisine, (4) Prime location in the historic district, (5) Blend of period charm with modern luxury amenities like air conditioning, Wi-Fi, and premium bedding, and (6) Commitment to sustainable tourism and cultural preservation.
+                                    <strong>A:</strong> Rose Villa stands out as Jaffna's premier heritage accommodation for several reasons: (1) Established in 1848 by Subramaniar Ramupillai Udayar, Rose Villa has remained in the same family for over 200 years — preserving its legacy, tradition, and timeless charm across generations. (2) Personalized service with a maximum of 12 guests, (3) Curated cultural experiences including heritage tours and traditional cuisine, (4) Prime location in the historic district, (5) Blend of period charm with modern amenities like air conditioning and Wi-Fi, (6) Commitment to sustainable tourism and cultural preservation.
                                 </p>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa offers unique and comfortable heritage accommodations. Please note that we do not have en-suite bathrooms directly inside the bedrooms.
+                                    <strong>A:</strong> Rose Villa offers spacious heritage-style bedroom designed to blend timeless architectural charm with modern comfort. Large heritage room includes a private hall and a well-appointed bathroom featuring a hot water system, rain shower, and washing machine facilities — ensuring complete comfort, privacy, and convenience within the villa.
                                 </p>
                             </div>
                         </div>
@@ -325,7 +325,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Yes, we offer airport transfer services to and from Jaffna International Airport. Our comfortable, air-conditioned vehicles can be arranged for a nominal fee. We also provide transfers to Colombo (A9 highway, approximately 5-6 hours) and other destinations in Northern Sri Lanka. Please book transfers at least 24 hours in advance.
+                                    <strong>A:</strong> Yes, we offer airport transfer services to and from Jaffna International Airport. Our comfortable, air-conditioned vehicles can be arranged for a nominal fee. We also provide transfers to Colombo (A9 highway, approximately 7hours) and other destinations in Northern Sri Lanka. Please book transfers at least 24 hours in advance.
                                 </p>
                             </div>
                         </div>

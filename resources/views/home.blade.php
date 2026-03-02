@@ -172,7 +172,7 @@
                 <!-- Navigation Links (Centered) -->
                 <nav class="hidden md:flex flex-grow justify-center px-8">
                     <div class="flex items-center gap-x-8 lg:gap-x-16">
-                        @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Contact Us' => '#concierge'] as $label => $link)
+                        @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Find Us' => '#concierge'] as $label => $link)
                             <a href="{{ $link }}" class="relative text-[12px] tracking-[0.2em] font-black text-white uppercase transition-all duration-300 hover:text-rose-gold group drop-shadow-md whitespace-nowrap" aria-label="{{ $label }}">
                                 {{ __($label) }}
                                 <span class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-rose-gold transition-all duration-500 group-hover:w-full rounded-full shadow-[0_0_8px_rgba(179,142,93,0.8)]"></span>
@@ -278,7 +278,7 @@
                                 ['label' => 'Gallery', 'link' => '#gallery', 'sub' => 'Visual Tour', 'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
                                 ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
                                 ['label' => 'Events', 'link' => '#events', 'sub' => 'Celebrations', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z'],
-                                ['label' => 'Contact Us', 'link' => '#concierge', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                                ['label' => 'Find Us', 'link' => '#concierge', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                             ];
                         @endphp
 
