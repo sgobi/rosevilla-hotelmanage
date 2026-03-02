@@ -1015,86 +1015,68 @@
                 <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto leading-relaxed">{{ __('Discover our sanctuary in the heart of Jaffna') }}</p>
             </div>
             
-            <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 h-[500px]">
+            <div class="rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] h-[400px] md:h-[500px] ring-1 ring-gray-200 bg-white">
                 <iframe src="{{ $content['map_embed'] ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7864.813244882406!2d80.00654078217246!3d9.73158141202129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2snl!4v1769480636437!5m2!1sen!2snl' }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
 
             <!-- Travel Times -->
-            <div class="mt-16 bg-[#1a1c1e] rounded-[2rem] p-8 md:p-12 shadow-2xl border border-gray-800 relative overflow-hidden group/transports">
-                <div class="absolute inset-0 bg-gradient-to-r from-rose-gold/5 via-transparent to-rose-gold/5 opacity-50"></div>
+            <div class="mt-8 bg-[#16181b] rounded-[1.5rem] md:rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group/transports border border-gray-800/60">
+                <div class="absolute inset-0 bg-gradient-to-r from-rose-accent/10 via-transparent to-transparent opacity-30"></div>
                 
-                <div class="relative flex flex-col xl:flex-row items-center justify-between gap-10">
+                <div class="relative flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-0">
                     <!-- Transport Links -->
-                    <div class="flex flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-12 flex-grow">
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-8 md:gap-x-12 md:gap-y-8 flex-grow">
                         <!-- Jaffna Town -->
-                        <div class="flex items-center gap-4 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-12">🚗</span>
-                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
+                        <div class="flex items-center gap-4 group/item cursor-default min-w-[140px]">
+                            <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚙</span>
                             <div class="flex flex-col text-left">
-                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Town') }}</span>
-                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
+                                <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Town') }}</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
                             </div>
                         </div>
-
-                        <div class="h-10 w-px bg-white/10 hidden sm:block"></div>
 
                         <!-- Palaly Airport -->
-                        <div class="flex items-center gap-4 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-12">✈️</span>
-                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
+                        <div class="flex items-center gap-4 group/item cursor-default min-w-[140px]">
+                            <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">✈️</span>
                             <div class="flex flex-col text-left">
-                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Airport') }}</span>
-                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
+                                <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Airport') }}</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
                             </div>
                         </div>
-
-                        <div class="h-10 w-px bg-white/10 hidden md:block"></div>
 
                         <!-- Railway Station -->
-                        <div class="flex items-center gap-4 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:rotate-6">🚆</span>
-                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
+                        <div class="flex items-center gap-4 group/item cursor-default min-w-[140px]">
+                            <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚆</span>
                             <div class="flex flex-col text-left">
-                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Railway') }}</span>
-                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
+                                <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Railway') }}</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
                             </div>
                         </div>
 
-                        <div class="h-10 w-px bg-white/10 hidden lg:block"></div>
-
                         <!-- Bus Stand -->
-                        <div class="flex items-center gap-4 group/item cursor-default">
-                            <div class="relative">
-                                <span class="text-2xl md:text-3xl transition-all duration-500 group-hover/item:scale-125 block group-hover/item:-rotate-6">🚌</span>
-                                <div class="absolute -inset-2 bg-rose-gold/20 rounded-full blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                            </div>
+                        <div class="flex items-center gap-4 group/item cursor-default min-w-[140px]">
+                            <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚌</span>
                             <div class="flex flex-col text-left">
-                                <span class="text-[9px] md:text-[10px] font-black text-rose-gold/80 uppercase tracking-[0.3em] mb-1">{{ __('Bus Stand') }}</span>
-                                <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
+                                <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Bus Stand') }}</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
                             </div>
                         </div>
                     </div>
 
+                    <div class="h-16 w-px bg-white/10 hidden lg:block mx-10 shrink-0"></div>
+
                     <!-- Status & Call to Action -->
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 xl:border-l xl:border-white/10 xl:pl-10">
-                        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 group/status">
-                            <div class="relative">
-                                <span class="flex h-2.5 w-2.5">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                                </span>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 shrink-0">
+                        <div class="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 shadow-inner group/status">
+                            <div class="relative flex items-center justify-center w-2 h-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </div>
-                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
+                            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
                         </div>
-                        <a href="#contact" class="text-[10px] font-black text-rose-gold uppercase tracking-[0.4em] hover:text-white transition-colors duration-500 flex items-center gap-2 group/request whitespace-nowrap">
+                        <a href="#contact" class="text-[10px] font-black text-rose-gold uppercase tracking-[0.3em] hover:text-white transition-colors duration-500 flex items-center gap-3 group/request whitespace-nowrap">
                             {{ __('Request Transfer') }}
-                            <svg class="w-4 h-4 group-hover/request:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <svg class="w-4 h-4 text-rose-gold group-hover/request:text-white group-hover/request:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                     </div>
                 </div>
