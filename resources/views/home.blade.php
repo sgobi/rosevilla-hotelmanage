@@ -10,8 +10,8 @@
     @endif
 
     <title>{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}</title>
-    <meta name="description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
-    <meta name="keywords" content="Heritage Home Jaffna, Accommodation Jaffna, Luxury Stay Jaffna, Colonial Villa Jaffna, Best Accommodation in Jaffna, Jaffna Accommodation, Accommodations in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Accommodations near Jaffna Fort, Accommodations near Nallur Temple, Northern Province Accommodations, Sri Lanka Heritage Home, Accommodations Sri Lanka, Jaffna Tourism, Wedding Venue Jaffna, Colonial Architecture Jaffna, Tamil Cuisine Jaffna, Jaffna Cultural Experience, Heritage Tours Jaffna">
+    <meta name="description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Modern facilities, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
+    <meta name="keywords" content="Heritage Home Jaffna, Accommodation Jaffna, Modern Stay Jaffna, Colonial Villa Jaffna, Best Accommodation in Jaffna, Jaffna Accommodation, Accommodations in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Accommodations near Jaffna Fort, Accommodations near Nallur Temple, Northern Province Accommodations, Sri Lanka Heritage Home, Accommodations Sri Lanka, Jaffna Tourism, Wedding Venue Jaffna, Colonial Architecture Jaffna, Tamil Cuisine Jaffna, Jaffna Cultural Experience, Heritage Tours Jaffna">
     <meta name="geo.region" content="LK-41">
     <meta name="geo.placename" content="Jaffna">
     <meta name="geo.position" content="9.6615;80.0255">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}">
-    <meta property="og:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Luxury stay, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
+    <meta property="og:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Modern facilities, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
     <meta property="og:image" content="{{ asset('images/rosevilla front view.png') }}">
 
     <!-- Twitter -->
@@ -274,7 +274,7 @@
                         @php
                             $menuItems = [
                                 ['label' => 'About', 'link' => '#about', 'sub' => 'Our Heritage', 'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                                ['label' => 'Rooms', 'link' => '#rooms', 'sub' => 'Luxury Stay', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                                ['label' => 'Rooms', 'link' => '#rooms', 'sub' => 'Modern Facilities', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
                                 ['label' => 'Gallery', 'link' => '#gallery', 'sub' => 'Visual Tour', 'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
                                 ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
                                 ['label' => 'Events', 'link' => '#events', 'sub' => 'Celebrations', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z'],
@@ -434,7 +434,7 @@
             </h2>
             <div class="w-24 h-1.5 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-12 rounded-full"></div>
             <p class="text-xl leading-relaxed text-white mb-20 font-normal max-w-3xl mx-auto px-6">
-                {{ $content['about_text'] ?? __("Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.") }}
+                {{ $content['about_text'] ?? __("Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern facilities, offering a tranquil sanctuary for travelers seeking authenticity and elegance.") }}
             </p>
             
 
@@ -866,7 +866,7 @@
                                         <div class="flex items-center gap-6">
                                             <div class="w-1 h-16 bg-rose-gold rounded-full hidden md:block"></div>
                                             <div class="text-left max-w-[300px]">
-                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70">Luxury Selection</p>
+                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70">Premium Selection</p>
                                                 <div class="flex flex-wrap gap-2">
                                                     <template x-for="id in roomId" :key="id">
                                                         <span class="px-3 py-1 bg-rose-gold/10 text-rose-accent text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-gold/20" x-text="rooms[id].title"></span>
@@ -1020,8 +1020,8 @@
             </div>
 
             <!-- Travel Times -->
-            <div class="mt-8 bg-[#16181b] rounded-[1.5rem] md:rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group/transports border border-gray-800/60">
-                <div class="absolute inset-0 bg-gradient-to-r from-rose-accent/10 via-transparent to-transparent opacity-30"></div>
+            <div class="mt-8 bg-white rounded-[1.5rem] md:rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.05)] relative overflow-hidden group/transports border border-gray-100">
+                <div class="absolute inset-0 bg-gradient-to-r from-rose-accent/5 via-transparent to-transparent opacity-30"></div>
                 
                 <div class="relative flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-0">
                     <!-- Transport Links -->
@@ -1031,7 +1031,7 @@
                             <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚙</span>
                             <div class="flex flex-col text-left">
                                 <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Town') }}</span>
-                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_jaffna'] ?? '10-15 Mins' }}</span>
                             </div>
                         </div>
 
@@ -1040,7 +1040,7 @@
                             <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">✈️</span>
                             <div class="flex flex-col text-left">
                                 <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Airport') }}</span>
-                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_airport'] ?? '15-20 Mins' }}</span>
                             </div>
                         </div>
 
@@ -1049,7 +1049,7 @@
                             <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚆</span>
                             <div class="flex flex-col text-left">
                                 <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Railway') }}</span>
-                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_railway'] ?? '5-10 Mins' }}</span>
                             </div>
                         </div>
 
@@ -1058,25 +1058,25 @@
                             <span class="text-3xl drop-shadow-md transition-transform duration-500 group-hover/item:scale-110">🚌</span>
                             <div class="flex flex-col text-left">
                                 <span class="text-[9px] font-black text-rose-gold uppercase tracking-[0.2em] mb-1 opacity-90">{{ __('Bus Stand') }}</span>
-                                <span class="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ $content['reach_time_bus'] ?? '5-10 Mins' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="h-16 w-px bg-white/10 hidden lg:block mx-10 shrink-0"></div>
+                    <div class="h-16 w-px bg-gray-200 hidden lg:block mx-10 shrink-0"></div>
 
                     <!-- Status & Call to Action -->
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-8 shrink-0">
-                        <div class="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 shadow-inner group/status">
+                        <div class="flex items-center gap-3 px-5 py-2.5 rounded-full bg-gray-50 border border-gray-100 shadow-inner group/status">
                             <div class="relative flex items-center justify-center w-2 h-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </div>
-                            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
+                            <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">{{ __('Roads Clear') }}</span>
                         </div>
-                        <a href="#contact" class="text-[10px] font-black text-rose-gold uppercase tracking-[0.3em] hover:text-white transition-colors duration-500 flex items-center gap-3 group/request whitespace-nowrap">
+                        <a href="#contact" class="text-[10px] font-black text-rose-gold uppercase tracking-[0.3em] hover:text-gray-900 transition-colors duration-500 flex items-center gap-3 group/request whitespace-nowrap">
                             {{ __('Request Transfer') }}
-                            <svg class="w-4 h-4 text-rose-gold group-hover/request:text-white group-hover/request:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <svg class="w-4 h-4 text-rose-gold group-hover/request:text-gray-900 group-hover/request:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                     </div>
                 </div>

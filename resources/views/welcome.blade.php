@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- SEO Meta Tags -->
-    <title>Rose Villa Heritage Homes | Luxury Stay in Jaffna</title>
-    <meta name="description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury. Book your stay for an unforgettable authentic experience.">
-    <meta name="keywords" content="Rose Villa, Heritage Home Jaffna, Luxury Heritage Home Jaffna, Heritage Home Sri Lanka, Jaffna Accommodation, Colonial Villa Jaffna, Best Places to Stay in Jaffna">
+    <title>Rose Villa Heritage Homes | Premium Stay in Jaffna</title>
+    <meta name="description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern facilities. Book your stay for an unforgettable authentic experience.">
+    <meta name="keywords" content="Rose Villa, Heritage Home Jaffna, Premium Heritage Home Jaffna, Heritage Home Sri Lanka, Jaffna Accommodation, Colonial Villa Jaffna, Best Places to Stay in Jaffna">
     <meta name="author" content="Rose Villa Heritage Homes">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -16,16 +16,16 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Rose Villa Heritage Homes | Luxury Stay in Jaffna">
-    <meta property="og:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury.">
+    <meta property="og:title" content="Rose Villa Heritage Homes | Premium Stay in Jaffna">
+    <meta property="og:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern facilities.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
     <meta property="og:site_name" content="Rose Villa Heritage Homes">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="Rose Villa Heritage Homes | Luxury Stay in Jaffna">
-    <meta property="twitter:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern luxury.">
+    <meta property="twitter:title" content="Rose Villa Heritage Homes | Premium Stay in Jaffna">
+    <meta property="twitter:description" content="Experience the charm of Rose Villa Heritage Homes in Jaffna. A blend of colonial elegance and modern facilities.">
     <meta property="twitter:image" content="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
 
     <!-- Fonts -->
@@ -203,7 +203,7 @@
             </h2>
             <div class="w-24 h-1 bg-rose-gold mx-auto mb-10"></div>
             <p class="text-lg leading-relaxed text-gray-600 mb-8 font-light">
-                Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern luxury, offering a tranquil sanctuary for travelers seeking authenticity and elegance.
+                Nestled in the heart of Jaffna, Rose Villa is more than just a place to stay—it's a journey back in time. Our heritage home blends colonial charm with modern facilities, offering a tranquil sanctuary for travelers seeking authenticity and elegance.
             </p>
             <p class="text-lg leading-relaxed text-gray-600 font-light">
                 Discover the rich history, vibrant culture, and warm hospitality that define our heritage.
@@ -219,10 +219,10 @@
                 <!-- Feature 1 -->
                 <div class="text-center group cursor-pointer">
                     <div class="overflow-hidden mb-6 h-64 relative">
-                         <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury Suites at Rose Villa" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                         <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Premium Suites at Rose Villa" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
                          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                     </div>
-                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Luxury Rooms</h3>
+                    <h3 class="font-serif text-xl text-rose-accent uppercase mb-2 group-hover:text-rose-gold transition">Premium Rooms</h3>
                     <p class="text-gray-500 text-sm">Comfort meets tradition in our designed rooms.</p>
                 </div>
                  <!-- Feature 2 -->
@@ -259,7 +259,7 @@
       "@type": "LodgingBusiness",
       "name": "Rose Villa Heritage Homes",
       "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945",
-      "description": "Rose Villa Heritage Homes blends colonial charm with modern luxury in the heart of Jaffna. Experience authentic cultural heritage.",
+      "description": "Rose Villa Heritage Homes blends colonial charm with modern facilities in the heart of Jaffna. Experience authentic cultural heritage.",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "123 Heritage Lane",

@@ -75,7 +75,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa Heritage Homes is a luxury heritage located in Jaffna, Sri Lanka. We are a beautifully restored colonial-era villa that combines authentic heritage architecture with modern luxury amenities. Our property offers an immersive cultural experience in the heart of Jaffna's historic district, perfect for travelers seeking authenticity, elegance, and a connection to Sri Lanka's rich colonial past.
+                                    <strong>A:</strong> Rose Villa Heritage Homes is a premium heritage located in Jaffna, Sri Lanka. We are a beautifully restored colonial-era villa that combines authentic heritage architecture with modern facilities. Our property offers an immersive cultural experience in the heart of Jaffna's historic district, perfect for travelers seeking authenticity, elegance, and a connection to Sri Lanka's rich colonial past.
                                 </p>
                             </div>
                         </div>
@@ -310,7 +310,7 @@
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                             <div itemprop="text">
                                 <p class="text-gray-700 leading-relaxed ml-8">
-                                    <strong>A:</strong> Rose Villa is ideally located near Jaffna's top attractions: Jaffna Fort (1 km), Nallur Kandaswamy Temple (2 km), Jaffna Public Library (1.5 km), Jaffna Market (1 km), Casuarina Beach (15 km), Nagadeepa Temple (boat ride from Kurikadduwan), Point Pedro Lighthouse (25 km), and various colonial-era churches and Hindu temples. We can arrange guided heritage tours to all these locations.
+                                    <strong>A:</strong> Rose Villa is ideally located near Jaffna's top attractions: Uduvil Girls College (650 m), Maruthanarmadam Aanjaneyar Kovil (1.6 Km), Kantharodai Stupas (3.8 km), Jaffna Fort (10.2 km), Nallur Kandaswamy Temple (8.9 km), Jaffna Public Library (9.9 km), Jaffna Market (9 km), Casuarina Beach (19.7 km), Nagadeepa Temple (boat ride from Kurikadduwan), Point Pedro Lighthouse (32.2 km), and various colonial-era churches and Hindu temples. We can arrange guided heritage tours to all these locations.
                                 </p>
                             </div>
                         </div>

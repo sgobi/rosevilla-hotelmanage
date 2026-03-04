@@ -14,7 +14,7 @@
                     <x-application-logo class="w-40 h-auto" />
                 </a>
                 <p class="text-gray-400 text-sm leading-relaxed font-light italic">
-                    "A sanctuary of heritage and luxury in the heart of Jaffna. Experience the timeless charm of our colonial home."
+                    "A sanctuary of heritage and modern facilities in the heart of Jaffna. Experience the timeless charm of our colonial home."
                 </p>
                 <div class="flex items-center gap-4">
                     <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white hover:border-rose-gold transition-all duration-500" aria-label="Facebook">
