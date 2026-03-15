@@ -1,0 +1,38 @@
+[
+  {
+    "line": 424,
+    "content": "<section id=\"about\" class=\"py-24 md:py-40 bg-rose-"
+  },
+  {
+    "line": 444,
+    "content": "<section id=\"rooms\" class=\"py-24 bg-[#f8f5f2] over"
+  },
+  {
+    "line": 530,
+    "content": "<section id=\"garden\" class=\"py-28 bg-[#f8f5f2] ove"
+  },
+  {
+    "line": 762,
+    "content": "<section id=\"events\" class=\"pb-24 bg-white relativ"
+  },
+  {
+    "line": 823,
+    "content": "<section id=\"gallery\" class=\"py-20 bg-[#f8f5f2]\">"
+  },
+  {
+    "line": 846,
+    "content": "<section id=\"reviews\" class=\"py-20 bg-[#f9f9f9]\">"
+  },
+  {
+    "line": 880,
+    "content": "<section id=\"reservation\" class=\"py-28 bg-[#fdfaf8"
+  },
+  {
+    "line": 1181,
+    "content": "<section id=\"experiences\" class=\"py-24 bg-white\">"
+  },
+  {
+    "line": 1237,
+    "content": "<section id=\"location\" class=\"py-20 bg-gray-50\">"
+  }
+]

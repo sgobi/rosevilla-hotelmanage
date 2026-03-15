@@ -57,6 +57,27 @@ class HomeController extends Controller
             }
         }
 
+        $activeGardenBookings = \App\Models\GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString())
+            ->get(['check_in', 'check_out']);
+
+        $bookedDatesGarden = [];
+        foreach ($activeGardenBookings as $gb) {
+            $bookedDatesGarden[] = [
+                'check_in' => $gb->check_in->format('Y-m-d'),
+                'check_out' => $gb->check_out->format('Y-m-d')
+            ];
+        }
+
+        $garden = \App\Models\Garden::first() ?? new \App\Models\Garden([
+            'title' => 'Reserve the Garden',
+            'description' => 'Our scenic gardens provide a perfect backdrop for your most magical moments. Reserve exclusive access for your event or gathering with dedicated concierge service.',
+            'max_guests' => 1000,
+            'features' => ['Up to 1000 Guests', 'Custom Rituals'],
+            'price_per_day' => 30000.00,
+            'image_path' => 'garden/garden img.png'
+        ]);
+
         return view('home', [
             'content' => $content,
             'rooms' => $rooms,
@@ -65,6 +86,8 @@ class HomeController extends Controller
             'landmarks' => $landmarks,
             'homeEvents' => $homeEvents,
             'bookedDatesByRoom' => json_encode($bookedDatesByRoom),
+            'bookedDatesGarden' => json_encode($bookedDatesGarden),
+            'garden' => $garden,
         ]);
     }
 

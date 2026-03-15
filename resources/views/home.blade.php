@@ -528,6 +528,249 @@
         </div>
     </section>
 
+    <section id="garden" class="py-28 bg-[#f8f5f2] overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full -translate-x-1/3 translate-y-1/3"></div>
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-emerald-600 text-xs font-bold tracking-[0.4em] uppercase block mb-4">{{ __('Outdoor Event Space') }}</span>
+                <h2 class="font-serif text-4xl md:text-6xl text-emerald-900 mb-6 uppercase tracking-tight">{{ __($garden->title) }}</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto mb-8 rounded-full"></div>
+                <p class="text-gray-500 font-light text-lg max-w-2xl mx-auto leading-relaxed">
+                    {{ __($garden->description) }}
+                </p>
+            </div>
+            <div class="mb-20">
+                <div class="group relative bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.12)] transition-all duration-1000 overflow-hidden rounded-[2.5rem] border border-gray-100">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                        <!-- Image Column -->
+                        <div class="relative h-[28rem] lg:h-auto overflow-hidden">
+                            <img src="{{ str_starts_with($garden->image_path, 'http') ? $garden->image_path : asset('storage/' . $garden->image_path) }}" 
+                                 alt="{{ $garden->title }}" 
+                                 class="w-full h-full object-cover transform scale-105 group-hover:scale-110 group-hover:rotate-1 transition-all duration-1000 ease-out">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-700"></div>
+                            
+                            <div class="absolute top-8 right-8 flex flex-col items-center z-20">
+                                <div class="px-8 py-5 rounded-3xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center border border-white transition-all duration-500 hover:scale-105">
+                                     <span class="text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-2.5">{{ __('Starting from') }}</span>
+                                     <div class="flex flex-col items-center gap-0.5">
+                                        <span class="text-2xl font-serif text-emerald-900 uppercase">
+                                            RS {{ number_format($garden->price_per_day, 0) }}
+                                        </span>
+                                        <span class="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest">{{ __('Per Day') }}</span>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Column -->
+                        <div class="p-10 md:p-20 flex flex-col justify-center relative lg:order-1">
+                            <!-- Decorative Elements -->
+                            <div class="absolute top-10 left-20 text-[12rem] text-emerald-50/50 font-serif -z-10 select-none leading-none">
+                                G
+                            </div>
+
+                            <div class="mb-10">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="h-px w-10 bg-emerald-500"></span>
+                                    <span class="text-xs font-black text-emerald-600 uppercase tracking-[0.3em]">
+                                        {{ __('Outdoor Event Space') }}
+                                    </span>
+                                </div>
+                                <h3 class="font-serif text-4xl md:text-5xl text-emerald-900 uppercase mb-4 leading-tight tracking-tighter group-hover:translate-x-2 transition-transform duration-700 delay-100">{{ __($garden->title) }}</h3>
+                                <div class="flex items-center gap-5">
+                                    <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __('Up to ' . $garden->max_guests . ' Guests') }}</span>
+                                    @foreach($garden->features ?? [] as $feature)
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500/40"></span>
+                                        <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">{{ __($feature) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-600 text-[15px] leading-relaxed font-normal mb-10 lg:pr-12 italic">
+                                "{{ __($garden->description) }}"
+                            </p>
+                            
+                            <div class="flex items-center gap-8 pt-8 border-t border-gray-100">
+                                <button type="button" onclick="document.getElementById('garden_reservation_form').scrollIntoView({behavior: 'smooth'})" 
+                                   class="group/btn relative inline-flex items-center gap-4 px-10 py-5 bg-emerald-600 text-white rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(16,185,129,0.3)] active:scale-95">
+                                    <span class="absolute inset-0 w-full h-full bg-emerald-500 transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></span>
+                                    <span class="relative text-sm font-black uppercase tracking-[0.2em] z-10">{{ __('Reserve Garden') }}</span>
+                                    <svg class="relative w-6 h-6 group-hover/btn:translate-x-1 transition-transform z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.1)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
+                <form id="garden_reservation_form" action="{{ route('garden.store') }}" method="POST" class="space-y-16" 
+                      x-data="{ 
+                        checkIn: '', 
+                        checkOut: '', 
+                        guests: 1,
+                        taxRate: {!! \App\Models\ContentSetting::getValue('tax_percentage', 0) !!},
+                        basePrice: {!! $garden->price_per_day !!},
+                        exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
+                        currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
+                        currencyCode: '{{ session('currency', 'LKR') }}',
+                        get days() {
+                            if (!this.checkIn || !this.checkOut) return 0;
+                            const start = new Date(this.checkIn);
+                            const end = new Date(this.checkOut);
+                            if (isNaN(start) || isNaN(end)) return 0;
+                            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                            return diff >= 0 ? diff + 1 : 0;
+                        },
+                        get estimatedTotal() {
+                            if (this.days === 0) {
+                                const perDayWithTax = this.basePrice + (this.basePrice * this.taxRate / 100);
+                                return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
+                                    minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                    maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                                }) + ' / day';
+                            }
+                            const subtotal = this.basePrice * this.days;
+                            const totalLkr = subtotal + (subtotal * this.taxRate / 100);
+                            return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
+                                minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                            });
+                        }
+                      }">
+                    @csrf
+                    
+                    {{-- Personal Details --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Your Details') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Provide the main contact identity.') }}</p>
+                        </div>
+                        
+                        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Full Name') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="guest_name" required placeholder="John Doe" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Email Address') }} <span class="text-emerald-500">*</span></label>
+                                <input type="email" name="email" required placeholder="john@example.com" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Contact Number') }}</label>
+                                <input type="text" name="phone" placeholder="+94 ..." 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Permanent Address') }}</label>
+                                <input type="text" name="address" placeholder="123 Street, City" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Event Details --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Event Settings') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('When and how many guests?') }}</p>
+                        </div>
+
+                        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">{{ __('Event Start Date') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="check_in" id="garden_check_in" x-model="checkIn" required 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">{{ __('Event End Date') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="check_out" id="garden_check_out" x-model="checkOut" required 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Approximate Guests') }}</label>
+                                <input type="number" name="guests" x-model="guests" min="1" max="{{ $garden->max_guests ?? 1000 }}" placeholder="e.g. 150" required 
+                                        class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2">Max {{ number_format($garden->max_guests ?? 1000) }} guests</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Summary Block --}}
+                    <div x-show="checkIn && checkOut && days > 0" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8">
+                         <div class="lg:col-start-5 lg:col-span-8 p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden relative">
+                             <div class="flex flex-col md:flex-row justify-between items-center gap-8 z-10 relative">
+                                  <div class="flex items-center gap-6">
+                                      <div class="w-1 h-16 bg-emerald-500 rounded-full"></div>
+                                      <div class="text-left">
+                                          <p class="text-[9px] uppercase font-black text-emerald-600 tracking-[0.4em] mb-1 opacity-70">Duration Summary</p>
+                                          <p class="text-3xl font-serif text-emerald-900 flex items-baseline gap-1">
+                                              <span x-text="days"></span> 
+                                              <span class="text-[10px] uppercase font-black text-emerald-600 tracking-widest" x-text="days === 1 ? 'Day' : 'Days'"></span>
+                                          </p>
+                                      </div>
+                                  </div>
+
+                                  <div class="text-center bg-white px-10 py-6 rounded-3xl shadow-xl border border-emerald-500/20 transform hover:-translate-y-1 transition-transform duration-500">
+                                      <p class="text-[9px] uppercase font-black text-emerald-600 tracking-[0.3em] mb-2">Estimate Worth</p>
+                                      <div class="flex items-baseline gap-2">
+                                          <span class="text-xs font-black text-emerald-900 opacity-60" x-text="currencyCode"></span>
+                                          <span class="text-3xl font-serif text-emerald-900 font-bold"><span x-text="currencySymbol"></span> <span x-text="estimatedTotal"></span></span>
+                                      </div>
+                                  </div>
+                             </div>
+                         </div>
+                    </div>
+
+                    {{-- Final Touches --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Special Rituals') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Tailor your event with specific requirements.') }}</p>
+                        </div>
+                        
+                        <div class="lg:col-span-8 space-y-12">
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Special Requirements') }}</label>
+                                <textarea name="special_requirements" rows="3" placeholder="Power needs, tent space, seating arrangements..." 
+                                          class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
+                            </div>
+
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Additional Notes') }}</label>
+                                <textarea name="additional_notes" rows="3" placeholder="Event schedule, caterers list..." 
+                                          class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
+                            </div>
+
+                             <div class="flex flex-col items-center pt-8">
+                                <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
+                                        :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-600/50'"
+                                        :disabled="!checkIn || !checkOut || days < 1">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
+                                    <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10">{{ __('Reserve Garden') }}</span>
+                                    <svg class="relative w-6 h-6 ml-6 transform group-hover:translate-x-3 transition-transform duration-700 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Garden Booking Section -->
+
+
     <!-- Smooth Transition Spacer -->
     <div class="w-full bg-gradient-to-b from-[#f8f5f2] to-white" style="height: 12rem;"></div>
 
@@ -948,6 +1191,9 @@
         </div>
     </section>
 
+
+
+
     <!-- Nearest Places Section -->
     @if(isset($landmarks) && $landmarks->count() > 0)
     <section id="experiences" class="py-24 bg-white">
@@ -1329,6 +1575,49 @@
                 if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disabledDatesFunc]);
                 if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disabledDatesFunc]);
                 if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disabledDatesFunc]);
+            });
+
+            // Garden Section Configuration
+            window.bookedDatesGarden = {!! $bookedDatesGarden ?? '[]' !!};
+            
+            const disabledGardenDatesFunc = function(date) {
+                if (!window.bookedDatesGarden || window.bookedDatesGarden.length === 0) return false;
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+                
+                for(let j = 0; j < window.bookedDatesGarden.length; j++) {
+                    const range = window.bookedDatesGarden[j];
+                    if (dateStr >= range.check_in && dateStr < range.check_out) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            const gardenConfig = {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d / m / Y",
+                minDate: "today",
+                disable: [disabledGardenDatesFunc],
+                altInputClass: "w-full px-8 py-6 bg-white border-2 {{ session('garden_error') ? 'border-rose-500 text-rose-600 focus:border-rose-600 focus:ring-rose-500/20' : 'border-gray-100 focus:border-emerald-500 focus:ring-emerald-500/10' }} rounded-3xl focus:ring-4 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+            };
+
+            const gardenCheckIn = flatpickr("#garden_check_in", {
+                ...gardenConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    gardenCheckOut.set("minDate", dateStr);
+                    instance.input.dispatchEvent(new Event('input'));
+                }
+            });
+            const gardenCheckOut = flatpickr("#garden_check_out", {
+                ...gardenConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    instance.input.dispatchEvent(new Event('input'));
+                }
             });
         });
     </script>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GardenBookingController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventBookingController;
+use App\Http\Controllers\Admin\GardenBookingController as AdminGardenBookingController;
 use App\Http\Controllers\Admin\HomeEventController;
 use App\Http\Controllers\Admin\FrontDeskController;
 use App\Http\Controllers\Admin\EventFrontDeskController;
@@ -21,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/reservations', [HomeController::class, 'storeReservation'])->name('reservations.store');
+Route::post('/garden-booking', [GardenBookingController::class, 'store'])->name('garden.store');
 Route::get('/faq', function () {
     return view('faq');
 })->name('faq');
@@ -74,6 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('events-calendar', [EventBookingController::class, 'calendar'])->name('events.calendar');
             Route::get('api/events', [EventBookingController::class, 'apiEvents'])->name('events.api');
             Route::resource('reviews', ReviewController::class)->except(['show']);
+            Route::resource('garden-bookings', AdminGardenBookingController::class);
         });
 
         // Admin, Accountant, & Staff (Invoices)
@@ -98,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('landmarks', LandmarkController::class)->except(['show']);
             Route::get('content', [ContentController::class, 'edit'])->name('content.edit');
             Route::post('content', [ContentController::class, 'update'])->name('content.update');
+            Route::get('garden-profile', [\App\Http\Controllers\Admin\GardenProfileController::class, 'edit'])->name('garden-profile.edit');
+            Route::put('garden-profile', [\App\Http\Controllers\Admin\GardenProfileController::class, 'update'])->name('garden-profile.update');
             Route::resource('users', UserController::class)->except(['show']);
             Route::resource('home-events', HomeEventController::class)->except(['show']);
             Route::post('maintenance/wipe-all', [\App\Http\Controllers\Admin\MaintenanceController::class, 'wipeAllData'])->name('maintenance.wipe-all');
