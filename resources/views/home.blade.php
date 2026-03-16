@@ -172,7 +172,7 @@
                 <!-- Navigation Links (Centered) -->
                 <nav class="hidden md:flex flex-grow justify-center px-8">
                     <div class="flex items-center gap-x-8 lg:gap-x-16">
-                        @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Experiences' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Find Us' => '#concierge'] as $label => $link)
+                        @foreach(['About' => '#about', 'Rooms' => '#rooms', 'Gallery' => '#gallery', 'Explore' => '#experiences', 'Events' => '#events', 'FAQ' => route('faq'), 'Find Us' => '#location'] as $label => $link)
                             <a href="{{ $link }}" class="relative text-[12px] tracking-[0.2em] font-black text-white uppercase transition-all duration-300 hover:text-rose-gold group drop-shadow-md whitespace-nowrap" aria-label="{{ $label }}">
                                 {{ __($label) }}
                                 <span class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-rose-gold transition-all duration-500 group-hover:w-full rounded-full shadow-[0_0_8px_rgba(179,142,93,0.8)]"></span>
@@ -276,9 +276,9 @@
                                 ['label' => 'About', 'link' => '#about', 'sub' => 'Our Heritage', 'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
                                 ['label' => 'Rooms', 'link' => '#rooms', 'sub' => 'Modern Facilities', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
                                 ['label' => 'Gallery', 'link' => '#gallery', 'sub' => 'Visual Tour', 'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
-                                ['label' => 'Experiences', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
+                                ['label' => 'Explore', 'link' => '#experiences', 'sub' => 'Unique Moments', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0L4 10.172V17a1 1 0 001 1h14a1 1 0 001-1v-6.828l-5.172 4.656z'],
                                 ['label' => 'Events', 'link' => '#events', 'sub' => 'Celebrations', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z'],
-                                ['label' => 'Find Us', 'link' => '#concierge', 'sub' => 'Get in Touch', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                                ['label' => 'Find Us', 'link' => '#location', 'sub' => 'Map & Directions', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                             ];
                         @endphp
 
@@ -778,6 +778,7 @@
     <section id="events" class="pb-24 bg-white relative z-10" style="padding-top: 3rem;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
+                <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Events') }}</span>
                 <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-widest leading-tight">
                     {!! $content['events_title'] ?? __('Celebrate <span class="text-rose-gold italic lowercase normal-case">in</span> Style') !!}
                 </h2>
