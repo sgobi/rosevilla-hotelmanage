@@ -768,6 +768,10 @@
                    const end = new Date(this.checkOut);
                    if (isNaN(start) || isNaN(end)) return 0;
                    const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                   // For rooms, calculate nights (diff). For garden, calculate days (diff + 1).
+                   if (this.bookingType === 'room') {
+                       return diff > 0 ? diff : 0;
+                   }
                    return diff >= 0 ? diff + 1 : 0;
                },
                get estimatedTotal() {
@@ -1013,7 +1017,8 @@
                                                 <p class="text-[9px] uppercase font-black text-gray-400 tracking-[0.3em] mb-2">Duration</p>
                                                 <p class="text-4xl font-serif text-rose-accent flex items-baseline gap-1">
                                                     <span x-text="days"></span> 
-                                                    <span class="text-[10px] uppercase font-black text-rose-gold tracking-widest" x-text="days === 1 ? 'Day' : 'Days'"></span>
+                                                    <span class="text-[10px] uppercase font-black text-rose-gold tracking-widest" 
+                                                          x-text="bookingType === 'room' ? (days === 1 ? '{{ __('Night') }}' : '{{ __('Nights') }}') : (days === 1 ? '{{ __('Day') }}' : '{{ __('Days') }}')"></span>
                                                 </p>
                                             </div>
 
@@ -1431,7 +1436,16 @@
             const resCheckIn = flatpickr("#res_check_in", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    resCheckOut.set("minDate", dateStr);
+                    const currentType = document.querySelector('#reservation').__x.$data.bookingType;
+                    if (currentType === 'room') {
+                        // For rooms, next day is minimum for checkout
+                        const nextDay = new Date(selectedDates[0]);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        resCheckOut.set("minDate", nextDay);
+                    } else {
+                        // For garden, same day is allowed
+                        resCheckOut.set("minDate", dateStr);
+                    }
                     heroCheckIn.setDate(dateStr);
                     // Update Alpine.js model
                     instance.input.dispatchEvent(new Event('input'));
@@ -1497,11 +1511,22 @@
                 if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disableFunc]);
                 if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disableFunc]);
 
+                // Update minDate for checkout based on mode
+                if (type === 'room') {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('minDate', tomorrow);
+                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('minDate', tomorrow);
+                } else {
+                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('minDate', 'today');
+                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('minDate', 'today');
+                }
+
                 // Reset dates if they are now disabled in the new mode
-                resCheckIn.clear();
-                resCheckOut.clear();
-                heroCheckIn.clear();
-                heroCheckOut.clear();
+                if (typeof resCheckIn !== 'undefined') resCheckIn.clear();
+                if (typeof resCheckOut !== 'undefined') resCheckOut.clear();
+                if (typeof heroCheckIn !== 'undefined') heroCheckIn.clear();
+                if (typeof heroCheckOut !== 'undefined') heroCheckOut.clear();
             });
         });
     </script>
