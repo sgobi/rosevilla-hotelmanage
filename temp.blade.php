@@ -605,9 +605,171 @@
                 </div>
             </div>
 
+            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.1)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
+                <form id="garden_reservation_form" action="{{ route('garden.store') }}" method="POST" class="space-y-16" 
+                      x-data="{ 
+                        checkIn: '', 
+                        checkOut: '', 
+                        guests: 1,
+                        taxRate: {!! \App\Models\ContentSetting::getValue('tax_percentage', 0) !!},
+                        basePrice: {!! $garden->price_per_day !!},
+                        exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
+                        currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
+                        currencyCode: '{{ session('currency', 'LKR') }}',
+                        get days() {
+                            if (!this.checkIn || !this.checkOut) return 0;
+                            const start = new Date(this.checkIn);
+                            const end = new Date(this.checkOut);
+                            if (isNaN(start) || isNaN(end)) return 0;
+                            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                            return diff >= 0 ? diff + 1 : 0;
+                        },
+                        get estimatedTotal() {
+                            if (this.days === 0) {
+                                const perDayWithTax = this.basePrice + (this.basePrice * this.taxRate / 100);
+                                return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
+                                    minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                    maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                                }) + ' / day';
+                            }
+                            const subtotal = this.basePrice * this.days;
+                            const totalLkr = subtotal + (subtotal * this.taxRate / 100);
+                            return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
+                                minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                            });
+                        }
+                      }">
+                    @csrf
+                    
+                    {{-- Personal Details --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Your Details') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Provide the main contact identity.') }}</p>
+                        </div>
+                        
+                        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Full Name') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="guest_name" required placeholder="John Doe" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Email Address') }} <span class="text-emerald-500">*</span></label>
+                                <input type="email" name="email" required placeholder="john@example.com" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Contact Number') }}</label>
+                                <input type="text" name="phone" placeholder="+94 ..." 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Permanent Address') }}</label>
+                                <input type="text" name="address" placeholder="123 Street, City" 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 placeholder-gray-300">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Event Details --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Event Settings') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('When and how many guests?') }}</p>
+                        </div>
+
+                        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">{{ __('Event Start Date') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="check_in" id="garden_check_in" x-model="checkIn" required 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">{{ __('Event End Date') }} <span class="text-emerald-500">*</span></label>
+                                <input type="text" name="check_out" id="garden_check_out" x-model="checkOut" required 
+                                       class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                            </div>
+
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Approximate Guests') }}</label>
+                                <input type="number" name="guests" x-model="guests" min="1" max="{{ $garden->max_guests ?? 1000 }}" placeholder="e.g. 150" required 
+                                        class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2">Max {{ number_format($garden->max_guests ?? 1000) }} guests</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Summary Block --}}
+                    <div x-show="checkIn && checkOut && days > 0" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8">
+                         <div class="lg:col-start-5 lg:col-span-8 p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden relative">
+                             <div class="flex flex-col md:flex-row justify-between items-center gap-8 z-10 relative">
+                                  <div class="flex items-center gap-6">
+                                      <div class="w-1 h-16 bg-emerald-500 rounded-full"></div>
+                                      <div class="text-left">
+                                          <p class="text-[9px] uppercase font-black text-emerald-600 tracking-[0.4em] mb-1 opacity-70">Duration Summary</p>
+                                          <p class="text-3xl font-serif text-emerald-900 flex items-baseline gap-1">
+                                              <span x-text="days"></span> 
+                                              <span class="text-[10px] uppercase font-black text-emerald-600 tracking-widest" x-text="days === 1 ? 'Day' : 'Days'"></span>
+                                          </p>
+                                      </div>
+                                  </div>
+
+                                  <div class="text-center bg-white px-10 py-6 rounded-3xl shadow-xl border border-emerald-500/20 transform hover:-translate-y-1 transition-transform duration-500">
+                                      <p class="text-[9px] uppercase font-black text-emerald-600 tracking-[0.3em] mb-2">Estimate Worth</p>
+                                      <div class="flex items-baseline gap-2">
+                                          <span class="text-xs font-black text-emerald-900 opacity-60" x-text="currencyCode"></span>
+                                          <span class="text-3xl font-serif text-emerald-900 font-bold"><span x-text="currencySymbol"></span> <span x-text="estimatedTotal"></span></span>
+                                      </div>
+                                  </div>
+                             </div>
+                         </div>
+                    </div>
+
+                    {{-- Final Touches --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-gray-50">
+                        <div class="lg:col-span-4">
+                            <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Special Rituals') }}</h3>
+                            <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Tailor your event with specific requirements.') }}</p>
+                        </div>
+                        
+                        <div class="lg:col-span-8 space-y-12">
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Special Requirements') }}</label>
+                                <textarea name="special_requirements" rows="3" placeholder="Power needs, tent space, seating arrangements..." 
+                                          class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
+                            </div>
+
+                            <div class="space-y-4">
+                                <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Additional Notes') }}</label>
+                                <textarea name="additional_notes" rows="3" placeholder="Event schedule, caterers list..." 
+                                          class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
+                            </div>
+
+                             <div class="flex flex-col items-center pt-8">
+                                <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
+                                        :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-600/50'"
+                                        :disabled="!checkIn || !checkOut || days < 1">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
+                                    <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10">{{ __('Reserve Garden') }}</span>
+                                    <svg class="relative w-6 h-6 ml-6 transform group-hover:translate-x-3 transition-transform duration-700 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
+
+    <!-- Garden Booking Section -->
+
 
     <!-- Smooth Transition Spacer -->
     <div class="w-full bg-gradient-to-b from-[#f8f5f2] to-white" style="height: 12rem;"></div>
@@ -771,94 +933,71 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden"
-                 x-data="{ 
-                   bookingType: 'room',
-                   checkIn: '', 
-                   checkOut: '', 
-                   roomId: [],
-                   guests: 1,
-                   taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
-                   gardenBasePrice: {{ $garden->price_per_day ?? 0 }},
-                   exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
-                   currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
-                   currencyCode: '{{ session('currency', 'LKR') }}',
-                   rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
-                   init() {
-                       const params = new URLSearchParams(window.location.search);
-                       if (params.get('check_in')) this.checkIn = params.get('check_in');
-                       if (params.get('check_out')) this.checkOut = params.get('check_out');
-                       if (params.get('guests')) this.guests = params.get('guests');
-
-                       this.$watch('roomId', (value) => {
-                           if (value.length <= 1 && this.guests > 5) {
-                               this.guests = 5;
-                           }
-                           window.dispatchEvent(new CustomEvent('room-selected', { detail: value }));
-                       });
-                   },
-                   get days() {
-                       if (!this.checkIn || !this.checkOut) return 0;
-                       const start = new Date(this.checkIn);
-                       const end = new Date(this.checkOut);
-                       if (isNaN(start) || isNaN(end)) return 0;
-                       const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                       return diff >= 0 ? diff + 1 : 0;
-                   },
-                   get estimatedTotal() {
-                       let totalPrice = 0;
-                       if (this.bookingType === 'room') {
-                           if (this.roomId.length === 0) return 0;
-                           this.roomId.forEach(id => {
-                               if (this.rooms[id]) {
-                                   totalPrice += parseFloat(this.rooms[id].price);
-                               }
-                           });
-                       } else {
-                           totalPrice = this.gardenBasePrice;
-                       }
-                       
-                       if (isNaN(totalPrice) || totalPrice === 0) return 0;
-
-                       if (this.days === 0) {
-                           const perDayWithTax = totalPrice + (totalPrice * this.taxRate / 100);
-                           return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
-                               minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
-                               maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
-                           }) + ' / day';
-                       }
-                       const subtotal = totalPrice * this.days;
-                       const totalLkr = subtotal + (subtotal * this.taxRate / 100);
-                       return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
-                           minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
-                           maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
-                       });
-                   },
-                   specialReq: '',
-                   additionalNotes: ''
-                 }"
-                  @set-guests.window="guests = $event.detail.count"
-                  @set-room.window="bookingType = 'room'; if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))">
+            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
-                <!-- Booking Type Selector -->
-                <div class="flex justify-center mb-12">
-                    <div class="inline-flex bg-gray-50 p-2 rounded-full border border-gray-100 shadow-inner">
-                        <button type="button" 
-                                @click="bookingType = 'room'"
-                                class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300"
-                                :class="bookingType === 'room' ? 'bg-white text-rose-accent shadow-md' : 'text-gray-400 hover:text-gray-900'">
-                            {{ __('Room Booking') }}
-                        </button>
-                        <button type="button" 
-                                @click="bookingType = 'garden'"
-                                class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300"
-                                :class="bookingType === 'garden' ? 'bg-white text-emerald-600 shadow-md' : 'text-gray-400 hover:text-gray-900'">
-                            {{ __('Garden Booking') }}
-                        </button>
-                    </div>
-                </div>
+                
+                <form action="{{ route('reservations.store') }}" method="POST" class="space-y-16" 
+                      x-data="{ 
+                        checkIn: '', 
+                        checkOut: '', 
+                        roomId: [],
+                        guests: 1,
+                        taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
+                        exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
+                        currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
+                        currencyCode: '{{ session('currency', 'LKR') }}',
+                        rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
+                        init() {
+                            const params = new URLSearchParams(window.location.search);
+                            if (params.get('check_in')) this.checkIn = params.get('check_in');
+                            if (params.get('check_out')) this.checkOut = params.get('check_out');
+                            if (params.get('guests')) this.guests = params.get('guests');
 
-                <form :action="bookingType === 'room' ? '{{ route('reservations.store') }}' : '{{ route('garden.store') }}'" method="POST" class="space-y-16" id="reservation_form">
+                            this.$watch('roomId', (value) => {
+                                if (value.length <= 1 && this.guests > 5) {
+                                    this.guests = 5;
+                                }
+                                window.dispatchEvent(new CustomEvent('room-selected', { detail: value }));
+                            });
+                        },
+                        get days() {
+                            if (!this.checkIn || !this.checkOut) return 0;
+                            const start = new Date(this.checkIn);
+                            const end = new Date(this.checkOut);
+                            if (isNaN(start) || isNaN(end)) return 0;
+                            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                            return diff >= 0 ? diff + 1 : 0;
+                        },
+                        get estimatedTotal() {
+                            if (this.roomId.length === 0) return 0;
+                            let totalPrice = 0;
+                            this.roomId.forEach(id => {
+                                if (this.rooms[id]) {
+                                    totalPrice += parseFloat(this.rooms[id].price);
+                                }
+                            });
+                            
+                            if (isNaN(totalPrice) || totalPrice === 0) return 0;
+
+                            if (this.days === 0) {
+                                const perDayWithTax = totalPrice + (totalPrice * this.taxRate / 100);
+                                return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
+                                    minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                    maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                                }) + ' / day';
+                            }
+                            const subtotal = totalPrice * this.days;
+                            const totalLkr = subtotal + (subtotal * this.taxRate / 100);
+                            return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
+                                minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                                maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                            });
+                        },
+                        specialReq: '',
+                        additionalNotes: ''
+                      }"
+                       @set-guests.window="guests = $event.detail.count"
+                       @set-room.window="if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'}))">
                     @csrf
                     
                     {{-- Section 1: Personal Details --}}
@@ -903,48 +1042,26 @@
                         <div class="lg:col-span-4">
                             <div class="sticky top-32">
                                 <span class="w-14 h-14 rounded-2xl bg-rose-gold text-white flex items-center justify-center font-black text-xl mb-6 shadow-2xl shadow-rose-gold/40 border-b-4 border-rose-accent/20">02</span>
-                                <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3" x-text="bookingType === 'room' ? '{{ __('Your Sanctuary') }}' : '{{ __('Outdoor Backdrop') }}'"></h3>
-                                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed" x-text="bookingType === 'room' ? '{{ __('Choose your timing and preferred experience.') }}' : '{{ __('Set the stage for your garden ceremony or event.') }}'"></p>
+                                <h3 class="text-2xl font-serif text-gray-900 uppercase tracking-tight mb-3">{{ __('Your Sanctuary') }}</h3>
+                                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest leading-relaxed">{{ __('Choose your timing and preferred experience.') }}</p>
                             </div>
                         </div>
 
                         <div class="lg:col-span-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                                <!-- Room Dates -->
-                                <div class="space-y-3" x-show="bookingType === 'room'">
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Check-In') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_in" id="res_check_in" x-model="checkIn" :required="bookingType === 'room'" :disabled="bookingType !== 'room'"
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 {{ session('error') ? 'text-rose-600' : 'text-gray-900' }}">{{ __('Check-In') }} <span class="text-rose-gold">*</span></label>
+                                    <input type="text" name="check_in" id="res_check_in" x-model="checkIn" required 
                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
-                                <div class="space-y-3" x-show="bookingType === 'room'">
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Check-Out') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_out" id="res_check_out" x-model="checkOut" :required="bookingType === 'room'" :disabled="bookingType !== 'room'"
+                                <div class="space-y-3">
+                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 {{ session('error') ? 'text-rose-600' : 'text-gray-900' }}">{{ __('Check-Out') }} <span class="text-rose-gold">*</span></label>
+                                    <input type="text" name="check_out" id="res_check_out" x-model="checkOut" required 
                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
                                 </div>
 
-                                <!-- Garden Dates -->
-                                <div class="space-y-3" x-show="bookingType === 'garden'" x-cloak>
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Event Start') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_in" id="garden_check_in" x-model="checkIn" :required="bookingType === 'garden'" :disabled="bookingType !== 'garden'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
-                                </div>
-
-                                <div class="space-y-3" x-show="bookingType === 'garden'" x-cloak>
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Event End') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_out" id="garden_check_out" x-model="checkOut" :required="bookingType === 'garden'" :disabled="bookingType !== 'garden'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
-                                </div>
-
-                                <div class="space-y-4 md:col-span-2" x-show="bookingType === 'room'" x-transition>
+                                <div class="space-y-4 md:col-span-2">
                                     <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Room Type Selection') }}</label>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         @foreach($rooms as $r)
@@ -965,24 +1082,15 @@
                                 </div>
 
                                 <div class="space-y-3">
-                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2" x-text="bookingType === 'room' ? '{{ __('Guest Count') }}' : '{{ __('Approximate Guests') }}'"></label>
-                                    <div x-show="bookingType === 'room'">
-                                        <select name="guests" x-model="guests" :disabled="bookingType !== 'room'"
-                                                class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
-                                            @foreach(range(1, 10) as $i)
-                                                <option value="{{ $i }}" class="bg-white" {!! $i > 5 ? 'x-show="roomId.length > 1"' : '' !!}>
-                                                    {{ $i }} {{ $i > 1 ? 'People' : 'Person' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div x-show="bookingType === 'garden'">
-                                        <div class="relative">
-                                            <input type="number" name="guests" x-model="guests" min="1" max="{{ $garden->max_guests ?? 1000 }}" placeholder="e.g. 150" :disabled="bookingType !== 'garden'"
-                                                   class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900">
-                                            <p class="mt-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2">Max {{ number_format($garden->max_guests ?? 1000) }} guests</p>
-                                        </div>
-                                    </div>
+                                    <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] ml-2">{{ __('Guest Count') }}</label>
+                                    <select name="guests" x-model="guests" required 
+                                            class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 appearance-none">
+                                        @foreach(range(1, 10) as $i)
+                                            <option value="{{ $i }}" class="bg-white" {!! $i > 5 ? 'x-show="roomId.length > 1"' : '' !!}>
+                                                {{ $i }} {{ $i > 1 ? 'People' : 'Person' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="space-y-3 md:col-span-2">
@@ -992,7 +1100,7 @@
                                 </div>
                             </div>
 
-                            <div x-show="bookingType === 'garden' || (bookingType === 'room' && roomId.length > 0)" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
+                            <div x-show="roomId.length > 0" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-8"
                                  class="p-10 bg-gradient-to-br from-[#fafafa] to-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative">
                                 <div class="absolute -right-12 -top-12 w-64 h-64 bg-rose-gold/5 rounded-full blur-3xl"></div>
                                 <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-rose-accent/5 rounded-full blur-2xl"></div>
@@ -1002,17 +1110,10 @@
                                         <div class="flex items-center gap-6">
                                             <div class="w-1 h-16 bg-rose-gold rounded-full hidden md:block"></div>
                                             <div class="text-left max-w-[300px]">
-                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70" x-text="bookingType === 'room' ? '{{ __('Premium Selection') }}' : '{{ __('Garden Venue') }}'"></p>
+                                                <p class="text-[9px] uppercase font-black text-rose-gold tracking-[0.4em] mb-1 opacity-70">Premium Selection</p>
                                                 <div class="flex flex-wrap gap-2">
-                                                    <template x-if="bookingType === 'room'">
-                                                        <div class="flex flex-wrap gap-2">
-                                                            <template x-for="id in roomId" :key="id">
-                                                                <span class="px-3 py-1 bg-rose-gold/10 text-rose-accent text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-gold/20" x-text="rooms[id].title"></span>
-                                                            </template>
-                                                        </div>
-                                                    </template>
-                                                    <template x-if="bookingType === 'garden'">
-                                                        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-emerald-100">{{ __('The Grand Garden') }}</span>
+                                                    <template x-for="id in roomId" :key="id">
+                                                        <span class="px-3 py-1 bg-rose-gold/10 text-rose-accent text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-gold/20" x-text="rooms[id].title"></span>
                                                     </template>
                                                 </div>
                                             </div>
@@ -1070,12 +1171,12 @@
                                           class="w-full bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 p-8 text-gray-900 font-bold placeholder-gray-300 italic text-sm leading-relaxed"></textarea>
                             </div>
 
-                             <div class="flex flex-col items-center pt-8" x-show="bookingType === 'garden' || (bookingType === 'room' && roomId.length > 0)" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
+                             <div class="flex flex-col items-center pt-8" x-show="roomId.length > 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4">
                                 <button type="submit" class="group relative w-full inline-flex items-center justify-center px-16 py-8 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-700 active:scale-95 disabled:cursor-not-allowed group"
-                                        :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : (bookingType === 'room' ? 'bg-rose-accent text-white hover:bg-rose-dark shadow-rose-accent/50' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/50')"
+                                        :class="(!checkIn || !checkOut || days < 1) ? 'bg-gray-100 text-gray-400 opacity-60' : 'bg-rose-accent text-white hover:bg-rose-dark hover:shadow-rose-accent/50'"
                                         :disabled="!checkIn || !checkOut || days < 1">
                                     <div class="absolute inset-0 bg-gradient-to-r from-rose-accent via-rose-gold to-rose-accent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
-                                    <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10" x-text="bookingType === 'room' ? '{{ __('Inquire Reservation') }}' : '{{ __('Book the Garden') }}'"></span>
+                                    <span class="relative font-black uppercase tracking-[0.5em] text-sm z-10">{{ __('Inquire Reservation') }}</span>
                                     <svg class="relative w-6 h-6 ml-6 transform group-hover:translate-x-3 transition-transform duration-700 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                 </button>
                                 <p class="mt-8 text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] flex items-center gap-4">
@@ -1418,15 +1519,13 @@
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
                     heroCheckOut.set("minDate", dateStr);
-                    if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, true);
-                    if (typeof gardenCheckIn !== 'undefined') gardenCheckIn.setDate(dateStr, true);
+                    resCheckIn.setDate(dateStr, true);
                 }
             });
             const heroCheckOut = flatpickr("#hero_check_out", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, true);
-                    if (typeof gardenCheckOut !== 'undefined') gardenCheckOut.setDate(dateStr, true);
+                    resCheckOut.setDate(dateStr, true);
                 }
             });
 
@@ -1512,14 +1611,12 @@
                 ...gardenConfig,
                 onChange: function(selectedDates, dateStr, instance) {
                     gardenCheckOut.set("minDate", dateStr);
-                    if (typeof heroCheckIn !== 'undefined') heroCheckIn.setDate(dateStr);
                     instance.input.dispatchEvent(new Event('input'));
                 }
             });
             const gardenCheckOut = flatpickr("#garden_check_out", {
                 ...gardenConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.setDate(dateStr);
                     instance.input.dispatchEvent(new Event('input'));
                 }
             });
