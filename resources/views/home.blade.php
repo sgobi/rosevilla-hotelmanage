@@ -732,7 +732,79 @@
     </section>
 
     <!-- Reservation Section -->
-    <section id="reservation" class="py-28 bg-[#fdfaf8] overflow-hidden relative">
+    <section id="reservation" class="py-28 bg-[#fdfaf8] overflow-hidden relative"
+             x-data="{ 
+               bookingType: 'room',
+               checkIn: '', 
+               checkOut: '', 
+               roomId: [],
+               guests: 1,
+               taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
+               gardenBasePrice: {{ $garden->price_per_day ?? 0 }},
+               exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
+               currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
+               currencyCode: '{{ session('currency', 'LKR') }}',
+               rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
+               init() {
+                   const params = new URLSearchParams(window.location.search);
+                   if (params.get('check_in')) this.checkIn = params.get('check_in');
+                   if (params.get('check_out')) this.checkOut = params.get('check_out');
+                   if (params.get('guests')) this.guests = params.get('guests');
+
+                   this.$watch('roomId', (value) => {
+                       if (value.length <= 1 && this.guests > 5) {
+                           this.guests = 5;
+                       }
+                       window.dispatchEvent(new CustomEvent('room-selected', { detail: value }));
+                   });
+
+                   this.$watch('bookingType', (value) => {
+                       window.dispatchEvent(new CustomEvent('booking-type-changed', { detail: value }));
+                   });
+               },
+               get days() {
+                   if (!this.checkIn || !this.checkOut) return 0;
+                   const start = new Date(this.checkIn);
+                   const end = new Date(this.checkOut);
+                   if (isNaN(start) || isNaN(end)) return 0;
+                   const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                   return diff >= 0 ? diff + 1 : 0;
+               },
+               get estimatedTotal() {
+                   let totalPrice = 0;
+                   if (this.bookingType === 'room') {
+                       if (this.roomId.length === 0) return 0;
+                       this.roomId.forEach(id => {
+                           if (this.rooms[id]) {
+                               totalPrice += parseFloat(this.rooms[id].price);
+                           }
+                       });
+                   } else {
+                       totalPrice = this.gardenBasePrice;
+                   }
+                   
+                   if (isNaN(totalPrice) || totalPrice === 0) return 0;
+
+                   if (this.days === 0) {
+                       const perDayWithTax = totalPrice + (totalPrice * this.taxRate / 100);
+                       return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
+                           minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                           maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                       }) + ' / day';
+                   }
+                   const subtotal = totalPrice * this.days;
+                   const totalLkr = subtotal + (subtotal * this.taxRate / 100);
+                   return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
+                       minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
+                       maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
+                   });
+               },
+               specialReq: '',
+               additionalNotes: ''
+             }"
+              @set-guests.window="guests = $event.detail.count"
+              @set-room.window="bookingType = 'room'; if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))"
+              @set-garden.window="bookingType = 'garden'; $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))">
         {{-- Decorative Elements --}}
         <div class="absolute top-0 left-0 w-64 h-64 bg-rose-gold/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div class="absolute bottom-0 right-0 w-96 h-96 bg-rose-accent/5 rounded-full translate-x-1/3 translate-y-1/3"></div>
@@ -771,75 +843,7 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden"
-                 x-data="{ 
-                   bookingType: 'room',
-                   checkIn: '', 
-                   checkOut: '', 
-                   roomId: [],
-                   guests: 1,
-                   taxRate: {{ \App\Models\ContentSetting::getValue('tax_percentage', 0) }},
-                   gardenBasePrice: {{ $garden->price_per_day ?? 0 }},
-                   exchangeRate: {{ \App\Helpers\CurrencyHelper::convert(1) }},
-                   currencySymbol: '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}',
-                   currencyCode: '{{ session('currency', 'LKR') }}',
-                   rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
-                   init() {
-                       const params = new URLSearchParams(window.location.search);
-                       if (params.get('check_in')) this.checkIn = params.get('check_in');
-                       if (params.get('check_out')) this.checkOut = params.get('check_out');
-                       if (params.get('guests')) this.guests = params.get('guests');
-
-                       this.$watch('roomId', (value) => {
-                           if (value.length <= 1 && this.guests > 5) {
-                               this.guests = 5;
-                           }
-                           window.dispatchEvent(new CustomEvent('room-selected', { detail: value }));
-                       });
-                   },
-                   get days() {
-                       if (!this.checkIn || !this.checkOut) return 0;
-                       const start = new Date(this.checkIn);
-                       const end = new Date(this.checkOut);
-                       if (isNaN(start) || isNaN(end)) return 0;
-                       const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                       return diff >= 0 ? diff + 1 : 0;
-                   },
-                   get estimatedTotal() {
-                       let totalPrice = 0;
-                       if (this.bookingType === 'room') {
-                           if (this.roomId.length === 0) return 0;
-                           this.roomId.forEach(id => {
-                               if (this.rooms[id]) {
-                                   totalPrice += parseFloat(this.rooms[id].price);
-                               }
-                           });
-                       } else {
-                           totalPrice = this.gardenBasePrice;
-                       }
-                       
-                       if (isNaN(totalPrice) || totalPrice === 0) return 0;
-
-                       if (this.days === 0) {
-                           const perDayWithTax = totalPrice + (totalPrice * this.taxRate / 100);
-                           return (perDayWithTax * this.exchangeRate).toLocaleString(undefined, {
-                               minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
-                               maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
-                           }) + ' / day';
-                       }
-                       const subtotal = totalPrice * this.days;
-                       const totalLkr = subtotal + (subtotal * this.taxRate / 100);
-                       return (totalLkr * this.exchangeRate).toLocaleString(undefined, {
-                           minimumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2,
-                           maximumFractionDigits: this.currencyCode === 'LKR' ? 0 : 2
-                       });
-                   },
-                   specialReq: '',
-                   additionalNotes: ''
-                 }"
-                  @set-guests.window="guests = $event.detail.count"
-                  @set-room.window="bookingType = 'room'; if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))"
-                  @set-garden.window="bookingType = 'garden'; $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))">
+            <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
                 <!-- Booking Type Selector -->
                 <div class="flex justify-center mb-12">
@@ -911,38 +915,23 @@
 
                         <div class="lg:col-span-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                                <!-- Room Dates -->
-                                <div class="space-y-3" x-show="bookingType === 'room'">
+                                <!-- Consolidated Dates -->
+                                <div class="space-y-3">
                                     <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Check-In') }} <span class="text-rose-gold">*</span>
+                                        <span x-text="bookingType === 'room' ? '{{ __('Check-In') }}' : '{{ __('Event Start') }}'"></span> <span class="text-rose-gold">*</span>
                                     </label>
-                                    <input type="text" name="check_in" id="res_check_in" x-model="checkIn" :required="bookingType === 'room'" :disabled="bookingType !== 'room'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                                    <input type="text" name="check_in" id="res_check_in" x-model="checkIn" required
+                                           class="w-full px-8 py-6 bg-white border-2 rounded-3xl transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+                                           :class="bookingType === 'room' ? 'border-gray-100 focus:border-rose-gold focus:ring-rose-gold/5' : 'border-gray-100 focus:border-emerald-500 focus:ring-emerald-500/5'">
                                 </div>
 
-                                <div class="space-y-3" x-show="bookingType === 'room'">
+                                <div class="space-y-3">
                                     <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Check-Out') }} <span class="text-rose-gold">*</span>
+                                        <span x-text="bookingType === 'room' ? '{{ __('Check-Out') }}' : '{{ __('Event End') }}'"></span> <span class="text-rose-gold">*</span>
                                     </label>
-                                    <input type="text" name="check_out" id="res_check_out" x-model="checkOut" :required="bookingType === 'room'" :disabled="bookingType !== 'room'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
-                                </div>
-
-                                <!-- Garden Dates -->
-                                <div class="space-y-3" x-show="bookingType === 'garden'" x-cloak>
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Event Start') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_in" id="garden_check_in" x-model="checkIn" :required="bookingType === 'garden'" :disabled="bookingType !== 'garden'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
-                                </div>
-
-                                <div class="space-y-3" x-show="bookingType === 'garden'" x-cloak>
-                                    <label class="block text-[11px] font-black uppercase tracking-[0.2em] ml-2 text-gray-900">
-                                        {{ __('Event End') }} <span class="text-rose-gold">*</span>
-                                    </label>
-                                    <input type="text" name="check_out" id="garden_check_out" x-model="checkOut" :required="bookingType === 'garden'" :disabled="bookingType !== 'garden'"
-                                           class="w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm">
+                                    <input type="text" name="check_out" id="res_check_out" x-model="checkOut" required
+                                           class="w-full px-8 py-6 bg-white border-2 rounded-3xl transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+                                           :class="bookingType === 'room' ? 'border-gray-100 focus:border-rose-gold focus:ring-rose-gold/5' : 'border-gray-100 focus:border-emerald-500 focus:ring-emerald-500/5'">
                                 </div>
 
                                 <div class="space-y-4 md:col-span-2" x-show="bookingType === 'room'" x-transition>
@@ -1420,14 +1409,12 @@
                 onChange: function(selectedDates, dateStr) {
                     heroCheckOut.set("minDate", dateStr);
                     if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, true);
-                    if (typeof gardenCheckIn !== 'undefined') gardenCheckIn.setDate(dateStr, true);
                 }
             });
             const heroCheckOut = flatpickr("#hero_check_out", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
                     if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, true);
-                    if (typeof gardenCheckOut !== 'undefined') gardenCheckOut.setDate(dateStr, true);
                 }
             });
 
@@ -1438,7 +1425,7 @@
                 altFormat: "d / m / Y",
                 minDate: "today",
                 disable: [disabledDatesFunc],
-                altInputClass: "w-full px-8 py-6 bg-white border-2 {{ session('error') ? 'border-rose-500 text-rose-600 focus:border-rose-600 focus:ring-rose-500/20' : 'border-gray-100 focus:border-rose-gold focus:ring-rose-gold/5' }} rounded-3xl focus:ring-4 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
+                altInputClass: "w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
             };
 
             const resCheckIn = flatpickr("#res_check_in", {
@@ -1472,15 +1459,6 @@
                 resCheckOut.setDate(date);
             }
 
-            window.addEventListener('room-selected', function(e) {
-                window.selectedRoomIds = Array.from(e.detail || []);
-                if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disabledDatesFunc]);
-                if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disabledDatesFunc]);
-                if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disabledDatesFunc]);
-                if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disabledDatesFunc]);
-            });
-
-            // Garden Section Configuration
             window.bookedDatesGarden = {!! $bookedDatesGarden ?? '[]' !!};
             
             const disabledGardenDatesFunc = function(date) {
@@ -1500,29 +1478,30 @@
                 return false;
             };
 
-            const gardenConfig = {
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "d / m / Y",
-                minDate: "today",
-                disable: [disabledGardenDatesFunc],
-                altInputClass: "w-full px-8 py-6 bg-white border-2 {{ session('garden_error') ? 'border-rose-500 text-rose-600 focus:border-rose-600 focus:ring-rose-500/20' : 'border-gray-100 focus:border-emerald-500 focus:ring-emerald-500/10' }} rounded-3xl focus:ring-4 transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
-            };
-
-            const gardenCheckIn = flatpickr("#garden_check_in", {
-                ...gardenConfig,
-                onChange: function(selectedDates, dateStr, instance) {
-                    gardenCheckOut.set("minDate", dateStr);
-                    if (typeof heroCheckIn !== 'undefined') heroCheckIn.setDate(dateStr);
-                    instance.input.dispatchEvent(new Event('input'));
+            window.addEventListener('room-selected', function(e) {
+                window.selectedRoomIds = Array.from(e.detail || []);
+                // Only update if in room mode
+                const currentType = document.querySelector('#reservation').__x.$data.bookingType;
+                if (currentType === 'room') {
+                    if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disabledDatesFunc]);
+                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disabledDatesFunc]);
                 }
             });
-            const gardenCheckOut = flatpickr("#garden_check_out", {
-                ...gardenConfig,
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.setDate(dateStr);
-                    instance.input.dispatchEvent(new Event('input'));
-                }
+
+            window.addEventListener('booking-type-changed', function(e) {
+                const type = e.detail;
+                const disableFunc = type === 'room' ? disabledDatesFunc : disabledGardenDatesFunc;
+                
+                if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disableFunc]);
+                if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disableFunc]);
+                if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disableFunc]);
+                if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disableFunc]);
+
+                // Reset dates if they are now disabled in the new mode
+                resCheckIn.clear();
+                resCheckOut.clear();
+                heroCheckIn.clear();
+                heroCheckOut.clear();
             });
         });
     </script>
