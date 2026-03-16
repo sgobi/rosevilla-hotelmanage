@@ -18,7 +18,7 @@ class GardenBookingController extends Controller
             'address' => ['nullable', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:50'],
             'check_in' => ['required', 'date'],
-            'check_out' => ['required', 'date', 'after:check_in'],
+            'check_out' => ['required', 'date', 'after_or_equal:check_in'],
             'guests' => ['required', 'integer', 'min:1'],
             'special_requirements' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],
@@ -30,14 +30,14 @@ class GardenBookingController extends Controller
         // Check for overlapping bookings
         $overlappingBookings = GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
             ->where(function ($query) use ($requestedCheckIn, $requestedCheckOut) {
-                $query->whereDate('check_in', '<', $requestedCheckOut)
-                      ->whereDate('check_out', '>', $requestedCheckIn);
+                $query->whereDate('check_in', '<=', $requestedCheckOut)
+                      ->whereDate('check_out', '>=', $requestedCheckIn);
             })->exists();
 
         if ($overlappingBookings) {
             return back()
                 ->withInput()
-                ->with('garden_error', 'Sorry, the garden is already booked for the chosen dates. Please adjust your check-in/check-out dates.');
+                ->with('error', 'Sorry, the garden is already booked for the chosen dates. Please adjust your check-in/check-out dates.');
         }
 
         $data['status'] = 'pending';
@@ -48,6 +48,6 @@ class GardenBookingController extends Controller
         $users = User::whereIn('role', ['admin', 'staff', 'accountant'])->get();
         Notification::send($users, new NewGardenBookingRequest($booking));
 
-        return back()->with('garden_success', 'Thank you. Your garden booking request has been received. Our team will contact you shortly.');
+        return back()->with('success', 'Thank you. Your garden booking request has been received. Our team will contact you shortly.');
     }
 }

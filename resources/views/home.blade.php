@@ -847,6 +847,22 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-rose-500 shadow-xl p-8 rounded-2xl flex items-center gap-6 animate-fade-in-up">
+                    <div class="shrink-0 w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-sm">{{ __('Check Form Details') }}</h4>
+                        <ul class="text-gray-500 text-sm mt-1 list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.15)] rounded-[3rem] border border-gray-100 p-8 md:p-20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
                 <!-- Booking Type Selector -->
@@ -1413,13 +1429,13 @@
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
                     heroCheckOut.set("minDate", dateStr);
-                    if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, true);
+                    if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, false); // Don't trigger onChange
                 }
             });
             const heroCheckOut = flatpickr("#hero_check_out", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, true);
+                    if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, false); // Don't trigger onChange
                 }
             });
 
@@ -1436,27 +1452,25 @@
             const resCheckIn = flatpickr("#res_check_in", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    const currentType = document.querySelector('#reservation').__x.$data.bookingType;
+                    const alpineData = document.querySelector('#reservation').__x ? document.querySelector('#reservation').__x.$data : null;
+                    const currentType = alpineData ? alpineData.bookingType : 'room';
+                    
                     if (currentType === 'room') {
-                        // For rooms, next day is minimum for checkout
                         const nextDay = new Date(selectedDates[0]);
                         nextDay.setDate(nextDay.getDate() + 1);
                         resCheckOut.set("minDate", nextDay);
                     } else {
-                        // For garden, same day is allowed
                         resCheckOut.set("minDate", dateStr);
                     }
-                    heroCheckIn.setDate(dateStr);
-                    // Update Alpine.js model
-                    instance.input.dispatchEvent(new Event('input'));
+                    heroCheckIn.setDate(dateStr, false);
+                    instance.input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
             const resCheckOut = flatpickr("#res_check_out", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    heroCheckOut.setDate(dateStr);
-                    // Update Alpine.js model
-                    instance.input.dispatchEvent(new Event('input'));
+                    heroCheckOut.setDate(dateStr, false);
+                    instance.input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
 
