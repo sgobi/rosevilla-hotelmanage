@@ -593,7 +593,7 @@
                             </p>
                             
                             <div class="flex items-center gap-8 pt-8 border-t border-gray-100">
-                                <button type="button" onclick="document.getElementById('garden_reservation_form').scrollIntoView({behavior: 'smooth'})" 
+                                <button type="button" onclick="window.dispatchEvent(new CustomEvent('set-garden'))" 
                                    class="group/btn relative inline-flex items-center gap-4 px-10 py-5 bg-emerald-600 text-white rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(16,185,129,0.3)] active:scale-95">
                                     <span class="absolute inset-0 w-full h-full bg-emerald-500 transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></span>
                                     <span class="relative text-sm font-black uppercase tracking-[0.2em] z-10">{{ __('Reserve Garden') }}</span>
@@ -666,7 +666,7 @@
             </div>
 
             <div class="text-center">
-                <a href="#contact" class="inline-flex items-center gap-4 bg-rose-accent text-white hover:bg-rose-dark px-12 py-5 rounded-full text-xs font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-2xl hover:shadow-rose-accent/40 active:scale-95">
+                <a href="javascript:void(0)" onclick="window.dispatchEvent(new CustomEvent('set-garden'))" class="inline-flex items-center gap-4 bg-rose-accent text-white hover:bg-rose-dark px-12 py-5 rounded-full text-xs font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-2xl hover:shadow-rose-accent/40 active:scale-95">
                     {{ __('Plan Your Event') }}
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -838,7 +838,8 @@
                    additionalNotes: ''
                  }"
                   @set-guests.window="guests = $event.detail.count"
-                  @set-room.window="bookingType = 'room'; if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))">
+                  @set-room.window="bookingType = 'room'; if(!roomId.includes($event.detail.id)) roomId.push($event.detail.id); $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))"
+                  @set-garden.window="bookingType = 'garden'; $nextTick(() => document.getElementById('reservation_form').scrollIntoView({behavior: 'smooth'}))">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
                 <!-- Booking Type Selector -->
                 <div class="flex justify-center mb-12">
