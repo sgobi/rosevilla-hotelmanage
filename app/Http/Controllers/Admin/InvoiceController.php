@@ -76,4 +76,38 @@ class InvoiceController extends Controller
         
         return view('admin.events.invoice', compact('event', 'content'));
     }
+
+    public function showGarden(\App\Models\GardenBooking $gardenBooking)
+    {
+        // Enforce approved status for invoice access
+        if ($gardenBooking->status !== 'approved') {
+            abort(403, 'Invoices can only be viewed for approved garden bookings.');
+        }
+
+        $user = auth()->user();
+
+        // Admin can always view
+        if ($user->isAdmin() || $user->isAccountant()) {
+            // Pass
+        } elseif ($user->isStaff()) {
+            // Staff restrictions
+            if ($gardenBooking->invoice_print_count > 0 && $gardenBooking->invoice_reprint_status !== 'approved') {
+                abort(403, 'Invoice already printed. Request Admin approval for reprint.');
+            }
+
+            // Increment count
+            $gardenBooking->increment('invoice_print_count');
+
+            // Consume approval if used
+            if ($gardenBooking->invoice_reprint_status === 'approved') {
+                $gardenBooking->update(['invoice_reprint_status' => 'none']);
+            }
+        }
+
+        $content = ContentSetting::pluck('value', 'key');
+        
+        $days = $gardenBooking->check_in->diffInDays($gardenBooking->check_out) + 1;
+
+        return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days'));
+    }
 }

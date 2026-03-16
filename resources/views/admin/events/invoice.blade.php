@@ -115,10 +115,10 @@
                     <span class="info-label">:</span>
                     <span class="info-value">Events Department</span>
                 </div>
-                <div class="flex gap-4 mr-[140px]">
+                <div class="flex gap-4 mr-[120px]">
                     <span class="info-label w-24">Contact No.</span>
                     <span class="info-label">:</span>
-                    <span class="info-value">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
+                    <span class="info-value whitespace-nowrap">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
                 </div>
             </div>
             <div class="flex justify-between items-center">
@@ -127,7 +127,7 @@
                     <span class="info-label">:</span>
                     <span class="info-value">Event Booking Confirmation</span>
                 </div>
-                <div class="flex gap-4 mr-[140px]">
+                <div class="flex gap-4 mr-[120px]">
                     <span class="info-label w-24">Pages</span>
                     <span class="info-label">:</span>
                     <span class="info-value">1</span>

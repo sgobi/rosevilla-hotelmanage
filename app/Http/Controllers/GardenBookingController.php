@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GardenBooking;
+use App\Notifications\NewGardenBookingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
@@ -43,9 +44,9 @@ class GardenBookingController extends Controller
         
         $booking = GardenBooking::create($data);
 
-        // Notify Admins, Staff, and Accountants (can reuse the overlapping notification if desired, or let it slide for now)
-        // $users = User::whereIn('role', ['admin', 'staff', 'accountant'])->get();
-        // Notification::send($users, new \App\Notifications\NewGardenBookingRequest($booking));
+        // Notify Admins, Staff, and Accountants
+        $users = User::whereIn('role', ['admin', 'staff', 'accountant'])->get();
+        Notification::send($users, new NewGardenBookingRequest($booking));
 
         return back()->with('garden_success', 'Thank you. Your garden booking request has been received. Our team will contact you shortly.');
     }

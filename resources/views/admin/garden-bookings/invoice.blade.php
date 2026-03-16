@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation Confirmation #{{ $reservation->id }} - Rose Villa</title>
+    <title>Garden Booking Confirmation #{{ $gardenBooking->id }} - Rose Villa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -43,12 +43,6 @@
             border-top: 3px double #000;
             margin: 15px 0;
         }
-        .info-grid {
-            display: grid;
-            grid-template-columns: 140px 1fr 140px 1fr;
-            gap: 10px 20px;
-            margin-bottom: 30px;
-        }
         .info-label {
             font-weight: 700;
             font-size: 13px;
@@ -68,10 +62,6 @@
         }
         .details-label {
             font-weight: 700;
-        }
-        .details-separator {
-            width: 20px;
-            text-align: center;
         }
     </style>
 </head>
@@ -123,7 +113,7 @@
                 <div class="flex gap-4">
                     <span class="info-label w-32">From</span>
                     <span class="info-label">:</span>
-                    <span class="info-value">Reservation Office</span>
+                    <span class="info-value">Garden Department</span>
                 </div>
                 <div class="flex gap-4 mr-[120px]">
                     <span class="info-label w-24">Contact No.</span>
@@ -135,7 +125,7 @@
                 <div class="flex gap-4">
                     <span class="info-label w-32">Subject</span>
                     <span class="info-label">:</span>
-                    <span class="info-value">Reservation Confirmation</span>
+                    <span class="info-value">Garden Booking Confirmation</span>
                 </div>
                 <div class="flex gap-4 mr-[120px]">
                     <span class="info-label w-24">Pages</span>
@@ -149,51 +139,51 @@
 
         {{-- Greeting --}}
         <div class="mb-6 text-[14px] leading-relaxed">
-            <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong>. We are happy to confirm the following details</p>
+            <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong> for your garden booking. We are happy to confirm the following details</p>
         </div>
 
         {{-- Main Details --}}
         <div class="details-list space-y-1">
             <div class="details-row">
                 <span class="details-label">Confirmation Number</span>
-                <span>: <strong>{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}</strong></span>
+                <span>: <strong>G-{{ str_pad($gardenBooking->id, 5, '0', STR_PAD_LEFT) }}</strong></span>
             </div>
             <div class="details-row">
-                <span class="details-label">Guest Name</span>
-                <span class="capitalize">: {{ strtolower($reservation->guest_name) }}</span>
+                <span class="details-label">Customer Name</span>
+                <span class="capitalize">: {{ strtolower($gardenBooking->guest_name) }}</span>
             </div>
             <div class="details-row">
-                <span class="details-label">Check-in</span>
-                <span class="col-span-3">: {{ $reservation->check_in->format('d-m-Y') }}</span>
+                <span class="details-label">Phone</span>
+                <span class="capitalize">: {{ strtolower($gardenBooking->phone) }}</span>
             </div>
             <div class="details-row">
-                <span class="details-label">Check-out</span>
-                <span class="col-span-3">: {{ $reservation->check_out->format('d-m-Y') }}</span>
+                <span class="details-label">Event Dates</span>
+                <span>: {{ $gardenBooking->check_in->format('d-m-Y') }} to {{ $gardenBooking->check_out->format('d-m-Y') }}</span>
             </div>
             <div class="details-row">
-                <span class="details-label">Name of Rooms</span>
-                <span class="col-span-3">: {{ $reservation->rooms()->pluck('title')->implode(', ') }}</span>
+                <span class="details-label">Duration</span>
+                <span>: {{ $days }} Day(s)</span>
             </div>
             <div class="details-row">
-                <span class="details-label">Number of Persons</span>
-                <span>: {{ $reservation->guests }}</span>
+                <span class="details-label">Number of Guests</span>
+                <span>: {{ $gardenBooking->guests }}</span>
             </div>
             <div class="details-row">
-                <span class="details-label">Room Rate</span>
-                <span>: LKR {{ number_format($reservation->total_price, 2) }}</span>
+                <span class="details-label">Base Rental Rate</span>
+                <span>: LKR {{ number_format($gardenBooking->total_price, 2) }}</span>
             </div>
             
-            @if($reservation->tax_amount > 0)
+            @if($gardenBooking->tax_amount > 0)
                 <div class="details-row">
-                    <span class="details-label">Taxes ({{ number_format($reservation->tax_percentage, 1) }}%)</span>
-                    <span>: LKR {{ number_format($reservation->tax_amount, 2) }}</span>
+                    <span class="details-label">Taxes ({{ number_format($gardenBooking->tax_percentage, 1) }}%)</span>
+                    <span>: LKR {{ number_format($gardenBooking->tax_amount, 2) }}</span>
                 </div>
             @endif
 
-            @if($reservation->discount_percentage > 0 && $reservation->discount_status === 'approved')
+            @if($gardenBooking->discount_amount > 0)
                 <div class="details-row text-black">
-                    <span class="details-label">Discount ({{ $reservation->discount_percentage }}%)</span>
-                    <span>: - LKR {{ number_format(($reservation->total_price * $reservation->discount_percentage) / 100, 2) }}</span>
+                    <span class="details-label">Discount</span>
+                    <span>: - LKR {{ number_format($gardenBooking->discount_amount, 2) }}</span>
                 </div>
             @endif
         </div>
@@ -201,38 +191,38 @@
         <div class="border-t border-black my-4"></div>
         <div class="details-row py-1 font-bold text-[16px]">
             <span>Gross Amount</span>
-            <span>: LKR {{ number_format($reservation->final_price, 2) }}</span>
+            <span>: LKR {{ number_format($gardenBooking->final_price, 2) }}</span>
         </div>
         <div class="border-b border-black mb-8"></div>
 
-        @if($reservation->advance_amount > 0)
+        @if($gardenBooking->advance_amount > 0)
             <div class="details-row text-black">
-                <span class="details-label">Advance Paid</span>
-                <span>: - LKR {{ number_format($reservation->advance_amount, 2) }}</span>
+                <span class="details-label">Deposit Paid</span>
+                <span>: - LKR {{ number_format($gardenBooking->advance_amount, 2) }}</span>
             </div>
             <div class="details-row font-bold mb-8">
                 <span class="details-label">Balance Payable</span>
-                <span>: LKR {{ number_format($reservation->final_price - $reservation->advance_amount, 2) }}</span>
+                <span>: LKR {{ number_format($gardenBooking->final_price - $gardenBooking->advance_amount, 2) }}</span>
             </div>
         @endif
 
         <div class="text-[13px] leading-relaxed space-y-4 text-black italic">
-            <p>Should you need to cancel your booking, please do so up to 72 hours prior to your scheduled arrival day to avoid late cancellation or no-show charges (one night charge of room, tax and service charge against the guarantee deposit).</p>
+            <p>Please note that garden bookings are subject to our standard event policies. Cancellations must be made at least 14 days in advance to be eligible for a partial refund of the deposit.</p>
             
             <div class="not-italic">
                 <p class="font-bold mb-1">Note:</p>
-                <p>1. Early arrival requests are based on an availability of serviced rooms on the day of arrival only. Early arrival fees may apply.</p>
-                <p>2. Late check-out requests are based on room availability on the day of departure only. Late check-out fees may apply.</p>
+                <p>1. Setup time must be coordinated with the management at least 48 hours prior to the event.</p>
+                <p>2. Any additional services or catering requested on the day will be billed separately.</p>
             </div>
 
-            <p class="not-italic">If you require any information prior to your arrival, please visit our website <a href="https://www.rosevillaheritagehomes.com" class="text-black font-semibold">www.rosevillaheritagehomes.com</a> or contact our customer service at <span class="font-semibold">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</span>.</p>
+            <p class="not-italic">If you require any information prior to your event, please visit our website <a href="https://www.rosevillaheritagehomes.com" class="text-black font-semibold">www.rosevillaheritagehomes.com</a> or contact our team at <span class="font-semibold">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</span>.</p>
             
-            <p class="font-bold not-italic">We are looking forward to welcoming you to the Rose Villa Heritage Homes.</p>
+            <p class="font-bold not-italic">We are looking forward to hosting your event at Rose Villa Heritage Homes.</p>
         </div>
 
         {{-- Footer Signature --}}
         <div class="mt-8">
-            <p class="font-bold text-[14px]">Reservation Officer</p>
+            <p class="font-bold text-[14px]">Garden Bookings Manager</p>
             @if($content['signature_path'] ?? null)
                 <div class="mt-2">
                     <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 w-auto object-contain">

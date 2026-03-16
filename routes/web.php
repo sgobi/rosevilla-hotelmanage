@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('role:admin,accountant,staff')->group(function () {
             Route::get('invoices/{reservation}', [InvoiceController::class, 'show'])->name('invoices.show');
             Route::get('event-invoices/{event}', [InvoiceController::class, 'showEvent'])->name('events.invoice');
+            Route::get('garden-invoices/{gardenBooking}', [InvoiceController::class, 'showGarden'])->name('garden.invoice');
         });
 
         // Accountant & Admin (Reports)
