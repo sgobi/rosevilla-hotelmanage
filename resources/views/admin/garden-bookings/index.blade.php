@@ -6,6 +6,15 @@
                 <p class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em] mt-1 italic">Outdoor Event Space · Guest Lifecycle Logs</p>
             </div>
             <div class="flex items-center gap-3">
+                <a href="{{ route('admin.garden.calendar') }}" class="group bg-indigo-600 px-5 py-2.5 rounded-2xl border border-indigo-500 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-white/20 text-white flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-white/50 uppercase tracking-widest leading-none mb-1 text-left">Schedule</p>
+                        <p class="text-xs font-black text-white uppercase">Calendar View</p>
+                    </div>
+                </a>
                 <a href="{{ route('admin.garden-profile.edit') }}" class="group bg-white/80 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md flex items-center gap-3">
                     <div class="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-100 group-hover:rotate-6 transition-transform">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>

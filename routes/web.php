@@ -78,6 +78,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('api/events', [EventBookingController::class, 'apiEvents'])->name('events.api');
             Route::resource('reviews', ReviewController::class)->except(['show']);
             Route::resource('garden-bookings', AdminGardenBookingController::class);
+            Route::get('garden-calendar', [AdminGardenBookingController::class, 'calendar'])->name('garden.calendar');
+            Route::get('api/garden-bookings', [AdminGardenBookingController::class, 'apiEvents'])->name('garden.api');
         });
 
         // Admin, Accountant, & Staff (Invoices)

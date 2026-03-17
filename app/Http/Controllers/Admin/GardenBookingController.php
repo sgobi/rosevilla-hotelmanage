@@ -38,6 +38,39 @@ class GardenBookingController extends Controller
         return view('admin.garden-bookings.index', compact('bookings'));
     }
 
+    public function calendar()
+    {
+        return view('admin.garden-bookings.calendar');
+    }
+
+    public function apiEvents()
+    {
+        $events = GardenBooking::whereNotIn('status', ['cancelled', 'rejected'])->get()->map(function ($booking) {
+            return [
+                'title' => 'Garden: ' . $booking->guest_name,
+                'start' => $booking->check_in->format('Y-m-d'),
+                'end' => $booking->check_out->copy()->addDay()->format('Y-m-d'), // End date is exclusive in FullCalendar
+                'backgroundColor' => $this->getStatusColor($booking->status),
+                'url' => route('admin.garden-bookings.edit', $booking->id),
+            ];
+        });
+
+        return response()->json($events);
+    }
+
+    private function getStatusColor($status)
+    {
+        return match ($status) {
+            'approved' => '#10b981',   // green
+            'pending' => '#f59e0b',    // amber
+            'checked_in' => '#3b82f6', // blue
+            'checked_out' => '#6366f1',// indigo
+            'rejected' => '#ef4444',   // red
+            'cancelled' => '#6b7280',  // gray
+            default => '#3b82f6',      // blue
+        };
+    }
+
     public function show(GardenBooking $gardenBooking)
     {
         return view('admin.garden-bookings.show', compact('gardenBooking'));
@@ -125,7 +158,7 @@ class GardenBookingController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'check_in' => 'required|date',
-            'check_out' => 'required|date|after:check_in',
+            'check_out' => 'required|date|after_or_equal:check_in',
             'guests' => 'required|integer|min:1',
             'special_requirements' => 'nullable|string',
             'additional_notes' => 'nullable|string',

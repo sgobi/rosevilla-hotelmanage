@@ -67,6 +67,7 @@
                             <x-dropdown-link :href="route('admin.reservations.index')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/10 hover:text-white transition-all duration-500 px-8 text-gray-400">View Room Stays</x-dropdown-link>
                             <x-dropdown-link :href="route('admin.events.index')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/10 hover:text-white transition-all duration-500 px-8 text-gray-400">View Event Bookings</x-dropdown-link>
                             <x-dropdown-link :href="route('admin.garden-bookings.index')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/10 hover:text-white transition-all duration-500 px-8 text-gray-400">View Garden Bookings</x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.garden.calendar')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/10 hover:text-white transition-all duration-500 px-8 text-gray-400 italic">Garden Calendar</x-dropdown-link>
                             <x-dropdown-link :href="route('admin.reviews.index')" class="text-[11px] font-black uppercase tracking-wider py-4 hover:bg-white/10 hover:text-white transition-all duration-500 px-8 text-gray-400">Guest Experience</x-dropdown-link>
                         </div>
                     </div>
@@ -243,6 +244,7 @@
                 <x-responsive-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Room Reservations</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.events.index')" :active="request()->routeIs('admin.events.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Event Bookings</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.garden-bookings.index')" :active="request()->routeIs('admin.garden-bookings.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Garden Bookings</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.garden.calendar')" :active="request()->routeIs('admin.garden.calendar')" class="text-emerald-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4 italic">Garden Calendar View</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')" class="text-gray-400 font-bold text-[11px] uppercase tracking-wider px-14 hover:text-white transition-colors py-4">Guest Reviews</x-responsive-nav-link>
             @endif
 

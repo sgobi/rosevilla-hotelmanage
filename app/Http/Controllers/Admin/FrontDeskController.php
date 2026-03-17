@@ -57,25 +57,17 @@ class FrontDeskController extends Controller
             ->where('status', '!=', 'cancelled')
             ->get()
             ->map(function ($reservation) {
-                $statusColor = '#3b82f6'; // Default blue
+                $statusColor = '#3b82f6'; // Blue for Rooms
+                if ($reservation->checked_out_at) $statusColor = '#64748b'; // Gray for Spent
+                elseif ($reservation->checked_in_at) $statusColor = '#2563eb'; // Deep Blue for In-House
                 
-                if ($reservation->checked_out_at) {
-                    $statusColor = '#6b7280'; // gray (spent)
-                } elseif ($reservation->checked_in_at) {
-                    $statusColor = '#10b981'; // green (in-house)
-                } elseif ($reservation->status === 'approved') {
-                    $statusColor = '#f59e0b'; // amber (confirmed)
-                } elseif ($reservation->status === 'pending') {
-                    $statusColor = '#ef4444'; // red (needs attention)
-                }
-
                 $rooms = $reservation->rooms();
                 $roomText = $rooms->pluck('title')->implode(', ') ?: 'Room';
                 $nights = $reservation->check_in->diffInDays($reservation->check_out);
                 
                 return [
-                    'id' => $reservation->id,
-                    'title' => "({$nights}N) {$roomText} - {$reservation->guest_name}",
+                    'id' => 'room-' . $reservation->id,
+                    'title' => "🏨 ({$nights}N) {$roomText} - {$reservation->guest_name}",
                     'start' => $reservation->check_in->format('Y-m-d'),
                     'end' => $reservation->check_out->addDay()->format('Y-m-d'), 
                     'backgroundColor' => $statusColor,
@@ -83,16 +75,47 @@ class FrontDeskController extends Controller
                     'textColor' => '#ffffff',
                     'url' => route('admin.front-desk.index', ['search' => $reservation->guest_name]),
                     'allDay' => true,
-                    'extendedProps' => [
-                        'guest' => $reservation->guest_name,
-                        'rooms' => $roomText,
-                        'nights' => $nights,
-                        'status' => $reservation->status,
-                    ]
                 ];
             });
 
-        return response()->json($reservations);
+        $gardens = \App\Models\GardenBooking::where('status', '!=', 'cancelled')
+            ->get()
+            ->map(function ($booking) {
+                $statusColor = '#10b981'; // Emerald for Garden
+                if ($booking->status === 'pending') $statusColor = '#059669';
+                
+                return [
+                    'id' => 'garden-' . $booking->id,
+                    'title' => "🌳 GARDEN - " . $booking->guest_name,
+                    'start' => $booking->check_in->format('Y-m-d'),
+                    'end' => $booking->check_out->addDay()->format('Y-m-d'),
+                    'backgroundColor' => $statusColor,
+                    'borderColor' => $statusColor,
+                    'textColor' => '#ffffff',
+                    'url' => route('admin.garden-bookings.index', ['search' => $booking->guest_name]),
+                    'allDay' => true,
+                ];
+            });
+
+        $events = \App\Models\EventBooking::where('status', '!=', 'cancelled')
+            ->get()
+            ->map(function ($booking) {
+                $statusColor = '#e11d48'; // Rose for Events
+                
+                return [
+                    'id' => 'event-' . $booking->id,
+                    'title' => "🎉 {$booking->event_type} - " . $booking->customer_name,
+                    'start' => $booking->event_date->format('Y-m-d') . 'T' . $booking->start_time->format('H:i:s'),
+                    'end' => $booking->event_date->format('Y-m-d') . 'T' . $booking->end_time->format('H:i:s'),
+                    'backgroundColor' => $statusColor,
+                    'borderColor' => $statusColor,
+                    'textColor' => '#ffffff',
+                    'url' => route('admin.events.index', ['search' => $booking->customer_name]),
+                    'allDay' => false,
+                ];
+            });
+
+        return response()->json($reservations->concat($gardens)->concat($events));
     }
 
     public function checkIn(Reservation $reservation)

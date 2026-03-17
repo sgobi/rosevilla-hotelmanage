@@ -234,8 +234,13 @@
                                     </td>
                                     <td class="px-8 py-5">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest
-                                            {{ $sale->type === 'Room' ? 'bg-indigo-50 text-indigo-600' : 'bg-rose-50 text-rose-600' }}">
-                                            <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $sale->type === 'Room' ? 'bg-indigo-400' : 'bg-rose-400' }}"></span>
+                                            @if($sale->type === 'Room') bg-indigo-50 text-indigo-600
+                                            @elseif($sale->type === 'Event') bg-rose-50 text-rose-600
+                                            @else bg-emerald-50 text-emerald-600 @endif">
+                                            <span class="w-1.5 h-1.5 rounded-full mr-2 
+                                                @if($sale->type === 'Room') bg-indigo-400
+                                                @elseif($sale->type === 'Event') bg-rose-400
+                                                @else bg-emerald-400 @endif"></span>
                                             {{ $sale->type }}
                                         </span>
                                     </td>
@@ -267,7 +272,11 @@
                                     </td>
                                     <td class="px-8 py-5 text-center">
                                         @php 
-                                            $invoiceRoute = $sale->type === 'Room' ? route('admin.invoices.show', $sale) : route('admin.events.invoice', $sale);
+                                            $invoiceRoute = $sale->type === 'Room' 
+                                                ? route('admin.invoices.show', $sale) 
+                                                : ($sale->type === 'Event' 
+                                                    ? route('admin.events.invoice', $sale) 
+                                                    : route('admin.garden.invoice', $sale));
                                         @endphp
                                         <a href="{{ $invoiceRoute }}" target="_blank" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-900 hover:text-white transition-all transform hover:scale-110 active:scale-95 shadow-sm">

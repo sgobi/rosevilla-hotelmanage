@@ -13,22 +13,26 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'rooms' => Room::count(),
-            'reservations_pending' => Reservation::where('status', 'pending')->count(),
-            'reservations_total' => Reservation::count(),
-            'guests_in_house' => Reservation::whereNotNull('checked_in_at')->whereNull('checked_out_at')->count(),
-            'reviews' => Review::count(),
-            'gallery' => GalleryImage::count(),
+            'rooms' => \App\Models\Room::count(),
+            'reservations_pending' => \App\Models\Reservation::where('status', 'pending')->count(),
+            'garden_pending' => \App\Models\GardenBooking::where('status', 'pending')->count(),
+            'events_pending' => \App\Models\EventBooking::where('status', 'pending')->count(),
+            'guests_in_house' => \App\Models\Reservation::whereNotNull('checked_in_at')->whereNull('checked_out_at')->count(),
+            'reviews' => \App\Models\Review::count(),
         ];
 
-        $recentReservations = Reservation::with('room')
+        $recentReservations = \App\Models\Reservation::with('room')
             ->latest()
+            ->take(5)
+            ->get();
+
+        $recentGardenBookings = \App\Models\GardenBooking::latest()
             ->take(5)
             ->get();
 
         $notifications = auth()->user()->unreadNotifications;
 
-        return view('dashboard', compact('stats', 'recentReservations', 'notifications'));
+        return view('dashboard', compact('stats', 'recentReservations', 'recentGardenBookings', 'notifications'));
     }
 
     public function markAllRead()
@@ -81,19 +85,6 @@ class DashboardController extends Controller
             return view('partials.notifications', compact('notifications'));
         }
 
-        $stats = [
-            'rooms' => Room::count(),
-            'reservations_pending' => Reservation::where('status', 'pending')->count(),
-            'reservations_total' => Reservation::count(),
-            'reviews' => Review::count(),
-            'gallery' => GalleryImage::count(),
-        ];
-
-        $recentReservations = Reservation::with('room')
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('dashboard', compact('stats', 'recentReservations', 'notifications'));
+        return $this->index();
     }
 }

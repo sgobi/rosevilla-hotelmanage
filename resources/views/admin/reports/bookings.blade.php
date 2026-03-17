@@ -85,7 +85,10 @@
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-6 py-5">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs {{ $booking->type === 'Room' ? 'bg-indigo-50 text-indigo-600' : 'bg-rose-50 text-rose-600' }}">
+                                            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs 
+                                                @if($booking->type === 'Room') bg-indigo-50 text-indigo-600
+                                                @elseif($booking->type === 'Event') bg-rose-50 text-rose-600
+                                                @else bg-emerald-50 text-emerald-600 @endif">
                                                 {{ substr($booking->type, 0, 1) }}
                                             </div>
                                             <div>

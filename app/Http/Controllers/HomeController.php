@@ -102,7 +102,7 @@ class HomeController extends Controller
             'room_ids' => ['nullable', 'array'],
             'room_ids.*' => ['exists:rooms,id'],
             'check_in' => ['required', 'date'],
-            'check_out' => ['required', 'date', 'after:check_in'],
+            'check_out' => ['required', 'date', 'after_or_equal:check_in'],
             'guests' => ['required', 'integer', 'min:1', 'max:10'],
             'special_requirements' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],

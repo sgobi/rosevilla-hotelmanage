@@ -746,6 +746,7 @@
                currencyCode: '{{ session('currency', 'LKR') }}',
                rooms: {{ $rooms->mapWithKeys(fn($r) => [$r->id => ['price' => $r->price_per_night, 'title' => $r->title]])->toJson() }},
                init() {
+                    window.getBookingType = () => this.bookingType;
                    const params = new URLSearchParams(window.location.search);
                    if (params.get('check_in')) this.checkIn = params.get('check_in');
                    if (params.get('check_out')) this.checkOut = params.get('check_out');
@@ -761,6 +762,8 @@
                    this.$watch('bookingType', (value) => {
                        window.dispatchEvent(new CustomEvent('booking-type-changed', { detail: value }));
                    });
+
+                   window.dispatchEvent(new CustomEvent('booking-type-changed', { detail: this.bookingType }));
                },
                get days() {
                    if (!this.checkIn || !this.checkOut) return 0;
@@ -770,7 +773,7 @@
                    const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
                    // For rooms, calculate nights (diff). For garden, calculate days (diff + 1).
                    if (this.bookingType === 'room') {
-                       return diff > 0 ? diff : 0;
+                       return diff >= 0 ? Math.max(diff, 1) : 0;
                    }
                    return diff >= 0 ? diff + 1 : 0;
                },
@@ -1428,14 +1431,22 @@
             const heroCheckIn = flatpickr("#hero_check_in", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
-                    heroCheckOut.set("minDate", dateStr);
-                    if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, false); // Don't trigger onChange
+                    const start = selectedDates[0];
+                    if (start) {
+                        const type = window.getBookingType ? window.getBookingType() : 'room';
+                        let minEnd = start;
+                        
+                        const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
+                        heroCheckOut.set("minDate", minDateStr);
+                        if (typeof resCheckOut !== 'undefined') resCheckOut.set("minDate", minDateStr);
+                    }
+                    if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, false);
                 }
             });
             const heroCheckOut = flatpickr("#hero_check_out", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, false); // Don't trigger onChange
+                    if (typeof resCheckOut !== 'undefined') resCheckOut.setDate(dateStr, false);
                 }
             });
 
@@ -1452,24 +1463,23 @@
             const resCheckIn = flatpickr("#res_check_in", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    const alpineData = document.querySelector('#reservation').__x ? document.querySelector('#reservation').__x.$data : null;
-                    const currentType = alpineData ? alpineData.bookingType : 'room';
-                    
-                    if (currentType === 'room') {
-                        const nextDay = new Date(selectedDates[0]);
-                        nextDay.setDate(nextDay.getDate() + 1);
-                        resCheckOut.set("minDate", nextDay);
-                    } else {
-                        resCheckOut.set("minDate", dateStr);
+                    const start = selectedDates[0];
+                    if (start) {
+                        const type = window.getBookingType ? window.getBookingType() : 'room';
+                        let minEnd = start;
+                        
+                        const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
+                        resCheckOut.set("minDate", minDateStr);
+                        if (typeof heroCheckOut !== 'undefined') heroCheckOut.set("minDate", minDateStr);
                     }
-                    heroCheckIn.setDate(dateStr, false);
+                    if (typeof heroCheckIn !== 'undefined') heroCheckIn.setDate(dateStr, false);
                     instance.input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
             const resCheckOut = flatpickr("#res_check_out", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
-                    heroCheckOut.setDate(dateStr, false);
+                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.setDate(dateStr, false);
                     instance.input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
@@ -1499,7 +1509,8 @@
                 
                 for(let j = 0; j < window.bookedDatesGarden.length; j++) {
                     const range = window.bookedDatesGarden[j];
-                    if (dateStr >= range.check_in && dateStr < range.check_out) {
+                    // For garden, we treat bookings as occupying the whole day range
+                    if (dateStr >= range.check_in && dateStr <= range.check_out) {
                         return true;
                     }
                 }
@@ -1525,18 +1536,28 @@
                 if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disableFunc]);
                 if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disableFunc]);
 
-                // Update minDate for checkout based on mode
-                if (type === 'room') {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('minDate', tomorrow);
-                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('minDate', tomorrow);
+                // Update minDate for checkout based on mode and current selection
+                const start = resCheckIn.selectedDates[0];
+                if (start) {
+                    let minEnd = start;
+                    const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
+                    resCheckOut.set("minDate", minDateStr);
+                    heroCheckOut.set("minDate", minDateStr);
                 } else {
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('minDate', 'today');
-                    if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('minDate', 'today');
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    resCheckOut.set("minDate", todayStr);
+                    heroCheckOut.set("minDate", todayStr);
+                    if (type === 'room') {
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        const tomStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+                        resCheckOut.set("minDate", tomStr);
+                        heroCheckOut.set("minDate", tomStr);
+                    }
                 }
+                
 
-                // Reset dates if they are now disabled in the new mode
+                // Reset dates to avoid invalid selections across types
                 if (typeof resCheckIn !== 'undefined') resCheckIn.clear();
                 if (typeof resCheckOut !== 'undefined') resCheckOut.clear();
                 if (typeof heroCheckIn !== 'undefined') heroCheckIn.clear();

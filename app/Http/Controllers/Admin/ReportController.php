@@ -18,6 +18,7 @@ class ReportController extends Controller
         // Only count 'approved' reservations and event bookings as actual sales
         $resQuery = Reservation::where('status', 'approved');
         $eventQuery = EventBooking::where('status', 'approved');
+        $gardenQuery = \App\Models\GardenBooking::where('status', 'approved');
 
         // Helper to sum final_price from a query (requires get() because final_price is an accessor)
         $sumFinal = function($query) {
@@ -25,16 +26,20 @@ class ReportController extends Controller
         };
 
         $today = $sumFinal($resQuery->clone()->whereDate('created_at', Carbon::today())) +
-                 $sumFinal($eventQuery->clone()->whereDate('created_at', Carbon::today()));
+                 $sumFinal($eventQuery->clone()->whereDate('created_at', Carbon::today())) +
+                 $sumFinal($gardenQuery->clone()->whereDate('created_at', Carbon::today()));
         
         $week = $sumFinal($resQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])) +
-                $sumFinal($eventQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]));
+                $sumFinal($eventQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])) +
+                $sumFinal($gardenQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]));
 
         $month = $sumFinal($resQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)) +
-                 $sumFinal($eventQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year));
+                 $sumFinal($eventQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)) +
+                 $sumFinal($gardenQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year));
 
         $year = $sumFinal($resQuery->clone()->whereYear('created_at', Carbon::now()->year)) +
-                $sumFinal($eventQuery->clone()->whereYear('created_at', Carbon::now()->year));
+                $sumFinal($eventQuery->clone()->whereYear('created_at', Carbon::now()->year)) +
+                $sumFinal($gardenQuery->clone()->whereYear('created_at', Carbon::now()->year));
 
         // Recent sales list (merged and sorted)
         $reservations = $resQuery->clone()->get()->map(function($item) {
@@ -51,7 +56,14 @@ class ReportController extends Controller
             return $item;
         });
 
-        $allSales = $reservations->concat($events);
+        $gardens = $gardenQuery->clone()->get()->map(function($item) {
+            $item->type = 'Garden';
+            $item->display_name = $item->guest_name;
+            $item->details = 'Garden Rental';
+            return $item;
+        });
+
+        $allSales = $reservations->concat($events)->concat($gardens);
 
         // Search Logic
         $search = $request->get('search');
@@ -94,7 +106,7 @@ class ReportController extends Controller
     public function print(Request $request)
     {
         $resQuery = Reservation::where('status', 'approved');
-        $eventQuery = EventBooking::where('status', 'approved');
+        $gardenQuery = \App\Models\GardenBooking::where('status', 'approved');
         $title = 'Sales Report';
         $period = $request->input('period');
 
@@ -103,26 +115,32 @@ class ReportController extends Controller
             $end = Carbon::parse($request->end_date)->endOfDay();
             $resQuery->whereBetween('created_at', [$start, $end]);
             $eventQuery->whereBetween('created_at', [$start, $end]);
+            $gardenQuery->whereBetween('created_at', [$start, $end]);
             $title .= ': ' . $start->format('M d, Y') . ' - ' . $end->format('M d, Y');
         } elseif ($period === 'today') {
             $resQuery->whereDate('created_at', Carbon::today());
             $eventQuery->whereDate('created_at', Carbon::today());
+            $gardenQuery->whereDate('created_at', Carbon::today());
             $title .= ': Today (' . now()->format('M d, Y') . ')';
         } elseif ($period === 'week') {
             $start = Carbon::now()->startOfWeek();
             $end = Carbon::now()->endOfWeek();
             $resQuery->whereBetween('created_at', [$start, $end]);
             $eventQuery->whereBetween('created_at', [$start, $end]);
+            $gardenQuery->whereBetween('created_at', [$start, $end]);
             $title .= ': This Week (' . $start->format('M d') . ' - ' . $end->format('M d, Y') . ')';
         } elseif ($period === 'month') {
             $resQuery->whereMonth('created_at', Carbon::now()->month)
                      ->whereYear('created_at', Carbon::now()->year);
             $eventQuery->whereMonth('created_at', Carbon::now()->month)
                        ->whereYear('created_at', Carbon::now()->year);
+            $gardenQuery->whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year);
             $title .= ': ' . now()->format('F Y');
         } elseif ($period === 'year') {
             $resQuery->whereYear('created_at', Carbon::now()->year);
             $eventQuery->whereYear('created_at', Carbon::now()->year);
+            $gardenQuery->whereYear('created_at', Carbon::now()->year);
             $title .= ': ' . now()->format('Y');
         }
 
@@ -140,8 +158,15 @@ class ReportController extends Controller
             $item->report_discount = $item->discount_amount;
             return $item;
         });
+        $gardenSales = $gardenQuery->oldest()->get()->map(function($item) {
+            $item->report_type = 'Garden';
+            $item->report_name = $item->guest_name;
+            $item->report_desc = 'Garden Space';
+            $item->report_discount = $item->discount_amount;
+            return $item;
+        });
 
-        $sales = $resSales->concat($eventSales)->sortBy('created_at');
+        $sales = $resSales->concat($eventSales)->concat($gardenSales)->sortBy('created_at');
         
         $totalSubtotal = $sales->sum('total_price');
         $totalTax = $sales->sum('tax_amount');
@@ -205,10 +230,12 @@ class ReportController extends Controller
 
         $resQuery = Reservation::with('room');
         $eventQuery = EventBooking::query();
+        $gardenQuery = \App\Models\GardenBooking::query();
 
         if ($status !== 'all') {
             $resQuery->where('status', $status);
             $eventQuery->where('status', $status);
+            $gardenQuery->where('status', $status);
         }
 
         $reservations = $resQuery->get()->map(function($item) {
@@ -231,7 +258,17 @@ class ReportController extends Controller
             return $item;
         });
 
-        $allBookings = $reservations->concat($events);
+        $gardens = $gardenQuery->get()->map(function($item) {
+            $item->type = 'Garden';
+            $item->display_name = $item->guest_name;
+            $item->details = 'Garden Rental';
+            $item->notes = $item->additional_notes;
+            $item->special = $item->special_requirements;
+            $item->date = $item->check_in->format('M d, Y') . ' - ' . $item->check_out->format('M d, Y');
+            return $item;
+        });
+
+        $allBookings = $reservations->concat($events)->concat($gardens);
 
         if ($search) {
             $search = strtolower($search);
