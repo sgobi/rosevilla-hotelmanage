@@ -1432,9 +1432,10 @@
                         if (window.bookedDatesByRoom[rId]) {
                             for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
                                 const range = window.bookedDatesByRoom[rId][j];
-                                if (dateStr >= range.check_in && dateStr < range.check_out) {
-                                    return true;
-                                }
+                                const isBooked = (range.check_in === range.check_out) 
+                                    ? (dateStr === range.check_in)
+                                    : (dateStr >= range.check_in && dateStr < range.check_out);
+                                if (isBooked) return true;
                             }
                         }
                     }
@@ -1447,7 +1448,10 @@
                             if (window.bookedDatesByRoom[rId]) {
                                 for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
                                     const range = window.bookedDatesByRoom[rId][j];
-                                    if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                    const isBooked = (range.check_in === range.check_out)
+                                        ? (dateStr === range.check_in)
+                                        : (dateStr >= range.check_in && dateStr < range.check_out);
+                                    if (isBooked) {
                                         bookedCount++;
                                         break; 
                                     }
@@ -1474,7 +1478,10 @@
                     } else if (window.bookedDatesByRoom) {
                         for (let rId in window.bookedDatesByRoom) {
                             for (let range of window.bookedDatesByRoom[rId]) {
-                                if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                const isBooked = (range.check_in === range.check_out)
+                                    ? (dateStr === range.check_in)
+                                    : (dateStr >= range.check_in && dateStr < range.check_out);
+                                if (isBooked) {
                                     dayElem.classList.add('is-booked');
                                     return;
                                 }
@@ -1521,7 +1528,10 @@
                     } else if (window.bookedDatesByRoom) {
                         for (let rId in window.bookedDatesByRoom) {
                             for (let range of window.bookedDatesByRoom[rId]) {
-                                if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                const isBooked = (range.check_in === range.check_out)
+                                    ? (dateStr === range.check_in)
+                                    : (dateStr >= range.check_in && dateStr < range.check_out);
+                                if (isBooked) {
                                     dayElem.classList.add('is-booked');
                                     return;
                                 }
