@@ -87,6 +87,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('invoices/{reservation}', [InvoiceController::class, 'show'])->name('invoices.show');
             Route::get('event-invoices/{event}', [InvoiceController::class, 'showEvent'])->name('events.invoice');
             Route::get('garden-invoices/{gardenBooking}', [InvoiceController::class, 'showGarden'])->name('garden.invoice');
+
+            Route::get('proforma-invoices/{reservation}', [InvoiceController::class, 'showProforma'])->name('invoices.proforma');
+            Route::get('event-proforma-invoices/{event}', [InvoiceController::class, 'showEventProforma'])->name('events.proforma');
+            Route::get('garden-proforma-invoices/{gardenBooking}', [InvoiceController::class, 'showGardenProforma'])->name('garden.proforma');
         });
 
         // Accountant & Admin (Reports)
@@ -111,6 +115,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('home-events', HomeEventController::class)->except(['show']);
             Route::get('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'index'])->name('maintenance.index');
             Route::post('maintenance/wipe-all', [\App\Http\Controllers\Admin\MaintenanceController::class, 'wipeAllData'])->name('maintenance.wipe-all');
+            Route::get('maintenance/backup', [\App\Http\Controllers\Admin\MaintenanceController::class, 'downloadBackup'])->name('maintenance.backup');
+            Route::post('maintenance/restore', [\App\Http\Controllers\Admin\MaintenanceController::class, 'restoreBackup'])->name('maintenance.restore');
+            Route::get('maintenance/export-mysql', [\App\Http\Controllers\Admin\MaintenanceController::class, 'exportToMysql'])->name('maintenance.export-mysql');
         });
     });
 

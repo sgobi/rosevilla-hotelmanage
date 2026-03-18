@@ -162,6 +162,36 @@ class ReservationController extends Controller
                 $updateData['cancellation_reason'] = $data['cancellation_reason'];
             }
             
+            if ($newStatus === 'approved') {
+                $requestedCheckIn = $reservation->check_in->format('Y-m-d');
+                $requestedCheckOut = $reservation->check_out->format('Y-m-d');
+                $roomIdsToCheck = $reservation->room_ids ?: ($reservation->room_id ? [$reservation->room_id] : []);
+                
+                if (!empty($roomIdsToCheck)) {
+                    $overlapping = \App\Models\Reservation::where('id', '!=', $reservation->id)
+                        ->whereIn('status', ['approved', 'checked_in', 'checked_out'])
+                        ->where(function ($query) use ($requestedCheckIn, $requestedCheckOut) {
+                            $query->whereDate('check_in', '<', $requestedCheckOut)
+                                  ->whereDate('check_out', '>', $requestedCheckIn);
+                        })->get();
+
+                    $isActuallyAvailable = true;
+                    foreach ($overlapping as $res) {
+                        $resRoomIds = $res->room_ids ?: ($res->room_id ? [$res->room_id] : []);
+                        foreach ($roomIdsToCheck as $rId) {
+                            if (in_array((string)$rId, array_map('strval', $resRoomIds))) {
+                                $isActuallyAvailable = false;
+                                break 2;
+                            }
+                        }
+                    }
+
+                    if (!$isActuallyAvailable) {
+                        return back()->with('error', 'Critical Error: This booking cannot be approved because another reservation already occupies these dates/rooms. Please resolve the conflict first.');
+                    }
+                }
+            }
+            
             $reservation->update($updateData);
             
             // Send WhatsApp notification to customer if status changed to approved or cancelled

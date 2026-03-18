@@ -60,12 +60,6 @@
                     <div class="flex items-end justify-between">
                         <div>
                             <div class="text-2xl font-black text-slate-900 tracking-tight">{{ $metric['value'] }}</div>
-                            <div class="flex items-center gap-1 mt-1">
-                                <span class="text-[10px] font-bold {{ $metric['trendUp'] ? 'text-emerald-600' : 'text-amber-600' }}">
-                                    {{ $metric['trend'] }}
-                                </span>
-                                <span class="text-[10px] text-slate-400 font-medium">vs last month</span>
-                            </div>
                         </div>
                     </div>
                 </div>

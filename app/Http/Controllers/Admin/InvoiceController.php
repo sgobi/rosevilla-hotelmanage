@@ -110,4 +110,30 @@ class InvoiceController extends Controller
 
         return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days'));
     }
+
+    public function showProforma(Reservation $reservation)
+    {
+        $content = ContentSetting::pluck('value', 'key');
+        $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
+        $isProforma = true;
+
+        return view('admin.invoices.show', compact('reservation', 'content', 'days', 'isProforma'));
+    }
+
+    public function showEventProforma(EventBooking $event)
+    {
+        $content = ContentSetting::pluck('value', 'key');
+        $isProforma = true;
+        
+        return view('admin.events.invoice', compact('event', 'content', 'isProforma'));
+    }
+
+    public function showGardenProforma(\App\Models\GardenBooking $gardenBooking)
+    {
+        $content = ContentSetting::pluck('value', 'key');
+        $days = $gardenBooking->check_in->diffInDays($gardenBooking->check_out) + 1;
+        $isProforma = true;
+
+        return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days', 'isProforma'));
+    }
 }

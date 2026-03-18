@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garden Booking Confirmation #{{ $gardenBooking->id }} - Rose Villa</title>
+    <title>{{ ($isProforma ?? false) ? 'Garden Quotation / Proforma Invoice' : 'Garden Booking Confirmation' }} #{{ $gardenBooking->id }} - Rose Villa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -73,9 +73,15 @@
         </a>
         <button onclick="window.print()" class="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-black transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            Print Confirmation
+            Print {{ ($isProforma ?? false) ? 'Proforma' : 'Confirmation' }}
         </button>
     </div>
+
+    @if($isProforma ?? false)
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest no-print z-50 shadow-sm border border-yellow-200">
+        Proforma Invoice Mode
+    </div>
+    @endif
 
     <div class="invoice-container">
         {{-- Header Section --}}
@@ -125,7 +131,7 @@
                 <div class="flex gap-4">
                     <span class="info-label w-32">Subject</span>
                     <span class="info-label">:</span>
-                    <span class="info-value">Garden Booking Confirmation</span>
+                    <span class="info-value">{{ ($isProforma ?? false) ? 'Garden Quotation / Proforma Invoice' : 'Garden Booking Confirmation' }}</span>
                 </div>
                 <div class="flex gap-4 mr-[120px]">
                     <span class="info-label w-24">Pages</span>
@@ -139,7 +145,7 @@
 
         {{-- Greeting --}}
         <div class="mb-6 text-[14px] leading-relaxed">
-            <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong> for your garden booking. We are happy to confirm the following details</p>
+            <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong>. We are pleased to provide the {{ ($isProforma ?? false) ? 'quotation / proforma invoice' : 'confirmation details' }} for your upcoming garden booking.</p>
         </div>
 
         {{-- Main Details --}}

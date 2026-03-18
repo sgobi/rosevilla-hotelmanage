@@ -113,7 +113,7 @@ class HomeController extends Controller
         $roomIdsToCheck = isset($data['room_ids']) ? $data['room_ids'] : (isset($data['room_id']) ? [$data['room_id']] : []);
 
         if (!empty($roomIdsToCheck)) {
-            $overlappingReservations = \App\Models\Reservation::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            $overlappingReservations = \App\Models\Reservation::whereIn('status', ['approved', 'checked_in', 'checked_out'])
                 ->where(function ($query) use ($requestedCheckIn, $requestedCheckOut) {
                     $query->whereDate('check_in', '<', $requestedCheckOut)
                           ->whereDate('check_out', '>', $requestedCheckIn);

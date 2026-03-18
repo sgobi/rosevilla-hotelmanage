@@ -1392,6 +1392,15 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Global helper to get the current booking type from Alpine.js
+            window.getBookingType = () => document.querySelector('#reservation')?.__x?.$data?.bookingType || 'room';
+            
+            // Helper to format date as YYYY-MM-DD in local timezone
+            const formatDate = (date) => {
+                const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                return d.toISOString().split('T')[0];
+            };
+
             window.bookedDatesByRoom = {!! $bookedDatesByRoom ?? '{}' !!};
             window.selectedRoomIds = [];
             
@@ -1401,14 +1410,12 @@
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
-                const dateStr = `${year}-${month}-${day}`;
-                
+                const dateStr = formatDate(date);
                 for (let i = 0; i < window.selectedRoomIds.length; i++) {
                     const rId = window.selectedRoomIds[i];
                     if (window.bookedDatesByRoom[rId]) {
                         for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
                             const range = window.bookedDatesByRoom[rId][j];
-                            // The night before check_out is the last booked night. So date < check_out is disabled.
                             if (dateStr >= range.check_in && dateStr < range.check_out) {
                                 return true;
                             }
@@ -1418,14 +1425,13 @@
                 return false;
             };
 
-            // Hero Section Configuration
             const heroConfig = {
                 dateFormat: "Y-m-d",
                 altInput: true,
                 altFormat: "d / m / Y",
                 minDate: "today",
                 disable: [disabledDatesFunc],
-                altInputClass: "w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all cursor-pointer hover:bg-white/10 outline-none"
+                altInputClass: "w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all duration-500 cursor-pointer hover:bg-white/10 outline-none"
             };
 
             const heroCheckIn = flatpickr("#hero_check_in", {
@@ -1433,16 +1439,17 @@
                 onChange: function(selectedDates, dateStr) {
                     const start = selectedDates[0];
                     if (start) {
-                        const type = window.getBookingType ? window.getBookingType() : 'room';
-                        let minEnd = start;
-                        
-                        const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
+                        const type = window.getBookingType();
+                        let minEnd = new Date(start.getTime());
+                        if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
+                        const minDateStr = formatDate(minEnd);
                         heroCheckOut.set("minDate", minDateStr);
                         if (typeof resCheckOut !== 'undefined') resCheckOut.set("minDate", minDateStr);
                     }
                     if (typeof resCheckIn !== 'undefined') resCheckIn.setDate(dateStr, false);
                 }
             });
+
             const heroCheckOut = flatpickr("#hero_check_out", {
                 ...heroConfig,
                 onChange: function(selectedDates, dateStr) {
@@ -1450,7 +1457,6 @@
                 }
             });
 
-            // Reservation Section Configuration
             const resConfig = {
                 dateFormat: "Y-m-d",
                 altInput: true,
@@ -1465,10 +1471,10 @@
                 onChange: function(selectedDates, dateStr, instance) {
                     const start = selectedDates[0];
                     if (start) {
-                        const type = window.getBookingType ? window.getBookingType() : 'room';
-                        let minEnd = start;
-                        
-                        const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
+                        const type = window.getBookingType();
+                        let minEnd = new Date(start.getTime());
+                        if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
+                        const minDateStr = formatDate(minEnd);
                         resCheckOut.set("minDate", minDateStr);
                         if (typeof heroCheckOut !== 'undefined') heroCheckOut.set("minDate", minDateStr);
                     }
@@ -1476,6 +1482,7 @@
                     instance.input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
+
             const resCheckOut = flatpickr("#res_check_out", {
                 ...resConfig,
                 onChange: function(selectedDates, dateStr, instance) {
@@ -1484,32 +1491,12 @@
                 }
             });
 
-            // Sync with URL parameters if present
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('check_in')) {
-                const date = params.get('check_in');
-                heroCheckIn.setDate(date);
-                resCheckIn.setDate(date);
-            }
-            if (params.get('check_out')) {
-                const date = params.get('check_out');
-                heroCheckOut.setDate(date);
-                resCheckOut.setDate(date);
-            }
-
             window.bookedDatesGarden = {!! $bookedDatesGarden ?? '[]' !!};
-            
             const disabledGardenDatesFunc = function(date) {
                 if (!window.bookedDatesGarden || window.bookedDatesGarden.length === 0) return false;
-                
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const dateStr = `${year}-${month}-${day}`;
-                
+                const dateStr = formatDate(date);
                 for(let j = 0; j < window.bookedDatesGarden.length; j++) {
                     const range = window.bookedDatesGarden[j];
-                    // For garden, we treat bookings as occupying the whole day range
                     if (dateStr >= range.check_in && dateStr <= range.check_out) {
                         return true;
                     }
@@ -1519,50 +1506,50 @@
 
             window.addEventListener('room-selected', function(e) {
                 window.selectedRoomIds = Array.from(e.detail || []);
-                // Only update if in room mode
-                const currentType = document.querySelector('#reservation').__x.$data.bookingType;
-                if (currentType === 'room') {
-                    if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disabledDatesFunc]);
-                    if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disabledDatesFunc]);
+                if (window.getBookingType() === 'room') {
+                    [resCheckIn, resCheckOut, heroCheckIn, heroCheckOut].forEach(dp => dp && dp.set('disable', [disabledDatesFunc]));
                 }
             });
 
             window.addEventListener('booking-type-changed', function(e) {
                 const type = e.detail;
                 const disableFunc = type === 'room' ? disabledDatesFunc : disabledGardenDatesFunc;
-                
-                if (typeof resCheckIn !== 'undefined') resCheckIn.set('disable', [disableFunc]);
-                if (typeof resCheckOut !== 'undefined') resCheckOut.set('disable', [disableFunc]);
-                if (typeof heroCheckIn !== 'undefined') heroCheckIn.set('disable', [disableFunc]);
-                if (typeof heroCheckOut !== 'undefined') heroCheckOut.set('disable', [disableFunc]);
+                [resCheckIn, resCheckOut, heroCheckIn, heroCheckOut].forEach(dp => dp && dp.set('disable', [disableFunc]));
 
-                // Update minDate for checkout based on mode and current selection
-                const start = resCheckIn.selectedDates[0];
+                const start = resCheckIn ? resCheckIn.selectedDates[0] : null;
                 if (start) {
-                    let minEnd = start;
-                    const minDateStr = `${minEnd.getFullYear()}-${String(minEnd.getMonth() + 1).padStart(2, '0')}-${String(minEnd.getDate()).padStart(2, '0')}`;
-                    resCheckOut.set("minDate", minDateStr);
-                    heroCheckOut.set("minDate", minDateStr);
+                    let minEnd = new Date(start.getTime());
+                    if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
+                    const minDateStr = formatDate(minEnd);
+                    if (resCheckOut) resCheckOut.set("minDate", minDateStr);
+                    if (heroCheckOut) heroCheckOut.set("minDate", minDateStr);
                 } else {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    resCheckOut.set("minDate", todayStr);
-                    heroCheckOut.set("minDate", todayStr);
+                    const todayStr = formatDate(new Date());
+                    let minCheckOut = todayStr;
                     if (type === 'room') {
                         const tomorrow = new Date();
                         tomorrow.setDate(tomorrow.getDate() + 1);
-                        const tomStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
-                        resCheckOut.set("minDate", tomStr);
-                        heroCheckOut.set("minDate", tomStr);
+                        minCheckOut = formatDate(tomorrow);
                     }
+                    if (resCheckOut) resCheckOut.set("minDate", minCheckOut);
+                    if (heroCheckOut) heroCheckOut.set("minDate", minCheckOut);
                 }
-                
-
-                // Reset dates to avoid invalid selections across types
-                if (typeof resCheckIn !== 'undefined') resCheckIn.clear();
-                if (typeof resCheckOut !== 'undefined') resCheckOut.clear();
-                if (typeof heroCheckIn !== 'undefined') heroCheckIn.clear();
-                if (typeof heroCheckOut !== 'undefined') heroCheckOut.clear();
+                [resCheckIn, resCheckOut, heroCheckIn, heroCheckOut].forEach(dp => dp && dp.clear());
             });
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('check_in')) {
+                const date = params.get('check_in');
+                if (heroCheckIn) heroCheckIn.setDate(date);
+                if (resCheckIn) resCheckIn.setDate(date);
+            }
+            if (params.get('check_out')) {
+                const date = params.get('check_out');
+                if (heroCheckOut) heroCheckOut.set('minDate', date);
+                if (heroCheckOut) heroCheckOut.setDate(date);
+                if (resCheckOut) resCheckOut.set('minDate', date);
+                if (resCheckOut) resCheckOut.setDate(date);
+            }
         });
     </script>
 </body>

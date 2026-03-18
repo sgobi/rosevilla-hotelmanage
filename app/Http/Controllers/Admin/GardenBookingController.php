@@ -62,7 +62,7 @@ class GardenBookingController extends Controller
             'additional_notes' => 'nullable|string',
         ]);
 
-        $conflict = GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+        $conflict = GardenBooking::whereIn('status', ['approved', 'checked_in', 'checked_out'])
             ->where(function ($query) use ($validated) {
                  $query->whereDate('check_in', '<', $validated['check_out'])
                        ->whereDate('check_out', '>', $validated['check_in']);
@@ -141,9 +141,18 @@ class GardenBookingController extends Controller
             if ($newStatus === 'checked_out') {
                 $updateData['checked_out_at'] = now();
             }
-            if ($request->has('advance_amount')) {
-                $updateData['advance_amount'] = $request->input('advance_amount');
-                $updateData['advance_paid_at'] = $updateData['advance_paid_at'] ?? now();
+            if ($newStatus === 'approved') {
+                $conflict = GardenBooking::where('id', '!=', $gardenBooking->id)
+                    ->whereIn('status', ['approved', 'checked_in', 'checked_out'])
+                    ->where(function ($query) use ($gardenBooking) {
+                         $query->whereDate('check_in', '<', $gardenBooking->check_out)
+                               ->whereDate('check_out', '>', $gardenBooking->check_in);
+                    })
+                    ->exists();
+
+                if ($conflict) {
+                    return back()->with('error', 'Critical Error: The garden is already booked (Approved) for these dates. You cannot approve this request until the conflict is resolved.');
+                }
             }
             
             $gardenBooking->update($updateData);

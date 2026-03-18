@@ -28,7 +28,7 @@ class GardenBookingController extends Controller
         $requestedCheckOut = $data['check_out'];
 
         // Check for overlapping bookings
-        $overlappingBookings = GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+        $overlappingBookings = GardenBooking::whereIn('status', ['approved', 'checked_in', 'checked_out'])
             ->where(function ($query) use ($requestedCheckIn, $requestedCheckOut) {
                 $query->whereDate('check_in', '<=', $requestedCheckOut)
                       ->whereDate('check_out', '>=', $requestedCheckIn);

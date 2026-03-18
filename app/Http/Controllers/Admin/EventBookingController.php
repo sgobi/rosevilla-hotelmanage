@@ -112,8 +112,7 @@ class EventBookingController extends Controller
 
         // Check for conflicts
         $conflict = EventBooking::whereDate('event_date', $validated['event_date'])
-            ->where('status', '!=', 'cancelled')
-            ->where('status', '!=', 'rejected')
+            ->where('status', 'approved')
             ->where(function ($query) use ($validated) {
                 $query->where('start_time', '<', $validated['end_time'])
                       ->where('end_time', '>', $validated['start_time']);
@@ -196,6 +195,21 @@ class EventBookingController extends Controller
              // If status is cancelled, also save the cancellation reason
             if ($newStatus === 'cancelled' && $request->has('cancellation_reason')) {
                 $updateData['cancellation_reason'] = $request->input('cancellation_reason');
+            }
+            
+            if ($newStatus === 'approved') {
+                $conflict = EventBooking::whereDate('event_date', $event->event_date)
+                    ->where('id', '!=', $event->id)
+                    ->where('status', 'approved')
+                    ->where(function ($query) use ($event) {
+                        $query->where('start_time', '<', $event->end_time)
+                              ->where('end_time', '>', $event->start_time);
+                    })
+                    ->exists();
+
+                if ($conflict) {
+                    return back()->with('error', 'Critical Error: There is already an APPROVED event for this time slot. You cannot approve this request until the conflict is resolved.');
+                }
             }
             
             $event->update($updateData);
@@ -352,8 +366,7 @@ class EventBookingController extends Controller
         // Check for conflicts excluding this event
         $conflict = EventBooking::whereDate('event_date', $validated['event_date'])
             ->where('id', '!=', $event->id)
-            ->where('status', '!=', 'cancelled')
-            ->where('status', '!=', 'rejected')
+            ->where('status', 'approved')
             ->where(function ($query) use ($validated) {
                  $query->where('start_time', '<', $validated['end_time'])
                        ->where('end_time', '>', $validated['start_time']);

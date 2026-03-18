@@ -307,21 +307,28 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="flex justify-end items-center gap-3">
-                                            {{-- Invoice & Management --}}
+                                        <div class="flex justify-end items-center gap-3">                                            {{-- Invoice & Management --}}
                                             <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative">
-                                                @if($booking->status === 'approved')
-                                                    @php
-                                                        $canPrint = auth()->user()->isAdmin() || 
-                                                                   ($booking->invoice_print_count == 0 || $booking->invoice_reprint_status === 'approved');
-                                                    @endphp
+                                                 @if($booking->status === 'approved' || $booking->status === 'pending')
+                                                     <a href="{{ route('admin.events.proforma', $booking) }}" target="_blank" 
+                                                        class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Download Quotation">
+                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 2 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                     </a>
+                                                 @endif
 
-                                                    @if($canPrint)
-                                                        <a href="{{ route('admin.events.invoice', $booking) }}" target="_blank" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Print Invoice">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                                        </a>
-                                                    @endif
-                                                @endif
+                                                 @if($booking->status === 'approved')
+                                                     @php
+                                                         $canPrint = auth()->user()->isAdmin() || 
+                                                                    ($booking->invoice_print_count == 0 || $booking->invoice_reprint_status === 'approved');
+                                                     @endphp
+ 
+                                                     @if($canPrint)
+                                                         <a href="{{ route('admin.events.invoice', $booking) }}" target="_blank" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Print Invoice">
+                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                                         </a>
+                                                     @endif
+                                                 @endif
+                                            </div>
 
                                                 <button @click="editing = !editing" 
                                                         :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
