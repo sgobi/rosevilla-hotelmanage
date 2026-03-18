@@ -97,6 +97,12 @@
         .numInputWrapper span.arrowUp:after { border-bottom-color: #b38e5d !important; }
         .numInputWrapper span.arrowDown:after { border-top-color: #b38e5d !important; }
         .cur-year { font-weight: 400 !important; color: #1a1c1e !important; }
+        .flatpickr-day.disabled {
+            color: #ef4444 !important;
+            text-decoration: line-through;
+            opacity: 0.3 !important;
+            cursor: not-allowed !important;
+        }
         .flatpickr-weekday {
             color: #b38e5d !important;
             font-weight: 900 !important;
@@ -1402,24 +1408,42 @@
             };
 
             window.bookedDatesByRoom = {!! $bookedDatesByRoom ?? '{}' !!};
+            window.allRoomIds = {!! $allRoomIds->toJson() !!};
             window.selectedRoomIds = [];
             
             const disabledDatesFunc = function(date) {
-                if (!window.bookedDatesByRoom || window.selectedRoomIds.length === 0) return false;
-                
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
+                if (!window.bookedDatesByRoom) return false;
                 const dateStr = formatDate(date);
-                for (let i = 0; i < window.selectedRoomIds.length; i++) {
-                    const rId = window.selectedRoomIds[i];
-                    if (window.bookedDatesByRoom[rId]) {
-                        for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
-                            const range = window.bookedDatesByRoom[rId][j];
-                            if (dateStr >= range.check_in && dateStr < range.check_out) {
-                                return true;
+                
+                if (window.selectedRoomIds && window.selectedRoomIds.length > 0) {
+                    for (let i = 0; i < window.selectedRoomIds.length; i++) {
+                        const rId = window.selectedRoomIds[i];
+                        if (window.bookedDatesByRoom[rId]) {
+                            for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
+                                const range = window.bookedDatesByRoom[rId][j];
+                                if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                    return true;
+                                }
                             }
                         }
+                    }
+                } else {
+                    // If no room selected, disable only if ALL active rooms are booked
+                    if (window.allRoomIds && window.allRoomIds.length > 0) {
+                        let bookedCount = 0;
+                        for (let i = 0; i < window.allRoomIds.length; i++) {
+                            const rId = window.allRoomIds[i];
+                            if (window.bookedDatesByRoom[rId]) {
+                                for(let j = 0; j < window.bookedDatesByRoom[rId].length; j++) {
+                                    const range = window.bookedDatesByRoom[rId][j];
+                                    if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                        bookedCount++;
+                                        break; 
+                                    }
+                                }
+                            }
+                        }
+                        return bookedCount >= window.allRoomIds.length;
                     }
                 }
                 return false;

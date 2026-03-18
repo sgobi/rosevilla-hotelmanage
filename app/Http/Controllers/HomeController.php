@@ -87,6 +87,7 @@ class HomeController extends Controller
             'homeEvents' => $homeEvents,
             'bookedDatesByRoom' => json_encode($bookedDatesByRoom),
             'bookedDatesGarden' => json_encode($bookedDatesGarden),
+            'allRoomIds' => $rooms->pluck('id'),
             'garden' => $garden,
         ]);
     }
