@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('garden-profile', [\App\Http\Controllers\Admin\GardenProfileController::class, 'update'])->name('garden-profile.update');
             Route::resource('users', UserController::class)->except(['show']);
             Route::resource('home-events', HomeEventController::class)->except(['show']);
+            Route::get('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'index'])->name('maintenance.index');
             Route::post('maintenance/wipe-all', [\App\Http\Controllers\Admin\MaintenanceController::class, 'wipeAllData'])->name('maintenance.wipe-all');
         });
     });

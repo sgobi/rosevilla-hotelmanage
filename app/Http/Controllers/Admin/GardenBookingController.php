@@ -43,6 +43,43 @@ class GardenBookingController extends Controller
         return view('admin.garden-bookings.calendar');
     }
 
+    public function create()
+    {
+        return view('admin.garden-bookings.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'guest_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'check_in' => 'required|date',
+            'check_out' => 'required|date|after_or_equal:check_in',
+            'guests' => 'required|integer|min:1',
+            'special_requirements' => 'nullable|string',
+            'additional_notes' => 'nullable|string',
+        ]);
+
+        $conflict = GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->where(function ($query) use ($validated) {
+                 $query->whereDate('check_in', '<', $validated['check_out'])
+                       ->whereDate('check_out', '>', $validated['check_in']);
+            })
+            ->first();
+
+        if ($conflict) {
+             return back()->withInput()->withErrors([
+                 'conflict' => 'This date overlaps with an existing garden booking.',
+            ]);
+        }
+
+        $booking = GardenBooking::create($validated);
+
+        return redirect()->route('admin.garden-bookings.index')->with('success', 'Garden booking created successfully.');
+    }
+
     public function apiEvents()
     {
         $events = GardenBooking::whereNotIn('status', ['cancelled', 'rejected'])->get()->map(function ($booking) {

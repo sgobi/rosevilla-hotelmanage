@@ -58,8 +58,21 @@ class FrontDeskController extends Controller
             ->get()
             ->map(function ($reservation) {
                 $statusColor = '#3b82f6'; // Blue for Rooms
-                if ($reservation->checked_out_at) $statusColor = '#64748b'; // Gray for Spent
-                elseif ($reservation->checked_in_at) $statusColor = '#2563eb'; // Deep Blue for In-House
+                $statusLabel = 'Future Booking';
+                
+                if ($reservation->status === 'pending') {
+                    $statusColor = '#ef4444'; // Red for Pending
+                    $statusLabel = 'Pending Request';
+                } elseif ($reservation->checked_out_at) {
+                    $statusColor = '#64748b'; // Gray for Spent
+                    $statusLabel = 'Checked Out';
+                } elseif ($reservation->checked_in_at) {
+                    $statusColor = '#10b981'; // Green for In-House
+                    $statusLabel = 'In-House';
+                } elseif ($reservation->check_in->isToday()) {
+                    $statusColor = '#f59e0b'; // Amber for Today's arrival
+                    $statusLabel = 'Arrival Today';
+                }
                 
                 $rooms = $reservation->rooms();
                 $roomText = $rooms->pluck('title')->implode(', ') ?: 'Room';
@@ -75,6 +88,13 @@ class FrontDeskController extends Controller
                     'textColor' => '#ffffff',
                     'url' => route('admin.front-desk.index', ['search' => $reservation->guest_name]),
                     'allDay' => true,
+                    'extendedProps' => [
+                        'type' => 'Room Stay',
+                        'guest' => $reservation->guest_name,
+                        'rooms' => $roomText,
+                        'nights' => $nights,
+                        'status' => $statusLabel
+                    ]
                 ];
             });
 
@@ -82,7 +102,11 @@ class FrontDeskController extends Controller
             ->get()
             ->map(function ($booking) {
                 $statusColor = '#10b981'; // Emerald for Garden
-                if ($booking->status === 'pending') $statusColor = '#059669';
+                $statusLabel = 'Approved';
+                if ($booking->status === 'pending') {
+                    $statusColor = '#f59e0b';
+                    $statusLabel = 'Pending';
+                }
                 
                 return [
                     'id' => 'garden-' . $booking->id,
@@ -90,10 +114,15 @@ class FrontDeskController extends Controller
                     'start' => $booking->check_in->format('Y-m-d'),
                     'end' => $booking->check_out->addDay()->format('Y-m-d'),
                     'backgroundColor' => $statusColor,
-                    'borderColor' => $statusColor,
+                    'borderColor' => '#064e3b',
                     'textColor' => '#ffffff',
                     'url' => route('admin.garden-bookings.index', ['search' => $booking->guest_name]),
                     'allDay' => true,
+                    'extendedProps' => [
+                        'type' => 'Garden Event',
+                        'guest' => $booking->guest_name,
+                        'status' => $statusLabel
+                    ]
                 ];
             });
 
@@ -108,10 +137,15 @@ class FrontDeskController extends Controller
                     'start' => $booking->event_date->format('Y-m-d') . 'T' . $booking->start_time->format('H:i:s'),
                     'end' => $booking->event_date->format('Y-m-d') . 'T' . $booking->end_time->format('H:i:s'),
                     'backgroundColor' => $statusColor,
-                    'borderColor' => $statusColor,
+                    'borderColor' => '#881337',
                     'textColor' => '#ffffff',
                     'url' => route('admin.events.index', ['search' => $booking->customer_name]),
                     'allDay' => false,
+                    'extendedProps' => [
+                        'type' => 'Other Event',
+                        'guest' => $booking->customer_name,
+                        'event_type' => $booking->event_type
+                    ]
                 ];
             });
 

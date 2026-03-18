@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\DB;
 
 class MaintenanceController extends Controller
 {
+    public function index()
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+        return view('admin.maintenance.index');
+    }
+
     /**
      * Wipe all transactional data from the system.
      * Restricted to Administrators only.

@@ -12,22 +12,65 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $now = \Carbon\Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+        $daysInMonth = $now->daysInMonth;
+
+        // Stats
+        $roomsCount = \App\Models\Room::count();
+        $reservations_pending = \App\Models\Reservation::where('status', 'pending')->count();
+        $garden_pending = \App\Models\GardenBooking::where('status', 'pending')->count();
+        $events_pending = \App\Models\EventBooking::where('status', 'pending')->count();
+        
         $stats = [
-            'rooms' => \App\Models\Room::count(),
-            'reservations_pending' => \App\Models\Reservation::where('status', 'pending')->count(),
-            'garden_pending' => \App\Models\GardenBooking::where('status', 'pending')->count(),
-            'events_pending' => \App\Models\EventBooking::where('status', 'pending')->count(),
-            'guests_in_house' => \App\Models\Reservation::whereNotNull('checked_in_at')->whereNull('checked_out_at')->count(),
+            'rooms' => $roomsCount,
+            'reservations_pending' => $reservations_pending,
+            'garden_pending' => $garden_pending,
+            'events_pending' => $events_pending,
+            'pending_requests' => $reservations_pending + $garden_pending + $events_pending,
+            'guests_in_house' => \App\Models\Reservation::where('status', 'approved')
+                ->where(function($q) {
+                    $q->whereNotNull('checked_in_at')->whereNull('checked_out_at')
+                      ->orWhere(function($sub) {
+                          $sub->whereDate('check_in', '<=', now())->whereDate('check_out', '>=', now());
+                      });
+                })->count(),
             'reviews' => \App\Models\Review::count(),
         ];
 
+        // Revenue Calculation (Borrowing from ReportController logic)
+        $resQuery = \App\Models\Reservation::where('status', 'approved')->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+        $eventQuery = \App\Models\EventBooking::where('status', 'approved')->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+        $gardenQuery = \App\Models\GardenBooking::where('status', 'approved')->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+
+        $sumFinal = function($query) {
+            return $query->get()->sum('final_price');
+        };
+
+        $stats['monthly_revenue'] = $sumFinal($resQuery) + $sumFinal($eventQuery) + $sumFinal($gardenQuery);
+
+        // Occupancy Rate (Simplified: Approved room nights this month / Total possible room nights)
+        $approvedNights = \App\Models\Reservation::where('status', 'approved')
+            ->where(function($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('check_in', [$startOfMonth, $endOfMonth])
+                  ->orWhereBetween('check_out', [$startOfMonth, $endOfMonth]);
+            })
+            ->get()
+            ->sum(function($r) {
+                return $r->check_in->diffInDays($r->check_out);
+            });
+        
+        $totalPossibleNights = $roomsCount * $daysInMonth;
+        $stats['occupancy_rate'] = $totalPossibleNights > 0 ? round(($approvedNights / $totalPossibleNights) * 100, 1) : 0;
+
         $recentReservations = \App\Models\Reservation::with('room')
             ->latest()
-            ->take(5)
+            ->take(8)
             ->get();
 
         $recentGardenBookings = \App\Models\GardenBooking::latest()
-            ->take(5)
+            ->take(8)
             ->get();
 
         $notifications = auth()->user()->unreadNotifications;
