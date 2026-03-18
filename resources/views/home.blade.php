@@ -1441,7 +1441,6 @@
                     if (start) {
                         const type = window.getBookingType();
                         let minEnd = new Date(start.getTime());
-                        if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
                         const minDateStr = formatDate(minEnd);
                         heroCheckOut.set("minDate", minDateStr);
                         if (typeof resCheckOut !== 'undefined') resCheckOut.set("minDate", minDateStr);
@@ -1473,7 +1472,6 @@
                     if (start) {
                         const type = window.getBookingType();
                         let minEnd = new Date(start.getTime());
-                        if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
                         const minDateStr = formatDate(minEnd);
                         resCheckOut.set("minDate", minDateStr);
                         if (typeof heroCheckOut !== 'undefined') heroCheckOut.set("minDate", minDateStr);
@@ -1519,18 +1517,12 @@
                 const start = resCheckIn ? resCheckIn.selectedDates[0] : null;
                 if (start) {
                     let minEnd = new Date(start.getTime());
-                    if (type === 'room') minEnd.setDate(minEnd.getDate() + 1);
                     const minDateStr = formatDate(minEnd);
                     if (resCheckOut) resCheckOut.set("minDate", minDateStr);
                     if (heroCheckOut) heroCheckOut.set("minDate", minDateStr);
                 } else {
                     const todayStr = formatDate(new Date());
                     let minCheckOut = todayStr;
-                    if (type === 'room') {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        minCheckOut = formatDate(tomorrow);
-                    }
                     if (resCheckOut) resCheckOut.set("minDate", minCheckOut);
                     if (heroCheckOut) heroCheckOut.set("minDate", minCheckOut);
                 }
