@@ -103,6 +103,17 @@
             opacity: 0.3 !important;
             cursor: not-allowed !important;
         }
+        .flatpickr-day.is-booked::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
         .flatpickr-weekday {
             color: #b38e5d !important;
             font-weight: 900 !important;
@@ -1455,6 +1466,22 @@
                 altFormat: "d / m / Y",
                 minDate: "today",
                 disable: [disabledDatesFunc],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = formatDate(dayElem.dateObj);
+                    const type = window.getBookingType();
+                    if (type === 'garden') {
+                        if (disabledGardenDatesFunc(dayElem.dateObj)) dayElem.classList.add('is-booked');
+                    } else if (window.bookedDatesByRoom) {
+                        for (let rId in window.bookedDatesByRoom) {
+                            for (let range of window.bookedDatesByRoom[rId]) {
+                                if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                    dayElem.classList.add('is-booked');
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                },
                 altInputClass: "w-full bg-white/5 border-0 pt-9 pb-4 px-6 text-white text-sm font-bold focus:ring-1 focus:ring-rose-gold/50 rounded-2xl transition-all duration-500 cursor-pointer hover:bg-white/10 outline-none"
             };
 
@@ -1486,6 +1513,22 @@
                 altFormat: "d / m / Y",
                 minDate: "today",
                 disable: [disabledDatesFunc],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = formatDate(dayElem.dateObj);
+                    const type = window.getBookingType();
+                    if (type === 'garden') {
+                        if (disabledGardenDatesFunc(dayElem.dateObj)) dayElem.classList.add('is-booked');
+                    } else if (window.bookedDatesByRoom) {
+                        for (let rId in window.bookedDatesByRoom) {
+                            for (let range of window.bookedDatesByRoom[rId]) {
+                                if (dateStr >= range.check_in && dateStr < range.check_out) {
+                                    dayElem.classList.add('is-booked');
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                },
                 altInputClass: "w-full px-8 py-6 bg-white border-2 border-gray-100 rounded-3xl transition-all duration-500 outline-none text-sm font-bold text-gray-900 shadow-sm"
             };
 
