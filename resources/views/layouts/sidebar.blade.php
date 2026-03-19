@@ -27,6 +27,15 @@
             <span x-show="expanded" class="font-medium text-sm whitespace-nowrap">Dashboard</span>
         </a>
 
+        <!-- Price Calculator -->
+        <a href="{{ route('admin.price-calculator.index') }}" 
+           class="flex items-center gap-4 px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.price-calculator.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+            <div class="shrink-0 w-6 h-6 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+            <span x-show="expanded" class="font-medium text-sm whitespace-nowrap">Price Calculator</span>
+        </a>
+
         <!-- Bookings -->
         @php
             $isBookingsActive = request()->routeIs('admin.reservations.*', 'admin.front-desk.*', 'admin.events.*', 'admin.garden-bookings.*', 'admin.event-front-desk.*');

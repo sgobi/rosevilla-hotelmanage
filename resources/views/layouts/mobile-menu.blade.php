@@ -38,6 +38,12 @@
                 <span class="font-bold uppercase tracking-widest text-xs">Dashboard</span>
             </a>
 
+            <!-- Price Calculator -->
+            <a href="{{ route('admin.price-calculator.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl {{ request()->routeIs('admin.price-calculator.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white' }}">
+                <svg class="w-6 h-6 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <span class="font-bold uppercase tracking-widest text-xs">Price Calculator</span>
+            </a>
+
             <!-- Operative Core -->
             <div class="space-y-3">
                 <div class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Operational Core</div>

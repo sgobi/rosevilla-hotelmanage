@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\GardenBookingController as AdminGardenBookingCont
 use App\Http\Controllers\Admin\HomeEventController;
 use App\Http\Controllers\Admin\FrontDeskController;
 use App\Http\Controllers\Admin\EventFrontDeskController;
+use App\Http\Controllers\Admin\PriceCalculatorController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -80,6 +81,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('garden-bookings', AdminGardenBookingController::class);
             Route::get('garden-calendar', [AdminGardenBookingController::class, 'calendar'])->name('garden.calendar');
             Route::get('api/garden-bookings', [AdminGardenBookingController::class, 'apiEvents'])->name('garden.api');
+            
+            // Price Calculator
+            Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
+            Route::post('price-calculator/calculate', [PriceCalculatorController::class, 'calculate'])->name('price-calculator.calculate');
         });
 
         // Admin, Accountant, & Staff (Invoices)
