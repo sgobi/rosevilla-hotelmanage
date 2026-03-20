@@ -20,6 +20,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <style> 
             [x-cloak] { display: none !important; } 
             body { font-family: 'Inter', sans-serif; }
@@ -40,12 +42,16 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                    @if (isset($header))
+                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    @endif
                     {{ $slot }}
                 </main>
             </div>
         </div>
         @stack('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 flatpickr('input[type="date"]', {

@@ -83,12 +83,86 @@ class EventBookingController extends Controller
         };
     }
 
+    private function getBookedDates($excludeEventId = null)
+    {
+        $bookedDatesByRoom = [];
+        $bookedDatesGarden = [];
+
+        // 1. Regular Room Reservations
+        $activeReservations = \App\Models\Reservation::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString())
+            ->get(['room_ids', 'room_id', 'check_in', 'check_out']);
+
+        foreach ($activeReservations as $res) {
+            $rIds = !empty($res->room_ids) ? $res->room_ids : ($res->room_id ? [$res->room_id] : []);
+            foreach ($rIds as $rId) {
+                if (!isset($bookedDatesByRoom[$rId])) {
+                    $bookedDatesByRoom[$rId] = [];
+                }
+                $bookedDatesByRoom[$rId][] = [
+                    'check_in' => $res->check_in->format('Y-m-d'),
+                    'check_out' => $res->check_out->format('Y-m-d')
+                ];
+            }
+        }
+
+        // 2. Garden Bookings
+        $activeGardenBookings = \App\Models\GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString())
+            ->get(['check_in', 'check_out']);
+
+        foreach ($activeGardenBookings as $gb) {
+            $bookedDatesGarden[] = [
+                'check_in' => $gb->check_in->format('Y-m-d'),
+                'check_out' => $gb->check_out->format('Y-m-d')
+            ];
+        }
+
+        // 3. Event Bookings
+        $query = EventBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString());
+            
+        if ($excludeEventId) {
+            $query->where('id', '!=', $excludeEventId);
+        }
+            
+        $activeEvents = $query->get(['room_ids', 'garden_selection', 'event_date', 'check_out']);
+
+        foreach ($activeEvents as $ev) {
+            if (!empty($ev->room_ids)) {
+                foreach ($ev->room_ids as $rId) {
+                    if (!isset($bookedDatesByRoom[$rId])) {
+                        $bookedDatesByRoom[$rId] = [];
+                    }
+                    $bookedDatesByRoom[$rId][] = [
+                        'check_in' => $ev->event_date->format('Y-m-d'),
+                        'check_out' => $ev->check_out ? $ev->check_out->format('Y-m-d') : $ev->event_date->format('Y-m-d')
+                    ];
+                }
+            }
+            if ($ev->garden_selection) {
+                $bookedDatesGarden[] = [
+                    'check_in' => $ev->event_date->format('Y-m-d'),
+                    'check_out' => $ev->check_out ? $ev->check_out->format('Y-m-d') : $ev->event_date->format('Y-m-d')
+                ];
+            }
+        }
+
+        return [
+            'bookedDatesByRoom' => json_encode($bookedDatesByRoom),
+            'bookedDatesGarden' => json_encode($bookedDatesGarden),
+            'allRoomIds' => \App\Models\Room::where('is_active', true)->pluck('id')->toJson(),
+        ];
+    }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('admin.events.create');
+        $rooms = \App\Models\Room::where('is_active', true)->get();
+        $bookedDates = $this->getBookedDates();
+        return view('admin.events.create', array_merge(compact('rooms'), $bookedDates));
     }
 
     /**
@@ -100,14 +174,22 @@ class EventBookingController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
+            'address' => 'nullable|string|max:500',
             'event_type' => 'required|string|max:100',
             'event_date' => 'required|date',
+            'check_out' => 'required|date|after_or_equal:event_date',
+            'arrival_time' => 'nullable',
             'start_time' => 'required',
             'end_time' => 'required',
             'guests' => 'required|integer|min:1',
             'message' => 'nullable|string',
             'total_price' => 'nullable|numeric|min:0',
-            'force_conflict' => 'nullable|boolean'
+            'force_conflict' => 'nullable|boolean',
+            'room_ids' => 'nullable|array',
+            'garden_selection' => 'nullable|boolean',
+            'additional_services' => 'nullable|array',
+            'additional_services.*.type' => 'nullable|string|max:255',
+            'additional_services.*.price' => 'nullable|numeric|min:0',
         ]);
 
         // Check for conflicts
@@ -173,7 +255,9 @@ class EventBookingController extends Controller
      */
     public function edit(EventBooking $event)
     {
-        return view('admin.events.edit', compact('event'));
+        $rooms = \App\Models\Room::where('is_active', true)->get();
+        $bookedDates = $this->getBookedDates($event->id);
+        return view('admin.events.edit', array_merge(compact('event', 'rooms'), $bookedDates));
     }
 
     /**
@@ -354,13 +438,21 @@ class EventBookingController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
+            'address' => 'nullable|string|max:500',
             'event_type' => 'required|string|max:100',
             'event_date' => 'required|date',
+            'check_out' => 'required|date|after_or_equal:event_date',
+            'arrival_time' => 'nullable',
             'start_time' => 'required',
             'end_time' => 'required',
             'guests' => 'required|integer|min:1',
             'message' => 'nullable|string',
             'total_price' => 'nullable|numeric|min:0',
+            'room_ids' => 'nullable|array',
+            'garden_selection' => 'nullable|boolean',
+            'additional_services' => 'nullable|array',
+            'additional_services.*.type' => 'nullable|string|max:255',
+            'additional_services.*.price' => 'nullable|numeric|min:0',
         ]);
 
         // Check for conflicts excluding this event

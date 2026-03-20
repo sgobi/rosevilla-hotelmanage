@@ -69,6 +69,31 @@ class HomeController extends Controller
             ];
         }
 
+        // Include Event Bookings
+        $activeEvents = \App\Models\EventBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
+            ->whereDate('check_out', '>=', now()->toDateString())
+            ->get(['room_ids', 'garden_selection', 'event_date', 'check_out']);
+
+        foreach ($activeEvents as $ev) {
+            if (!empty($ev->room_ids)) {
+                foreach ($ev->room_ids as $rId) {
+                    if (!isset($bookedDatesByRoom[$rId])) {
+                        $bookedDatesByRoom[$rId] = [];
+                    }
+                    $bookedDatesByRoom[$rId][] = [
+                        'check_in' => $ev->event_date->format('Y-m-d'),
+                        'check_out' => $ev->check_out ? $ev->check_out->format('Y-m-d') : $ev->event_date->format('Y-m-d')
+                    ];
+                }
+            }
+            if ($ev->garden_selection) {
+                $bookedDatesGarden[] = [
+                    'check_in' => $ev->event_date->format('Y-m-d'),
+                    'check_out' => $ev->check_out ? $ev->check_out->format('Y-m-d') : $ev->event_date->format('Y-m-d')
+                ];
+            }
+        }
+
         $garden = \App\Models\Garden::first() ?? new \App\Models\Garden([
             'title' => 'Reserve the Garden',
             'description' => 'Our scenic gardens provide a perfect backdrop for your most magical moments. Reserve exclusive access for your event or gathering with dedicated concierge service.',

@@ -170,6 +170,20 @@
                 <span class="details-label">Number of Guests</span>
                 <span>: {{ $event->guests }}</span>
             </div>
+
+            @if(!empty($event->additional_services))
+                <div class="my-4 border-t border-gray-100"></div>
+                @foreach($event->additional_services as $service)
+                    @if(!empty($service['type']))
+                        <div class="details-row">
+                            <span class="details-label">{{ $service['type'] }}</span>
+                            <span>: LKR {{ number_format($service['price'] ?? 0, 2) }}</span>
+                        </div>
+                    @endif
+                @endforeach
+                <div class="my-4 border-t border-gray-100"></div>
+            @endif
+
             <div class="details-row">
                 <span class="details-label">Base Rental Rate</span>
                 <span>: LKR {{ number_format($event->total_price, 2) }}</span>

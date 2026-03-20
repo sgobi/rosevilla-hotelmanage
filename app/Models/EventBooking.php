@@ -13,11 +13,17 @@ class EventBooking extends Model
         'customer_name',
         'customer_email',
         'customer_phone',
+        'address',
         'event_type',
         'event_date',
+        'check_out',
+        'arrival_time',
         'start_time',
         'end_time',
         'guests',
+        'room_ids',
+        'garden_selection',
+        'additional_services',
         'message',
         'status',
         'cancellation_reason',
@@ -51,9 +57,14 @@ class EventBooking extends Model
 
     protected $casts = [
         'event_date' => 'date',
+        'check_out' => 'date',
+        'arrival_time' => 'datetime:H:i',
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
         'guests' => 'integer',
+        'room_ids' => 'array',
+        'garden_selection' => 'boolean',
+        'additional_services' => 'array',
         'total_price' => 'decimal:2',
         'tax_percentage' => 'decimal:2',
         'tax_amount' => 'decimal:2',
@@ -73,9 +84,18 @@ class EventBooking extends Model
             $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
             $booking->tax_percentage = $taxRate;
             
-            $taxableAmount = $booking->total_price;
+            $servicesTotal = 0;
+            if (is_array($booking->additional_services)) {
+                $servicesTotal = array_reduce($booking->additional_services, function($carry, $item) {
+                    return $carry + (float)($item['price'] ?? 0);
+                }, 0);
+            }
+
+            $taxableAmount = $booking->total_price + $servicesTotal;
             if ($booking->discount_status === 'approved' && $booking->discount_percentage > 0) {
-                $taxableAmount = $booking->total_price - $booking->discount_amount;
+                // Discount applies to the total (Base + Services)
+                $discountAmount = ($taxableAmount * $booking->discount_percentage) / 100;
+                $taxableAmount = $taxableAmount - $discountAmount;
             }
 
             if ($taxableAmount > 0) {
@@ -93,16 +113,25 @@ class EventBooking extends Model
 
     public function getDiscountAmountAttribute()
     {
-        if ($this->discount_status === 'approved' && $this->discount_percentage > 0 && $this->total_price > 0) {
-            return ($this->total_price * $this->discount_percentage) / 100;
+        $taxableBase = $this->total_price + $this->additional_services_total_price;
+        if ($this->discount_status === 'approved' && $this->discount_percentage > 0 && $taxableBase > 0) {
+            return ($taxableBase * $this->discount_percentage) / 100;
         }
         return 0;
     }
 
 
+    public function getAdditionalServicesTotalPriceAttribute()
+    {
+        if (!is_array($this->additional_services)) return 0;
+        return array_reduce($this->additional_services, function($carry, $item) {
+            return $carry + (float)($item['price'] ?? 0);
+        }, 0);
+    }
+
     public function getFinalPriceAttribute()
     {
-        return ($this->total_price - $this->discount_amount) + $this->tax_amount;
+        return ($this->total_price + $this->additional_services_total_price - $this->discount_amount) + $this->tax_amount;
     }
 
     /**

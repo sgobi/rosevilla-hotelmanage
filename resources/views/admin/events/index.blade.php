@@ -124,6 +124,9 @@
                                                  <div class="flex-1">
                                                      <p class="font-semibold text-gray-800">{{ $booking->customer_name }}</p>
                                                      <p class="text-gray-500 text-xs">{{ $booking->customer_email }} • {{ $booking->customer_phone }}</p>
+                                                     @if($booking->address)
+                                                         <p class="text-gray-400 text-[10px] truncate max-w-[200px]" title="{{ $booking->address }}">{{ $booking->address }}</p>
+                                                     @endif
                                                  </div>
                                                  
                                                  @if($booking->message)
@@ -165,17 +168,26 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">
-                                        <div class="font-medium">{{ $booking->event_date->format('M d, Y') }}</div>
+                                        <div class="font-medium">
+                                            {{ optional($booking->event_date)->format('M d, Y') }}
+                                            @if($booking->check_out && $booking->check_out->ne($booking->event_date))
+                                                <span class="text-gray-400 mx-1">-</span>
+                                                {{ $booking->check_out->format('M d, Y') }}
+                                            @endif
+                                        </div>
                                         @php
                                             $startTime = \Carbon\Carbon::parse($booking->start_time);
                                             $endTime = \Carbon\Carbon::parse($booking->end_time);
-                                            $isNextDay = $endTime->lt($startTime);
+                                            $isNextDay = $endTime->lt($startTime) && (!$booking->check_out || $booking->check_out->eq($booking->event_date));
                                         @endphp
-                                        <div class="text-xs text-gray-500">
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            @if($booking->arrival_time)
+                                                <span class="text-indigo-600 font-bold mr-1" title="Arrival Time">Arr: {{ \Carbon\Carbon::parse($booking->arrival_time)->format('h:i A') }}</span> |
+                                            @endif
                                             {{ $startTime->format('h:i A') }} - {{ $endTime->format('h:i A') }}
                                             @if($isNextDay)
                                                 <div class="text-[10px] text-rose-600 font-bold mt-0.5">
-                                                    Dep: {{ $booking->event_date->copy()->addDay()->format('M d, Y') }}
+                                                    Dep: {{ optional($booking->event_date)->copy()->addDay()->format('M d, Y') }}
                                                 </div>
                                             @endif
                                         </div>
@@ -218,10 +230,21 @@
                                                             @php
                                                                 $tooltipStart = \Carbon\Carbon::parse($booking->start_time);
                                                                 $tooltipEnd = \Carbon\Carbon::parse($booking->end_time);
-                                                                $tooltipNext = $tooltipEnd->lt($tooltipStart);
+                                                                $tooltipNext = $tooltipEnd->lt($tooltipStart) && (!$booking->check_out || $booking->check_out->eq($booking->event_date));
                                                             @endphp
-                                                            <div class="font-medium text-white">{{ $booking->event_date->format('M d, Y') }}</div>
+                                                            <div class="font-medium text-white">
+                                                                {{ optional($booking->event_date)->format('M d, Y') }}
+                                                                @if($booking->check_out && $booking->check_out->ne($booking->event_date))
+                                                                    - <br>{{ $booking->check_out->format('M d, Y') }}
+                                                                @endif
+                                                            </div>
                                                             <div class="text-[10px] text-gray-400 mt-0.5">
+                                                                @if($booking->arrival_time)
+                                                                    <div class="flex justify-between text-indigo-300 font-bold">
+                                                                        <span>Arrival:</span>
+                                                                        <span>{{ \Carbon\Carbon::parse($booking->arrival_time)->format('h:i A') }}</span>
+                                                                    </div>
+                                                                @endif
                                                                 <div class="flex justify-between">
                                                                     <span>Start:</span>
                                                                     <span>{{ $tooltipStart->format('h:i A') }}</span>
@@ -231,7 +254,7 @@
                                                                     <span>
                                                                         {{ $tooltipEnd->format('h:i A') }}
                                                                         @if($tooltipNext)
-                                                                            <span class="block text-[9px] opacity-75">{{ $booking->event_date->copy()->addDay()->format('M d') }}</span>
+                                                                            <span class="block text-[9px] opacity-75">{{ optional($booking->event_date)->copy()->addDay()->format('M d') }}</span>
                                                                         @endif
                                                                     </span>
                                                                 </div>
@@ -240,6 +263,18 @@
                                                         <div>
                                                             <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Guests</div>
                                                             <div class="font-medium text-white">{{ $booking->guests }} Person(s)</div>
+                                                            
+                                                            @if(!empty($booking->room_ids) || $booking->garden_selection)
+                                                                <div class="text-[9px] text-gray-500 uppercase font-bold mt-2 mb-0.5">Venue(s)</div>
+                                                                <div class="text-[10px] text-white">
+                                                                    @if($booking->garden_selection)
+                                                                        <span class="inline-block bg-emerald-900 border border-emerald-700 text-emerald-300 px-1 py-0.5 rounded text-[8px] font-bold mr-1 mb-1">Garden</span>
+                                                                    @endif
+                                                                    @if(!empty($booking->room_ids) && is_array($booking->room_ids))
+                                                                        <span class="inline-block bg-indigo-900 border border-indigo-700 text-indigo-300 px-1 py-0.5 rounded text-[8px] font-bold mr-1 mb-1">{{ count($booking->room_ids) }} Room(s)</span>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
 

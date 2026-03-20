@@ -11,6 +11,7 @@ class Reservation extends Model
     use Notifiable;
 
     protected $fillable = [
+        'booking_type',
         'room_id',
         'room_ids',
         'guest_name',
