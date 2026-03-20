@@ -162,7 +162,10 @@ class EventBookingController extends Controller
     {
         $rooms = \App\Models\Room::where('is_active', true)->get();
         $bookedDates = $this->getBookedDates();
-        return view('admin.events.create', array_merge(compact('rooms'), $bookedDates));
+        $gardenPricePerDay = (float) \App\Models\ContentSetting::getValue('garden_price_per_day', 0);
+        $roomPrices = $rooms->pluck('price_per_night', 'id');
+
+        return view('admin.events.create', array_merge(compact('rooms', 'gardenPricePerDay', 'roomPrices'), $bookedDates));
     }
 
     /**
@@ -257,7 +260,10 @@ class EventBookingController extends Controller
     {
         $rooms = \App\Models\Room::where('is_active', true)->get();
         $bookedDates = $this->getBookedDates($event->id);
-        return view('admin.events.edit', array_merge(compact('event', 'rooms'), $bookedDates));
+        $gardenPricePerDay = (float) \App\Models\ContentSetting::getValue('garden_price_per_day', 0);
+        $roomPrices = $rooms->pluck('price_per_night', 'id');
+
+        return view('admin.events.edit', array_merge(compact('event', 'rooms', 'gardenPricePerDay', 'roomPrices'), $bookedDates));
     }
 
     /**

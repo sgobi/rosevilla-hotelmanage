@@ -279,10 +279,19 @@
                                                     </div>
 
                                                     <div class="space-y-1.5 pt-1">
-                                                        <div class="flex justify-between">
-                                                            <span class="text-gray-400">Base Price</span>
-                                                            <span class="font-medium text-white">LKR {{ number_format($booking->total_price, 2) }}</span>
-                                                        </div>
+                                                        @if($booking->venue_total_price > 0)
+                                                            <div class="flex justify-between">
+                                                                <span class="text-gray-400">Venue Rental</span>
+                                                                <span class="font-medium text-white">LKR {{ number_format($booking->venue_total_price, 2) }}</span>
+                                                            </div>
+                                                        @endif
+
+                                                        @if($booking->total_price > 0)
+                                                            <div class="flex justify-between">
+                                                                <span class="text-gray-400">Add. Quoted Rate</span>
+                                                                <span class="font-medium text-white">LKR {{ number_format($booking->total_price, 2) }}</span>
+                                                            </div>
+                                                        @endif
                                                         
                                                         @if($booking->discount_amount > 0)
                                                             <div class="flex justify-between text-emerald-400">
@@ -344,12 +353,7 @@
                                     <td class="px-6 py-4">
                                         <div class="flex justify-end items-center gap-3">                                            {{-- Invoice & Management --}}
                                             <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative">
-                                                 @if($booking->status === 'approved' || $booking->status === 'pending')
-                                                     <a href="{{ route('admin.events.proforma', $booking) }}" target="_blank" 
-                                                        class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Download Quotation">
-                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 2 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                     </a>
-                                                 @endif
+
 
                                                  @if($booking->status === 'approved')
                                                      @php
@@ -554,9 +558,10 @@
                                             </div>
 
                                             <div class="flex items-center gap-1">
-                                                <a href="{{ route('admin.events.edit', $booking) }}" class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit Info">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                <a href="{{ route('admin.events.show', $booking) }}" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Details">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                                 </a>
+
                                                 
                                                 <div x-data="{ open: false }" class="relative">
                                                     <button @click="open = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">

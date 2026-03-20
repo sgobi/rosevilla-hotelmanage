@@ -184,10 +184,26 @@
                 <div class="my-4 border-t border-gray-100"></div>
             @endif
 
-            <div class="details-row">
-                <span class="details-label">Base Rental Rate</span>
-                <span>: LKR {{ number_format($event->total_price, 2) }}</span>
-            </div>
+            @if($event->garden_selection)
+                <div class="details-row">
+                    <span class="details-label">Garden Venue ({{ $event->duration }} days)</span>
+                    <span>: LKR {{ number_format($event->garden_price_per_day * $event->duration, 2) }}</span>
+                </div>
+            @endif
+
+            @foreach($event->rooms_list as $room)
+                <div class="details-row">
+                    <span class="details-label">{{ $room->title }} ({{ $event->duration }} days)</span>
+                    <span>: LKR {{ number_format($room->price_per_night * $event->duration, 2) }}</span>
+                </div>
+            @endforeach
+
+            @if($event->total_price > 0)
+                <div class="details-row">
+                    <span class="details-label">Additional Quoted Rate</span>
+                    <span>: LKR {{ number_format($event->total_price, 2) }}</span>
+                </div>
+            @endif
             
             @if($event->tax_amount > 0)
                 <div class="details-row">

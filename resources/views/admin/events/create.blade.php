@@ -8,8 +8,41 @@
     <div class="py-12 bg-gradient-to-br from-slate-50 to-indigo-50/30 min-h-screen">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white/80 backdrop-blur-xl overflow-hidden shadow-2xl sm:rounded-3xl border border-white/50">
-                <form action="{{ route('admin.events.store') }}" method="POST" class="p-8 md:p-12 space-y-10">
+                <form action="{{ route('admin.events.store') }}" method="POST" class="p-8 md:p-12 space-y-10"
+                    x-data="{ 
+                        services: {{ old('additional_services') ? json_encode(old('additional_services')) : '[]' }},
+                        basePrice: 0,
+                        discountPercentage: 0,
+                        selectedRooms: {{ old('room_ids') ? json_encode(array_map('strval', old('room_ids'))) : '[]' }},
+                        gardenSelection: {{ old('garden_selection') == '1' ? 'true' : 'false' }},
+                        checkIn: '{{ old('event_date') }}',
+                        checkOut: '{{ old('check_out') }}',
+                        roomPrices: {{ $roomPrices->toJson() }},
+                        gardenPricePerDay: {{ $gardenPricePerDay }},
+                        
+                        addService() { this.services.push({ type: '', price: 0 }) },
+                        removeService(index) { this.services.splice(index, 1) },
+
+                        get days() {
+                            if (!this.checkIn || !this.checkOut) return 1;
+                            let start = new Date(this.checkIn);
+                            let end = new Date(this.checkOut);
+                            let diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                            return diff > 0 ? diff : 1; 
+                        },
+
+                        get totalAmount() {
+                            let roomTotal = this.selectedRooms.reduce((sum, rId) => sum + (parseFloat(this.roomPrices[rId] || 0) * this.days), 0);
+                            let gardenTotal = this.gardenSelection ? (this.gardenPricePerDay * this.days) : 0;
+                            let additionalTotal = this.services.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0);
+                            let subtotal = roomTotal + gardenTotal + additionalTotal;
+                            let discount = subtotal * ((parseFloat(this.discountPercentage) || 0) / 100);
+                            return subtotal - discount;
+                        }
+                    }">
                     @csrf
+                    <input type="hidden" name="total_price" value="0">
+                    <input type="hidden" name="discount_percentage" value="0">
                     
                     @if($errors->has('conflict'))
                         <div class="bg-rose-50/50 backdrop-blur-sm border border-rose-200/60 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -78,8 +111,58 @@
                         </div>
                     </div>
 
-                    <!-- Section: Event Detail -->
-                    <div class="space-y-6 pt-4">
+                    <!-- Section: Venue Selection -->
+                    <div class="space-y-6 pt-4 bg-indigo-50/30 -mx-8 md:-mx-12 p-8 md:p-12 border-y border-indigo-100/50">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-amber-100 p-2 rounded-lg text-amber-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">Venue Selection</h3>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-4">
+                            <label class="group relative flex items-center gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-emerald-500 transition-all shadow-sm hover:shadow-emerald-100/50 active:scale-95 duration-200 overflow-hidden">
+                                <input type="hidden" name="garden_selection" value="0">
+                                <input type="checkbox" name="garden_selection" id="garden_selection" value="1" x-model="gardenSelection"
+                                    class="w-6 h-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-slate-300">
+                                <div class="flex flex-col">
+                                    <span class="text-base font-bold text-slate-800">Garden Venue</span>
+                                    <span class="text-xs text-slate-500">Outdoor spaces & grounds</span>
+                                </div>
+                                <div class="absolute -right-2 -bottom-2 text-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.172 10.93a.303.303 0 010-.43l3.6-3.6a.303.303 0 01.43 0l3.6 3.6a.303.303 0 01-.43.43L9 7.63v7.07a.303.303 0 01-.606 0V7.63L5.602 11.36a.303.303 0 01-.43 0z"/></svg>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Select Rooms</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @foreach($rooms ?? [] as $room)
+                                    <label class="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/5 transition-all shadow-sm duration-300">
+                                        <div class="mt-1">
+                                            <input type="checkbox" name="room_ids[]" value="{{ $room->id }}" x-model="selectedRooms"
+                                                class="w-6 h-6 text-indigo-600 rounded-lg focus:ring-indigo-500 border-slate-300">
+                                        </div>
+                                        <div class="flex flex-col border-l border-slate-100 pl-4 space-y-1">
+                                            <span class="text-sm font-black text-slate-800">{{ $room->title }}</span>
+                                            <span class="text-xs font-bold text-slate-500 bg-slate-100 w-fit px-2 py-0.5 rounded-full">Cap: {{ $room->capacity }} Guests</span>
+                                            @if(stripos($room->title ?? '', 'garden') !== false || stripos($room->features ?? '', 'garden') !== false)
+                                                <span class="text-[10px] text-emerald-600 font-black uppercase tracking-widest flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                    Garden View
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                            @error('room_ids') <p class="text-xs text-rose-600 mt-2">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Section: Event Scheduling -->
+                    <div class="space-y-6 pt-10">
                         <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
                             <div class="bg-emerald-100 p-2 rounded-lg text-emerald-600">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -103,7 +186,7 @@
                             <div class="space-y-2">
                                 <label for="event_date" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Check-in Date</label>
                                 <div class="relative group">
-                                    <input type="text" name="event_date" id="event_date" value="{{ old('event_date') }}" required
+                                    <input type="text" name="event_date" id="event_date" value="{{ old('event_date') }}" required x-model="checkIn"
                                         class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-indigo-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -115,7 +198,7 @@
                             <div class="space-y-2">
                                 <label for="check_out" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Check-out Date</label>
                                 <div class="relative group">
-                                    <input type="text" name="check_out" id="check_out" value="{{ old('check_out') }}" required
+                                    <input type="text" name="check_out" id="check_out" value="{{ old('check_out') }}" required x-model="checkOut"
                                         class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-amber-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -167,64 +250,8 @@
                         </div>
                     </div>
 
-                    <!-- Section: Venue Selection -->
-                    <div class="space-y-6 pt-4 bg-indigo-50/30 -mx-8 md:-mx-12 p-8 md:p-12 border-y border-indigo-100/50">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-amber-100 p-2 rounded-lg text-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-800">Venue Selection</h3>
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-4">
-                            <label class="group relative flex items-center gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-emerald-500 transition-all shadow-sm hover:shadow-emerald-100/50 active:scale-95 duration-200 overflow-hidden">
-                                <input type="hidden" name="garden_selection" value="0">
-                                <input type="checkbox" name="garden_selection" id="garden_selection" value="1" @checked(old('garden_selection') == 1)
-                                    class="w-6 h-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-slate-300">
-                                <div class="flex flex-col">
-                                    <span class="text-base font-bold text-slate-800">Garden Venue</span>
-                                    <span class="text-xs text-slate-500">Outdoor spaces & grounds</span>
-                                </div>
-                                <div class="absolute -right-2 -bottom-2 text-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.172 10.93a.303.303 0 010-.43l3.6-3.6a.303.303 0 01.43 0l3.6 3.6a.303.303 0 01-.43.43L9 7.63v7.07a.303.303 0 01-.606 0V7.63L5.602 11.36a.303.303 0 01-.43 0z"/></svg>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="space-y-4">
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Select Rooms</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                @foreach($rooms ?? [] as $room)
-                                    <label class="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/5 transition-all shadow-sm duration-300">
-                                        <div class="mt-1">
-                                            <input type="checkbox" name="room_ids[]" value="{{ $room->id }}" 
-                                                @checked(is_array(old('room_ids')) && in_array($room->id, old('room_ids')))
-                                                class="w-6 h-6 text-indigo-600 rounded-lg focus:ring-indigo-500 border-slate-300">
-                                        </div>
-                                        <div class="flex flex-col border-l border-slate-100 pl-4 space-y-1">
-                                            <span class="text-sm font-black text-slate-800">{{ $room->title }}</span>
-                                            <span class="text-xs font-bold text-slate-500 bg-slate-100 w-fit px-2 py-0.5 rounded-full">Cap: {{ $room->capacity }} Guests</span>
-                                            @if(stripos($room->title ?? '', 'garden') !== false || stripos($room->features ?? '', 'garden') !== false)
-                                                <span class="text-[10px] text-emerald-600 font-black uppercase tracking-widest flex items-center gap-1">
-                                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                                    Garden View
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                            @error('room_ids') <p class="text-xs text-rose-600 mt-2">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
                     <!-- Section: Additional Services -->
-                    <div class="space-y-6 pt-4 -mx-8 md:-mx-12 p-8 md:p-12 border-b border-slate-100" 
-                         x-data="{ 
-                            services: {{ old('additional_services') ? json_encode(old('additional_services')) : '[]' }},
-                            addService() { this.services.push({ type: '', price: 0 }) },
-                            removeService(index) { this.services.splice(index, 1) }
-                         }">
+                    <div class="space-y-6 pt-4 -mx-8 md:-mx-12 p-8 md:p-12 border-b border-slate-100">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
@@ -287,11 +314,11 @@
                             </div>
                             <div class="bg-slate-50/80 rounded-3xl p-6 border border-slate-100 space-y-4">
                                 <div class="space-y-2">
-                                    <label for="total_price" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Quoted Base Rental (Mandatory if billing)</label>
-                                    <div class="relative group">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black text-sm group-focus-within:text-indigo-500 transition-colors">LKR</span>
-                                        <input type="number" name="total_price" id="total_price" value="{{ old('total_price') }}" step="0.01"
-                                            class="w-full bg-white border-slate-200 rounded-2xl py-4 pl-14 pr-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-black text-slate-800 text-lg shadow-sm" placeholder="0.00">
+                                    <div class="pt-4 border-t border-slate-200 mt-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Amount</span>
+                                            <span class="text-2xl font-black text-indigo-600" x-text="'LKR ' + totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})">LKR 0.00</span>
+                                        </div>
                                     </div>
                                     <p class="text-[10px] text-slate-400 italic">This is the base price. Additional services will be added to this total automatically.</p>
                                     @error('total_price') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
@@ -384,11 +411,15 @@
                     if (selectedDates[0]) {
                         fpCheckOut.set("minDate", formatDate(selectedDates[0]));
                     }
+                    document.getElementById('event_date').dispatchEvent(new Event('input'));
                 }
             });
 
             const fpCheckOut = flatpickr("#check_out", {
-                ...fpConfig
+                ...fpConfig,
+                onChange: function(selectedDates, dateStr) {
+                    document.getElementById('check_out').dispatchEvent(new Event('input'));
+                }
             });
 
             const timeConfig = {

@@ -84,16 +84,9 @@ class EventBooking extends Model
             $taxRate = \App\Models\ContentSetting::getValue('tax_percentage', 0);
             $booking->tax_percentage = $taxRate;
             
-            $servicesTotal = 0;
-            if (is_array($booking->additional_services)) {
-                $servicesTotal = array_reduce($booking->additional_services, function($carry, $item) {
-                    return $carry + (float)($item['price'] ?? 0);
-                }, 0);
-            }
-
-            $taxableAmount = $booking->total_price + $servicesTotal;
+            $taxableAmount = $booking->total_price + $booking->venue_total_price + $booking->getAdditionalServicesTotalPriceAttribute();
             if ($booking->discount_status === 'approved' && $booking->discount_percentage > 0) {
-                // Discount applies to the total (Base + Services)
+                // Discount applies to the total (Base + Venue + Services)
                 $discountAmount = ($taxableAmount * $booking->discount_percentage) / 100;
                 $taxableAmount = $taxableAmount - $discountAmount;
             }
@@ -111,15 +104,53 @@ class EventBooking extends Model
         return $this->belongsTo(User::class, 'discount_approved_by');
     }
 
+    public function getDurationAttribute()
+    {
+        if (!$this->event_date || !$this->check_out) return 1;
+        $start = \Carbon\Carbon::parse($this->event_date);
+        $end = \Carbon\Carbon::parse($this->check_out);
+        $diff = $start->diffInDays($end);
+        return $diff > 0 ? (int)$diff : 1;
+    }
+
+    public function getVenueTotalPriceAttribute()
+    {
+        $duration = $this->duration;
+        $total = 0;
+
+        // Garden Price
+        if ($this->garden_selection) {
+            $total += $this->garden_price_per_day * $duration;
+        }
+
+        // Rooms Price
+        if ($this->room_ids && is_array($this->room_ids)) {
+            $roomsPrice = $this->rooms_list->sum('price_per_night');
+            $total += (float)$roomsPrice * $duration;
+        }
+
+        return $total;
+    }
+
+    public function getGardenPricePerDayAttribute()
+    {
+        return (float) \App\Models\ContentSetting::getValue('garden_price_per_day', 0);
+    }
+
+    public function getRoomsListAttribute()
+    {
+        if (!$this->room_ids || !is_array($this->room_ids)) return collect();
+        return \App\Models\Room::whereIn('id', $this->room_ids)->get();
+    }
+
     public function getDiscountAmountAttribute()
     {
-        $taxableBase = $this->total_price + $this->additional_services_total_price;
+        $taxableBase = $this->total_price + $this->venue_total_price + $this->additional_services_total_price;
         if ($this->discount_status === 'approved' && $this->discount_percentage > 0 && $taxableBase > 0) {
             return ($taxableBase * $this->discount_percentage) / 100;
         }
         return 0;
     }
-
 
     public function getAdditionalServicesTotalPriceAttribute()
     {
@@ -131,7 +162,7 @@ class EventBooking extends Model
 
     public function getFinalPriceAttribute()
     {
-        return ($this->total_price + $this->additional_services_total_price - $this->discount_amount) + $this->tax_amount;
+        return ($this->total_price + $this->venue_total_price + $this->additional_services_total_price - $this->discount_amount) + $this->tax_amount;
     }
 
     /**
