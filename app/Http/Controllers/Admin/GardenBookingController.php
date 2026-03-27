@@ -178,6 +178,17 @@ class GardenBookingController extends Controller
                     'discount_percentage' => $data['discount_percentage'],
                     'discount_status' => 'pending',
                 ]);
+                
+                // Notify all Admins
+                $admins = \App\Models\User::where('role', 'admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\DiscountSuggested([
+                    'garden_booking_id' => $gardenBooking->id,
+                    'action_url' => route('admin.garden-bookings.index', [], false),
+                    'discount_percentage' => $data['discount_percentage'],
+                    'guest_name' => $gardenBooking->guest_name,
+                    'message' => 'New Garden Booking discount suggestion: ' . $data['discount_percentage'] . '% for ' . $gardenBooking->guest_name,
+                ]));
+                
                 return back()->with('success', 'Discount suggestion of ' . $data['discount_percentage'] . '% sent for approval.');
             }
         }
@@ -189,11 +200,31 @@ class GardenBookingController extends Controller
                     'discount_status' => 'approved',
                     'discount_approved_by' => auth()->id(),
                 ]);
+                
+                // Notify all Staff
+                $staff = \App\Models\User::where('role', 'staff')->get();
+                \Illuminate\Support\Facades\Notification::send($staff, new \App\Notifications\DiscountDecision([
+                    'garden_booking_id' => $gardenBooking->id,
+                    'action_url' => route('admin.garden-bookings.index', [], false),
+                    'status' => 'approved',
+                    'guest_name' => $gardenBooking->guest_name,
+                ]));
+                
                 return back()->with('success', 'Discount approved.');
             } elseif ($action === 'reject') {
                 $gardenBooking->update([
                     'discount_status' => 'rejected',
                 ]);
+                
+                // Notify all Staff
+                $staff = \App\Models\User::where('role', 'staff')->get();
+                \Illuminate\Support\Facades\Notification::send($staff, new \App\Notifications\DiscountDecision([
+                    'garden_booking_id' => $gardenBooking->id,
+                    'action_url' => route('admin.garden-bookings.index', [], false),
+                    'status' => 'rejected',
+                    'guest_name' => $gardenBooking->guest_name,
+                ]));
+                
                 return back()->with('success', 'Discount rejected.');
             }
         }

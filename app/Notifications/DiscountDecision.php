@@ -42,9 +42,10 @@ class DiscountDecision extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'reservation_id' => $this->data['reservation_id'],
+            'reservation_id' => $this->data['reservation_id'] ?? null,
+            'garden_booking_id' => $this->data['garden_booking_id'] ?? null,
             'message' => 'Discount ' . $this->data['status'] . ': ' . $this->data['guest_name'],
-            'action_url' => route('admin.reservations.index', [], false),
+            'action_url' => $this->data['action_url'] ?? route('admin.reservations.index', [], false),
             'type' => 'decision',
             'status' => $this->data['status']
         ];

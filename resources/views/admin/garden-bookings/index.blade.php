@@ -57,7 +57,7 @@
                         <select name="status" onchange="this.form.submit()"
                                 class="border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white pr-8">
                             <option value="">All Statuses</option>
-                            @foreach(['pending', 'approved', 'checked_in', 'checked_out', 'rejected', 'cancelled'] as $status)
+                            @foreach(['pending', 'approved', 'cancelled', 'rejected'] as $status)
                                 <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
                             @endforeach
                         </select>
@@ -97,7 +97,10 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse($bookings as $booking)
-                                <tr class="transition-all hover:bg-gray-50 border-l-4 border-transparent hover:border-emerald-400"
+                                @php
+                                    $hasPendingRequest = ($booking->discount_status === 'pending' && auth()->user()->isAdmin());
+                                @endphp
+                                <tr class="transition-all hover:bg-gray-50 border-l-4 {{ $hasPendingRequest ? 'border-amber-400 bg-amber-50/30' : 'border-transparent hover:border-emerald-400' }}"
                                     x-data="{ editing: false }">
 
                                     {{-- Guest --}}
@@ -173,6 +176,9 @@
                                         <div x-data="{ show: false }" class="relative">
                                             <div @mouseenter="show = true" @mouseleave="show = false" class="cursor-help inline-block">
                                                 <div class="font-bold text-gray-900">LKR {{ number_format($booking->final_price, 2) }}</div>
+                                                @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
+                                                    <div class="text-[9px] text-emerald-600 font-medium italic">-{{ $booking->discount_percentage }}% Off applied</div>
+                                                @endif
                                             </div>
                                             <div x-show="show" x-cloak
                                                  x-transition:enter="transition ease-out duration-200"
@@ -203,6 +209,12 @@
                                                             <span class="text-gray-400">Garden Subtotal</span>
                                                             <span class="font-medium text-white">LKR {{ number_format($booking->total_price, 2) }}</span>
                                                         </div>
+                                                        @if($booking->discount_amount > 0)
+                                                            <div class="flex justify-between text-emerald-400">
+                                                                <span>Discount ({{ number_format($booking->discount_percentage, 1) }}%)</span>
+                                                                <span>- LKR {{ number_format($booking->discount_amount, 2) }}</span>
+                                                            </div>
+                                                        @endif
                                                         <div class="flex justify-between text-gray-400">
                                                             <span>Service Tax ({{ number_format($booking->tax_percentage ?? 0, 1) }}%)</span>
                                                             <span>+ LKR {{ number_format($booking->tax_amount ?? 0, 2) }}</span>
@@ -232,117 +244,197 @@
                                         </span>
                                     </td>
 
-                                    {{-- Actions --}}
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
-                                            <a href="{{ route('admin.garden-bookings.show', $booking) }}"
-                                               class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Details">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                            </a>
+                                     <td class="px-6 py-4">
+                                        <div class="flex items-center justify-end gap-3">
+                                            <div class="flex flex-col items-end">
+                                                @if($hasPendingRequest)
+                                                    <span class="flex items-center gap-1 text-[9px] text-amber-600 font-bold mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200 animate-pulse">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                        Action Required
+                                                    </span>
+                                                @endif
+                                                @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
+                                                    <span class="text-[9px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-1.5 rounded">
+                                                        {{ number_format($booking->discount_percentage, 0) == $booking->discount_percentage ? number_format($booking->discount_percentage, 0) : number_format($booking->discount_percentage, 2) }}% OFF
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
+                                                @if($booking->status === 'approved')
+                                                    <a href="{{ route('admin.garden.invoice', $booking) }}" target="_blank"
+                                                       class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Print Invoice">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                                    </a>
+                                                @endif
 
-                                            @if($booking->status === 'approved' || $booking->status === 'pending')
-                                                <a href="{{ route('admin.garden.proforma', $booking) }}" target="_blank"
-                                                   class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Download Quotation">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                </a>
-                                            @endif
+                                                <button @click="editing = !editing"
+                                                        :class="editing ? 'text-emerald-600 bg-emerald-50' : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'"
+                                                        class="p-2 rounded-lg transition-all" title="Manage Booking">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                </button>
 
-                                            @if($booking->status === 'approved')
-                                                <a href="{{ route('admin.garden.invoice', $booking) }}" target="_blank"
-                                                   class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Print Invoice">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                                                </a>
-                                            @endif
-
-                                            <button @click="editing = !editing"
-                                                    :class="editing ? 'text-emerald-600 bg-emerald-50' : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'"
-                                                    class="p-2 rounded-lg transition-all" title="Manage Booking">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                            </button>
-
-                                            {{-- Management Modal --}}
-                                            <template x-teleport="body">
-                                                <div x-show="editing" x-cloak
-                                                     class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
-                                                    <div @click.away="editing = false"
-                                                         class="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100">
-                                                        <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                                                            <div class="flex items-center gap-4">
-                                                                <div class="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                                                </div>
-                                                                <div>
-                                                                    <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Garden Terminal</h4>
-                                                                    <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] mt-1.5 leading-none">{{ $booking->guest_name }} · Status &amp; Lifecycle Control</p>
-                                                                </div>
-                                                            </div>
-                                                            <button @click="editing = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                                                                <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                            </button>
-                                                        </div>
-
-                                                        <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
-                                                            {{-- Status Control --}}
-                                                            <div class="space-y-4">
-                                                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Global Status Protocol</label>
-                                                                <div x-data="{ status: '{{ $booking->status }}' }">
-                                                                    <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}" class="space-y-4">
-                                                                        @csrf @method('PUT')
-                                                                        <div class="flex gap-3">
-                                                                            <select x-model="status" name="status" class="flex-1 border-gray-100 rounded-2xl text-[13px] bg-gray-50/50 py-4 px-6 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-bold transition-all">
-                                                                                @foreach(['pending', 'approved', 'checked_in', 'checked_out', 'cancelled', 'rejected'] as $s)
-                                                                                    <option value="{{ $s }}" @selected($booking->status === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                            <button class="bg-emerald-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-emerald-100 active:scale-95 leading-none">Execute</button>
-                                                                        </div>
-                                                                        <div x-show="status === 'cancelled' || status === 'rejected'" x-transition class="animate-fade-in-down">
-                                                                            <textarea name="cancellation_reason" rows="2" class="w-full border-gray-100 rounded-2xl text-[13px] bg-rose-50/30 py-4 px-6 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 font-bold transition-all placeholder:text-rose-200" placeholder="State reason..."></textarea>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-
-                                                            {{-- Payment Notes --}}
-                                                            <div class="space-y-4 bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50">
-                                                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Payment Notes</label>
-                                                                <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}" class="space-y-4">
-                                                                    @csrf @method('PUT')
-                                                                    <input type="hidden" name="status" value="{{ $booking->status }}">
-                                                                    <div class="flex gap-3">
-                                                                        <div class="relative flex-1">
-                                                                            <input type="number" name="advance_amount" min="0" value="{{ $booking->advance_amount ?? '' }}"
-                                                                                   class="w-full border-gray-100 rounded-2xl text-[13px] bg-white py-4 px-6 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-bold transition-all tabular-nums" placeholder="Advance amount (LKR)">
-                                                                        </div>
-                                                                        <button class="bg-gray-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all leading-none">Save</button>
+                                                {{-- Management Modal --}}
+                                                <template x-teleport="body">
+                                                    <div x-show="editing" x-cloak
+                                                         class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
+                                                        <div @click.away="editing = false"
+                                                             class="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                            <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                <div class="flex items-center gap-4">
+                                                                    <div class="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                                                     </div>
-                                                                </form>
-                                                            </div>
-
-                                                            {{-- Danger Zone --}}
-                                                            <div class="pt-4 space-y-4">
-                                                                <div class="flex items-center gap-2 px-1">
-                                                                    <div class="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
-                                                                    <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Restricted Operations</label>
+                                                                    <div>
+                                                                        <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Garden Terminal</h4>
+                                                                        <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] mt-1.5 leading-none">{{ $booking->guest_name }} · Status &amp; Lifecycle Control</p>
+                                                                    </div>
                                                                 </div>
-                                                                <form action="{{ route('admin.garden-bookings.destroy', $booking) }}" method="POST" class="space-y-4">
-                                                                    @csrf @method('DELETE')
-                                                                    <input type="password" name="password" required placeholder="Confirm Destruction"
-                                                                           class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
-                                                                    <button type="submit" onclick="return confirm('Permanently delete this garden booking?')"
-                                                                            class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 leading-none">
-                                                                        Delete Permanent Record
-                                                                    </button>
-                                                                </form>
+                                                                <button @click="editing = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                    <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                </button>
                                                             </div>
-                                                        </div>
 
-                                                        <div class="bg-gray-50/50 p-6 text-center border-t border-gray-50">
-                                                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">System Integrity Verified · Terminal {{ auth()->id() }}</p>
+                                                            <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                                                                {{-- Status Control --}}
+                                                                <div class="space-y-4">
+                                                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Global Status Protocol</label>
+                                                                    <div x-data="{ status: '{{ $booking->status }}' }">
+                                                                        <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}" class="space-y-4">
+                                                                            @csrf @method('PUT')
+                                                                            <div class="flex gap-3">
+                                                                                <select x-model="status" name="status" class="flex-1 border-gray-100 rounded-2xl text-[13px] bg-gray-50/50 py-4 px-6 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-bold transition-all">
+                                                                                    @foreach(['pending', 'approved', 'cancelled', 'rejected'] as $s)
+                                                                                        <option value="{{ $s }}" @selected($booking->status === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                                <button class="bg-emerald-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-emerald-100 active:scale-95 leading-none">Execute</button>
+                                                                            </div>
+                                                                            <div x-show="status === 'cancelled' || status === 'rejected'" x-transition class="animate-fade-in-down">
+                                                                                <textarea name="cancellation_reason" rows="2" class="w-full border-gray-100 rounded-2xl text-[13px] bg-rose-50/30 py-4 px-6 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 font-bold transition-all placeholder:text-rose-200" placeholder="State reason..."></textarea>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+
+                                                                {{-- Financial Adjustments --}}
+                                                                @php $isAdmin = auth()->user()->isAdmin() || auth()->user()->isAccountant(); @endphp
+                                                                @if(($isAdmin || $booking->status === 'pending') && !in_array($booking->status, ['cancelled', 'rejected']))
+                                                                    <div class="space-y-4 bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50">
+                                                                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Financial Discounts</label>
+
+                                                                        @if($booking->discount_percentage > 0)
+                                                                            <div class="flex items-center gap-3 mb-4">
+                                                                                @if($booking->discount_status === 'approved')
+                                                                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-200">Authorized: {{ number_format($booking->discount_percentage, 1) }}%</span>
+                                                                                @elseif($booking->discount_status === 'rejected')
+                                                                                     <span class="px-3 py-1 bg-rose-100 text-rose-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-rose-200">Denied</span>
+                                                                                @else
+                                                                                    <span class="px-3 py-1 bg-amber-100 text-amber-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-amber-200 animate-pulse">Pending Review: {{ number_format($booking->discount_percentage, 1) }}%</span>
+                                                                                @endif
+
+                                                                                @if($booking->discount_status === 'pending' && $isAdmin)
+                                                                                    <div class="flex gap-2">
+                                                                                        <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="discount_action" value="approve">
+                                                                                            <button class="px-3 py-1 bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all">Grant</button>
+                                                                                        </form>
+                                                                                        <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}">
+                                                                                            @csrf @method('PUT')
+                                                                                            <input type="hidden" name="discount_action" value="reject">
+                                                                                            <button class="px-3 py-1 bg-white text-rose-600 border border-rose-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all">Revoke</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+
+                                                                        <form method="POST" action="{{ route('admin.garden-bookings.update', $booking) }}" class="space-y-4">
+                                                                            @csrf @method('PUT')
+                                                                            <div class="flex gap-3">
+                                                                                <div class="relative flex-1">
+                                                                                    <input type="number" name="discount_percentage" min="0" max="100" value="{{ $booking->discount_percentage }}" class="w-full border-gray-100 rounded-2xl text-[13px] bg-white py-4 px-6 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-bold transition-all tabular-nums" placeholder="Percentage %">
+                                                                                    <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300 tracking-widest">%</span>
+                                                                                </div>
+                                                                                <button class="bg-gray-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all leading-none">{{ $isAdmin ? 'Apply' : 'Suggest' }}</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                @endif
+
+
+                                                            </div>
+
+                                                            <div class="bg-gray-50/50 p-6 text-center border-t border-gray-50">
+                                                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">System Integrity Verified · Terminal {{ auth()->id() }}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </template>
+                                                </template>
+                                            </div>
+
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
+                                                <a href="{{ route('admin.garden-bookings.show', $booking) }}"
+                                                   class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Details">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                </a>
+
+                                                @if(auth()->user()->isAdmin() || !in_array($booking->status, ['approved', 'cancelled']))
+                                                    <a href="{{ route('admin.garden-bookings.edit', $booking) }}" class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit Booking">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </a>
+
+                                                    <div x-data="{ openDelete: false }" class="relative">
+                                                        <button @click="openDelete = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                        </button>
+                                                        
+                                                        <template x-teleport="body">
+                                                            <div x-show="openDelete" x-cloak
+                                                                 class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
+                                                                
+                                                                <div @click.away="openDelete = false" 
+                                                                     class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                                    
+                                                                    <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                        <div class="flex items-center gap-4">
+                                                                            <div class="h-12 w-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Record Operations</h4>
+                                                                                <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Administrative Event Control</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button @click="openDelete = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                            <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div class="p-8 space-y-8">
+                                                                        <form action="{{ route('admin.garden-bookings.destroy', $booking) }}" method="POST" class="space-y-4">
+                                                                            @csrf @method('DELETE')
+                                                                            <div class="space-y-2.5">
+                                                                                <label class="text-[10px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                                                <input type="password" name="password" required placeholder="Confirm Destruction" 
+                                                                                       class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
+                                                                            </div>
+                                                                            <button type="submit" 
+                                                                                    onclick="return confirm('CRITICAL: Permanently delete this garden booking?')"
+                                                                                    class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-none">
+                                                                                Delete Record Permanently
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                    <div class="bg-gray-50/50 p-6 text-center">
+                                                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Verified Administrative Operation</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

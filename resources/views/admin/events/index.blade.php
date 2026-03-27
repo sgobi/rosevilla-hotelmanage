@@ -367,7 +367,6 @@
                                                          </a>
                                                      @endif
                                                  @endif
-                                            </div>
 
                                                 <button @click="editing = !editing" 
                                                         :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
@@ -557,65 +556,70 @@
                                                 </template>
                                             </div>
 
-                                            <div class="flex items-center gap-1">
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
                                                 <a href="{{ route('admin.events.show', $booking) }}" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Details">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                                 </a>
 
-                                                
-                                                <div x-data="{ open: false }" class="relative">
-                                                    <button @click="open = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                    </button>
- 
-                                                    <template x-teleport="body">
-                                                        <div x-show="open" x-cloak
-                                                             class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
-                                                            
-                                                            <div @click.away="open = false" 
-                                                                 class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                @if(auth()->user()->isAdmin() || !in_array($booking->status, ['approved', 'cancelled']))
+                                                    <a href="{{ route('admin.events.edit', $booking) }}" class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit Booking">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </a>
+
+                                                    <div x-data="{ open: false }" class="relative">
+                                                        <button @click="open = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                        </button>
+     
+                                                        <template x-teleport="body">
+                                                            <div x-show="open" x-cloak
+                                                                 class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
                                                                 
-                                                                <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                                                                    <div class="flex items-center gap-4">
-                                                                        <div class="h-12 w-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
-                                                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                                                <div @click.away="open = false" 
+                                                                     class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                                    
+                                                                    <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                        <div class="flex items-center gap-4">
+                                                                            <div class="h-12 w-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Record Operations</h4>
+                                                                                <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Administrative Event Control</p>
+                                                                            </div>
                                                                         </div>
-                                                                        <div>
-                                                                            <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Record Operations</h4>
-                                                                            <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Administrative Event Control</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <button @click="open = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                                                                        <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                                    </button>
-                                                                </div>
-
-                                                                <div class="p-8 space-y-8">
-                                                                    {{-- Operational Reset --}}
-
-
-                                                                    {{-- Permanent Delete --}}
-                                                                    <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" class="space-y-4">
-                                                                        @csrf @method('DELETE')
-                                                                        <div class="space-y-2.5">
-                                                                            <label class="text-[10px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
-                                                                            <input type="password" name="password" required placeholder="Confirm Destruction" 
-                                                                                   class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
-                                                                        </div>
-                                                                        <button type="submit" 
-                                                                                onclick="return confirm('CRITICAL: Permanently delete this event?')"
-                                                                                class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-none">
-                                                                            Delete Record Permanently
+                                                                        <button @click="open = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                            <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                                         </button>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="bg-gray-50/50 p-6 text-center">
-                                                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Verified Administrative Operation</p>
+                                                                    </div>
+
+                                                                    <div class="p-8 space-y-8">
+                                                                        {{-- Operational Reset --}}
+
+
+                                                                        {{-- Permanent Delete --}}
+                                                                        <form action="{{ route('admin.events.destroy', $booking) }}" method="POST" class="space-y-4">
+                                                                            @csrf @method('DELETE')
+                                                                            <div class="space-y-2.5">
+                                                                                <label class="text-[10px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                                                <input type="password" name="password" required placeholder="Confirm Destruction" 
+                                                                                       class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
+                                                                            </div>
+                                                                            <button type="submit" 
+                                                                                    onclick="return confirm('CRITICAL: Permanently delete this event?')"
+                                                                                    class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-none">
+                                                                                Delete Record Permanently
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                    <div class="bg-gray-50/50 p-6 text-center">
+                                                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Verified Administrative Operation</p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </template>
-                                                </div>
+                                                        </template>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

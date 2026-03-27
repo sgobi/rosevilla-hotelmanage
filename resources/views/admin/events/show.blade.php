@@ -318,6 +318,177 @@
                     @endif
                 </div>
 
+                {{-- Operations Panel --}}
+                <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 space-y-6">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Operations Panel</h3>
+
+                    {{-- Status Override --}}
+                    @if(auth()->user()->isAdmin() || (auth()->user()->isStaff() && !in_array($event->status, ['approved', 'cancelled'])))
+                        <div x-data="{ status: '{{ $event->status }}' }" class="space-y-3">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Override Status</label>
+                            <form method="POST" action="{{ route('admin.events.update', $event) }}" class="space-y-3">
+                                @csrf @method('PATCH')
+                                <select x-model="status" name="status" class="w-full border-slate-100 rounded-2xl text-xs bg-slate-50 py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold transition-all">
+                                    @foreach(['pending','approved','rejected','cancelled'] as $s)
+                                        <option value="{{ $s }}" @selected($event->status === $s)>{{ ucfirst($s) }}</option>
+                                    @endforeach
+                                </select>
+                                <div x-show="status === 'cancelled'" x-transition>
+                                    <textarea name="cancellation_reason" rows="2" class="w-full border-slate-100 rounded-2xl text-xs bg-rose-50/30 py-3 px-4 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-bold transition-all placeholder:text-rose-200" placeholder="Reason for cancellation..."></textarea>
+                                </div>
+                                <button class="w-full bg-slate-900 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all active:scale-95">
+                                    Apply Status
+                                </button>
+                            </form>
+                        </div>
+                        <div class="border-t border-slate-50"></div>
+                    @endif
+
+                    {{-- Cancellation Reason --}}
+                    @if($event->status === 'cancelled' && $event->cancellation_reason)
+                        <div class="p-5 bg-rose-50 rounded-2xl border border-rose-100 space-y-2">
+                            <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Cancellation Reason</p>
+                            <p class="text-xs font-bold text-rose-700 italic leading-relaxed">{{ $event->cancellation_reason }}</p>
+                        </div>
+                        <div class="border-t border-slate-50"></div>
+                    @endif
+
+                    {{-- Conflict Note --}}
+                    @if($event->conflict_status && $event->conflict_status !== 'none' && $event->conflict_note)
+                        <div class="p-5 bg-amber-50 rounded-2xl border border-amber-100 space-y-2">
+                            <p class="text-[9px] font-black text-amber-500 uppercase tracking-widest">Conflict Override Note</p>
+                            <p class="text-xs font-bold text-amber-700 italic leading-relaxed">{{ $event->conflict_note }}</p>
+                        </div>
+                        <div class="border-t border-slate-50"></div>
+                    @endif
+
+                    {{-- Invoice Actions --}}
+                    @if($event->status === 'approved')
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Invoice Actions</label>
+                            @php
+                                $canPrint = auth()->user()->isAdmin() || ($event->invoice_print_count == 0 || $event->invoice_reprint_status === 'approved');
+                            @endphp
+                            @if($canPrint)
+                                <a href="{{ route('admin.events.invoice', $event) }}" target="_blank"
+                                   class="flex items-center gap-3 w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                    Print Invoice
+                                </a>
+                            @endif
+                            <a href="{{ route('admin.events.proforma', $event) }}" target="_blank"
+                               class="flex items-center gap-3 w-full px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Proforma Invoice
+                            </a>
+                        </div>
+                        <div class="border-t border-slate-50"></div>
+                    @endif
+
+                    {{-- Advance Payment --}}
+                    <div class="space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <span class="h-1.5 w-1.5 rounded-full {{ $event->advance_paid_at ? 'bg-emerald-500' : 'bg-slate-300' }}"></span>
+                            Advance Payment
+                        </label>
+                        @if($event->advance_paid_at)
+                            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-2 text-xs">
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Amount</span>
+                                    <span class="text-emerald-700 font-black">LKR {{ number_format($event->advance_amount, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Method</span>
+                                    <span class="text-slate-700 uppercase">{{ $event->advance_payment_method }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Guest</span>
+                                    <span class="text-slate-700">{{ $event->advance_guest_name }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">NIC</span>
+                                    <span class="text-slate-700">{{ $event->advance_nic_no }}</span>
+                                </div>
+                                @if($event->advance_bank_name)
+                                    <div class="flex justify-between font-bold">
+                                        <span class="text-slate-500">Bank</span>
+                                        <span class="text-slate-700">{{ $event->advance_bank_name }} @if($event->advance_bank_branch)/ {{ $event->advance_bank_branch }}@endif</span>
+                                    </div>
+                                @endif
+                                <div class="pt-1 border-t border-emerald-100 text-[10px] text-emerald-600 font-bold">
+                                    Paid: {{ $event->advance_paid_at->format('M d, Y H:i') }}
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-[10px] text-slate-400 font-bold italic px-1">No advance payment recorded.</p>
+                        @endif
+                    </div>
+
+                    {{-- Final Payment --}}
+                    <div class="space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <span class="h-1.5 w-1.5 rounded-full {{ $event->final_payment_at ? 'bg-emerald-500' : 'bg-slate-300' }}"></span>
+                            Final Payment
+                        </label>
+                        @if($event->final_payment_at)
+                            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-2 text-xs">
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Amount</span>
+                                    <span class="text-emerald-700 font-black">LKR {{ number_format($event->final_payment_amount, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Method</span>
+                                    <span class="text-slate-700 uppercase">{{ $event->final_payment_method }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">Guest</span>
+                                    <span class="text-slate-700">{{ $event->final_guest_name }}</span>
+                                </div>
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-500">NIC</span>
+                                    <span class="text-slate-700">{{ $event->final_nic_no }}</span>
+                                </div>
+                                @if($event->final_bank_name)
+                                    <div class="flex justify-between font-bold">
+                                        <span class="text-slate-500">Bank</span>
+                                        <span class="text-slate-700">{{ $event->final_bank_name }} @if($event->final_bank_branch)/ {{ $event->final_bank_branch }}@endif</span>
+                                    </div>
+                                @endif
+                                <div class="pt-1 border-t border-emerald-100 text-[10px] text-emerald-600 font-bold">
+                                    Paid: {{ $event->final_payment_at->format('M d, Y H:i') }}
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-[10px] text-slate-400 font-bold italic px-1">No final payment recorded.</p>
+                        @endif
+                    </div>
+
+                    {{-- Check-in / Check-out Timestamps --}}
+                    <div class="border-t border-slate-50 pt-6 space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Event Lifecycle</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-4 {{ $event->checked_in_at ? 'bg-indigo-50 border-indigo-100' : 'bg-slate-50 border-slate-100' }} rounded-2xl border text-center space-y-1">
+                                <p class="text-[9px] font-black {{ $event->checked_in_at ? 'text-indigo-500' : 'text-slate-400' }} uppercase tracking-widest">Started</p>
+                                @if($event->checked_in_at)
+                                    <p class="text-[10px] font-black text-indigo-700 leading-tight">{{ $event->checked_in_at->format('M d') }}</p>
+                                    <p class="text-[10px] font-bold text-indigo-600">{{ $event->checked_in_at->format('H:i') }}</p>
+                                @else
+                                    <p class="text-[10px] text-slate-300 font-bold italic">Pending</p>
+                                @endif
+                            </div>
+                            <div class="p-4 {{ $event->checked_out_at ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-100' }} rounded-2xl border text-center space-y-1">
+                                <p class="text-[9px] font-black {{ $event->checked_out_at ? 'text-emerald-500' : 'text-slate-400' }} uppercase tracking-widest">Completed</p>
+                                @if($event->checked_out_at)
+                                    <p class="text-[10px] font-black text-emerald-700 leading-tight">{{ $event->checked_out_at->format('M d') }}</p>
+                                    <p class="text-[10px] font-bold text-emerald-600">{{ $event->checked_out_at->format('H:i') }}</p>
+                                @else
+                                    <p class="text-[10px] text-slate-300 font-bold italic">Pending</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Terminal Info -->
                 <div class="text-center space-y-3 px-8">
                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">System Authentication Integrity</p>
