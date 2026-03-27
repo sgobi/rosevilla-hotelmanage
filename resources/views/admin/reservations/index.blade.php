@@ -191,9 +191,12 @@
                                     <td class="px-6 py-3">
                                         <div x-data="{ show: false }" class="relative">
                                             <div @mouseenter="show = true" @mouseleave="show = false" class="cursor-help inline-block">
-                                                <div class="font-bold text-gray-900">LKR {{ number_format($reservation->final_price, 2) }}</div>
-                                                @if($reservation->discount_status === 'approved' && $reservation->discount_percentage > 0)
-                                                    <div class="text-[9px] text-emerald-600 font-medium italic">-{{ $reservation->discount_percentage }}% Off applied</div>
+                                                <div class="font-bold text-gray-900 leading-tight">
+                                                    <span class="text-xs">LKR</span><br>
+                                                    {{ number_format($reservation->final_price, 2) }}
+                                                </div>
+                                                @if($reservation->discount_percentage > 0 && $reservation->discount_status === 'approved')
+                                                    <div class="text-[9px] text-emerald-600 font-medium italic mt-0.5">-{{ number_format($reservation->discount_percentage, 2) }}% Off applied</div>
                                                 @endif
                                             </div>
 
@@ -270,49 +273,49 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 text-center">
-                                        <span class="inline-block px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border
-                                            @if($reservation->status === 'approved') bg-emerald-50 text-emerald-700 border-emerald-100
-                                            @elseif($reservation->status === 'cancelled') bg-rose-50 text-rose-700 border-rose-100
-                                            @else bg-amber-50 text-amber-700 border-amber-100 @endif">
-                                            {{ $reservation->status }}
-                                        </span>
-                                        @if($reservation->checked_in_at && !$reservation->checked_out_at)
-                                            <div class="mt-1 flex items-center justify-center gap-1">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                                <span class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">In House</span>
-                                            </div>
-                                        @elseif($reservation->checked_out_at)
-                                            <div class="mt-1 flex items-center justify-center gap-1 opacity-60">
-                                                <svg class="w-2.5 h-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">Checked Out</span>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex flex-col items-end gap-2 relative">
-                                            <!-- Status & Main Actions -->
-                                            <div class="flex items-center gap-3">
-                                                <div class="flex flex-col items-end">
-                                                    @if($hasPendingRequest)
-                                                        <span class="flex items-center gap-1 text-[9px] text-amber-600 font-bold mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200 animate-pulse">
-                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                            Action Required
-                                                        </span>
-                                                    @endif
-                                                    @if($reservation->discount_status === 'approved')
-                                                        <span class="text-[9px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-1.5 rounded">
-                                                            {{ $reservation->discount_percentage }}% OFF
-                                                        </span>
-                                                    @endif
+                                        <div class="flex flex-col items-center justify-center gap-1">
+                                            <span class="inline-block px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border
+                                                @if($reservation->status === 'approved') bg-emerald-50 text-emerald-700 border-emerald-100
+                                                @elseif($reservation->status === 'cancelled') bg-rose-50 text-rose-700 border-rose-100
+                                                @else bg-amber-50 text-amber-700 border-amber-100 @endif">
+                                                {{ $reservation->status }}
+                                            </span>
+                                            
+                                            @if($reservation->checked_in_at && !$reservation->checked_out_at)
+                                                <div class="mt-1 flex items-center justify-center gap-1">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                    <span class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">In House</span>
                                                 </div>
+                                            @elseif($reservation->checked_out_at)
+                                                <div class="mt-1 flex items-center justify-center gap-1 opacity-60">
+                                                    <svg class="w-2.5 h-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                    <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">Checked Out</span>
+                                                </div>
+                                            @endif
+
+                                            @if($reservation->discount_percentage > 0)
+                                                @if($reservation->discount_status === 'pending')
+                                                    <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded shadow-sm border border-amber-100 uppercase inline-block max-w-max">
+                                                        {{ number_format($reservation->discount_percentage, 2) }}% PENDING
+                                                    </span>
+                                                @elseif($reservation->discount_status === 'approved')
+                                                    <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded shadow-sm border border-emerald-100 uppercase inline-block max-w-max">
+                                                        {{ number_format($reservation->discount_percentage, 2) }}% OFF
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-end gap-3">
+                                            @if($hasPendingRequest)
+                                                <div class="relative flex items-center justify-center mr-1" title="Action Required">
+                                                    <span class="absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75 animate-ping"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                                                </div>
+                                            @endif
 
                                             <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
-                                                @if($reservation->status === 'approved' || $reservation->status === 'pending')
-                                                    <a href="{{ route('admin.invoices.proforma', $reservation) }}" target="_blank" 
-                                                       class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Download Quotation">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                    </a>
-                                                @endif
 
                                                 @if($reservation->status === 'approved')
                                                     @php
@@ -506,27 +509,6 @@
                                                                     </div>
                                                                 @endif
 
-                                                                {{-- Danger Zone --}}
-                                                                <div class="pt-4 space-y-4">
-                                                                    <div class="flex items-center gap-2 px-1">
-                                                                        <div class="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
-                                                                        <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Restricted Operations</label>
-                                                                    </div>
-                                                                    
-
-
-                                                                    <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="space-y-4">
-                                                                        @csrf @method('DELETE')
-                                                                        <div class="space-y-2.5">
-                                                                            <input type="password" name="password" required placeholder="Confirm Destruction" 
-                                                                                   class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
-                                                                        </div>
-                                                                        <button type="submit" onclick="return confirm('CRITICAL: Permanently delete this reservation?')"
-                                                                                class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 leading-none">
-                                                                            Delete Permanent Record
-                                                                        </button>
-                                                                    </form>
-                                                                </div>
                                                             </div>
                                                             <div class="bg-gray-50/50 p-6 text-center border-t border-gray-50">
                                                                 <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">System Integrity Verified • Terminal {{ auth()->id() }}</p>
@@ -534,6 +516,69 @@
                                                         </div>
                                                     </div>
                                                 </template>
+                                            </div>
+
+                                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
+                                                <a href="{{ route('admin.reservations.show', $reservation) }}"
+                                                   class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Details">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                </a>
+
+                                                @if(auth()->user()->isAdmin() || !in_array($reservation->status, ['approved', 'cancelled']))
+                                                    <a href="{{ route('admin.reservations.edit', $reservation) }}" class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit Reservation">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </a>
+
+                                                    <div x-data="{ openDelete: false }" class="relative">
+                                                        <button @click="openDelete = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                        </button>
+                                                        
+                                                        <template x-teleport="body">
+                                                            <div x-show="openDelete" x-cloak
+                                                                 class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
+                                                                
+                                                                <div @click.away="openDelete = false" 
+                                                                     class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                                    
+                                                                    <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                                                                        <div class="flex items-center gap-4">
+                                                                            <div class="h-12 w-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 class="text-lg font-black text-gray-900 uppercase tracking-tight leading-none">Record Operations</h4>
+                                                                                <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Administrative Event Control</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button @click="openDelete = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                            <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div class="p-8 space-y-8">
+                                                                        <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="space-y-4">
+                                                                            @csrf @method('DELETE')
+                                                                            <div class="space-y-2.5">
+                                                                                <label class="text-[10px] font-black text-red-600 uppercase tracking-widest px-1">Permanent Destruction</label>
+                                                                                <input type="password" name="password" required placeholder="Confirm Destruction" 
+                                                                                       class="w-full border-gray-100 rounded-2xl text-[13px] bg-red-50/20 py-4 px-6 focus:ring-4 focus:ring-red-100 focus:border-red-500 font-bold transition-all placeholder:text-red-200">
+                                                                            </div>
+                                                                            <button type="submit" 
+                                                                                    onclick="return confirm('CRITICAL: Permanently delete this reservation?')"
+                                                                                    class="w-full bg-red-600 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-none">
+                                                                                Delete Record Permanently
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                    <div class="bg-gray-50/50 p-6 text-center">
+                                                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Verified Administrative Operation</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

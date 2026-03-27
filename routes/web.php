@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Staff & Admin
         Route::middleware('role:admin,staff')->group(function () {
-            Route::resource('reservations', ReservationController::class)->only(['index', 'update', 'destroy']);
+            Route::resource('reservations', ReservationController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
             
             // Front Desk
             Route::get('front-desk', [FrontDeskController::class, 'index'])->name('front-desk.index');

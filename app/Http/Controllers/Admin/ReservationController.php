@@ -70,17 +70,17 @@ class ReservationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Reservation $reservation)
     {
-        //
+        return view('admin.reservations.show', compact('reservation'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Reservation $reservation)
     {
-        //
+        return view('admin.reservations.edit', compact('reservation'));
     }
 
     /**
@@ -310,6 +310,20 @@ class ReservationController extends Controller
             if ($data['additional_notes']) $messageParts[] = "Additional Notes: " . $data['additional_notes'];
             $data['message'] = implode("\n\n", $messageParts);
 
+            $reservation->update($data);
+        }
+
+        // 6. Handle Full Edit Form Update
+        if ($request->has('guest_name')) {
+            $data = $request->validate([
+                'guest_name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'email', 'max:255'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:500'],
+                'check_in' => ['required', 'date'],
+                'check_out' => ['required', 'date', 'after_or_equal:check_in'],
+                'guests' => ['required', 'integer', 'min:1'],
+            ]);
             $reservation->update($data);
         }
 
