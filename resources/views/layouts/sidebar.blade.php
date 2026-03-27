@@ -51,22 +51,33 @@
                 </div>
                 <svg x-show="expanded" class="w-4 h-4 transition-transform duration-200" :class="activeMenu === 'bookings' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
-            <div x-show="expanded && activeMenu === 'bookings'" x-collapse class="pl-12 pr-4 space-y-1">
-                @php
-                    $bookingLinks = [
-                        ['label' => 'Room Front Desk', 'route' => 'admin.front-desk.index'],
-                        ['label' => 'Event Front Desk', 'route' => 'admin.event-front-desk.index'],
-                        ['label' => 'View Room Stays', 'route' => 'admin.reservations.index'],
-                        ['label' => 'View Events', 'route' => 'admin.events.index'],
-                        ['label' => 'Garden Bookings', 'route' => 'admin.garden-bookings.index'],
-                        ['label' => 'Guest Experience', 'route' => 'admin.reviews.index'],
-                    ];
-                @endphp
-                @foreach($bookingLinks as $link)
-                    <a href="{{ route($link['route']) }}" class="block py-2 text-xs font-medium {{ request()->routeIs($link['route']) ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300' }} transition-colors whitespace-nowrap">
-                        {{ $link['label'] }}
-                    </a>
-                @endforeach
+            <div x-show="expanded && activeMenu === 'bookings'" x-collapse class="pl-10 pr-4 space-y-3 pt-1 pb-2">
+
+                {{-- Rooms Group --}}
+                <div>
+                    <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] px-2 mb-1">Rooms</p>
+                    <a href="{{ route('admin.front-desk.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.front-desk.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">Front Desk</a>
+                    <a href="{{ route('admin.reservations.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.reservations.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">View Room Stays</a>
+                </div>
+
+                {{-- Events Group --}}
+                <div>
+                    <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] px-2 mb-1">Events</p>
+                    <a href="{{ route('admin.event-front-desk.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.event-front-desk.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">Front Desk</a>
+                    <a href="{{ route('admin.events.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.events.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">View Events</a>
+                </div>
+
+                {{-- Garden Group --}}
+                <div>
+                    <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] px-2 mb-1">Garden</p>
+                    <a href="{{ route('admin.garden-bookings.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.garden-bookings.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">Garden Bookings</a>
+                </div>
+
+                {{-- Guest Experience --}}
+                <div class="border-t border-slate-800 pt-2">
+                    <a href="{{ route('admin.reviews.index') }}" class="block py-1.5 px-2 text-xs font-medium rounded-lg {{ request()->routeIs('admin.reviews.index') ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50' }} transition-colors whitespace-nowrap">Guest Experience</a>
+                </div>
+
             </div>
         </div>
 
