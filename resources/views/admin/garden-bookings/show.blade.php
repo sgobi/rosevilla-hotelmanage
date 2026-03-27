@@ -61,7 +61,9 @@
                     @endif
 
                     <div class="flex gap-4">
-                        <a href="{{ route('admin.garden-bookings.edit', $gardenBooking) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Edit Booking</a>
+                        @if(auth()->user()->isAdmin() || !in_array($gardenBooking->status, ['approved', 'cancelled']))
+                            <a href="{{ route('admin.garden-bookings.edit', $gardenBooking) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Edit Booking</a>
+                        @endif
                         @if($gardenBooking->status === 'approved')
                             <a href="{{ route('admin.garden.invoice', $gardenBooking) }}" target="_blank" class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">Print Invoice</a>
                         @endif
