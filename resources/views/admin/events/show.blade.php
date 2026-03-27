@@ -368,22 +368,14 @@
                     </div>
                     <h4 class="text-xs font-black text-gray-700 uppercase tracking-widest">Operations Panel</h4>
                 </div>
-                <div class="p-5" x-data="{ status: '{{ $event->status }}' }">
-                    <label class="text-xs font-black text-gray-400 uppercase tracking-widest block mb-2">Override Status</label>
-                    <form method="POST" action="{{ route('admin.events.update', $event) }}" class="space-y-3">
-                        @csrf @method('PATCH')
-                        <select x-model="status" name="status" class="w-full border border-gray-200 rounded-xl text-sm bg-gray-50 py-2.5 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold transition-all">
-                            @foreach(['pending','approved','rejected','cancelled'] as $s)
-                                <option value="{{ $s }}" @selected($event->status === $s)>{{ ucfirst($s) }}</option>
-                            @endforeach
-                        </select>
-                        <div x-show="status === 'cancelled'" x-transition>
-                            <textarea name="cancellation_reason" rows="2" class="w-full border border-gray-200 rounded-xl text-sm bg-rose-50 py-2.5 px-4 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-bold transition-all placeholder:text-rose-300" placeholder="Reason for cancellation..."></textarea>
-                        </div>
-                        <button class="w-full bg-gray-900 hover:bg-indigo-600 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
-                            Apply Status
-                        </button>
-                    </form>
+                <div class="p-5 flex items-center justify-between">
+                    <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Current Status</span>
+                    <span class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border
+                        @if($event->status === 'approved') bg-green-50 text-green-700 border-green-200
+                        @elseif(in_array($event->status, ['cancelled','rejected'])) bg-red-50 text-red-700 border-red-200
+                        @else bg-yellow-50 text-yellow-700 border-yellow-200 @endif">
+                        {{ str_replace('_', ' ', $event->status) }}
+                    </span>
                 </div>
             </div>
             @endif
@@ -404,11 +396,7 @@
                         Print Invoice
                     </a>
                     @endif
-                    <a href="{{ route('admin.events.proforma', $event) }}" target="_blank"
-                       class="inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-sm transition-all hover:shadow-md">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Proforma Invoice
-                    </a>
+
                 @endif
                 <a href="{{ route('admin.events.index') }}"
                    class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold px-5 py-2.5 rounded-xl border border-gray-200 transition-all">
