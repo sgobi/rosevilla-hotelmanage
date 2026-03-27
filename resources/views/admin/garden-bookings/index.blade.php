@@ -177,9 +177,12 @@
                                     <td class="px-6 py-3">
                                         <div x-data="{ show: false }" class="relative">
                                             <div @mouseenter="show = true" @mouseleave="show = false" class="cursor-help inline-block">
-                                                <div class="font-bold text-gray-900">LKR {{ number_format($booking->final_price, 2) }}</div>
-                                                @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
-                                                    <div class="text-[9px] text-emerald-600 font-medium italic">-{{ $booking->discount_percentage }}% Off applied</div>
+                                                <div class="font-bold text-gray-900 leading-tight">
+                                                    <span class="text-xs">LKR</span><br>
+                                                    {{ number_format($booking->final_price, 2) }}
+                                                </div>
+                                                @if($booking->discount_percentage > 0 && $booking->discount_status === 'approved')
+                                                    <div class="text-[9px] text-emerald-600 font-medium italic mt-0.5">-{{ number_format($booking->discount_percentage, 2) }}% Off applied</div>
                                                 @endif
                                             </div>
                                             <div x-show="show" x-cloak
@@ -236,31 +239,37 @@
 
                                     {{-- Status --}}
                                     <td class="px-6 py-3 text-center">
-                                        <span class="inline-block px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border
-                                            @if($booking->status === 'approved') bg-emerald-50 text-emerald-700 border-emerald-100
-                                            @elseif($booking->status === 'checked_in') bg-blue-50 text-blue-700 border-blue-100
-                                            @elseif($booking->status === 'checked_out') bg-purple-50 text-purple-700 border-purple-100
-                                            @elseif(in_array($booking->status, ['cancelled', 'rejected'])) bg-rose-50 text-rose-700 border-rose-100
-                                            @else bg-amber-50 text-amber-700 border-amber-100 @endif">
-                                            {{ str_replace('_', ' ', $booking->status) }}
-                                        </span>
+                                        <div class="flex flex-col items-center justify-center gap-1">
+                                            <span class="inline-block px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase shadow-sm border
+                                                @if($booking->status === 'approved') bg-emerald-50 text-emerald-700 border-emerald-100
+                                                @elseif($booking->status === 'checked_in') bg-blue-50 text-blue-700 border-blue-100
+                                                @elseif($booking->status === 'checked_out') bg-purple-50 text-purple-700 border-purple-100
+                                                @elseif(in_array($booking->status, ['cancelled', 'rejected'])) bg-rose-50 text-rose-700 border-rose-100
+                                                @else bg-amber-50 text-amber-700 border-amber-100 @endif">
+                                                {{ str_replace('_', ' ', $booking->status) }}
+                                            </span>
+                                            @if($booking->discount_percentage > 0)
+                                                @if($booking->discount_status === 'pending')
+                                                    <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded shadow-sm border border-amber-100 uppercase inline-block max-w-max">
+                                                        {{ number_format($booking->discount_percentage, 2) }}% PENDING
+                                                    </span>
+                                                @elseif($booking->discount_status === 'approved')
+                                                    <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded shadow-sm border border-emerald-100 uppercase inline-block max-w-max">
+                                                        {{ number_format($booking->discount_percentage, 2) }}% OFF
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
                                     </td>
 
                                      <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-3">
-                                            <div class="flex flex-col items-end">
-                                                @if($hasPendingRequest)
-                                                    <span class="flex items-center gap-1 text-[9px] text-amber-600 font-bold mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200 animate-pulse">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                        Action Required
-                                                    </span>
-                                                @endif
-                                                @if($booking->discount_status === 'approved' && $booking->discount_percentage > 0)
-                                                    <span class="text-[9px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-1.5 rounded">
-                                                        {{ number_format($booking->discount_percentage, 0) == $booking->discount_percentage ? number_format($booking->discount_percentage, 0) : number_format($booking->discount_percentage, 2) }}% OFF
-                                                    </span>
-                                                @endif
-                                            </div>
+                                            @if($hasPendingRequest)
+                                                <div class="relative flex items-center justify-center mr-1" title="Discount Approval Required">
+                                                    <span class="absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75 animate-ping"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                                                </div>
+                                            @endif
                                             <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm relative z-10">
                                                 @if($booking->status === 'approved')
                                                     <a href="{{ route('admin.garden.invoice', $booking) }}" target="_blank"
