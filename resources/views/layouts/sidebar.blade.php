@@ -70,24 +70,6 @@
             </div>
         </div>
 
-        <!-- Quotations (Aggregated Pending Requests) -->
-        <div class="space-y-1">
-            <button @click="activeMenu = activeMenu === 'quotations' ? '' : 'quotations'" 
-               class="w-full flex items-center justify-between gap-4 px-3 py-2 rounded-xl transition-all duration-200 {{ request()->get('status') === 'pending' ? 'bg-amber-600/10 text-amber-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                <div class="flex items-center gap-4">
-                    <div class="shrink-0 w-6 h-6 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <span x-show="expanded" class="font-medium text-sm whitespace-nowrap">Quotations</span>
-                </div>
-                <svg x-show="expanded" class="w-4 h-4 transition-transform duration-200" :class="activeMenu === 'quotations' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="expanded && activeMenu === 'quotations'" x-collapse class="pl-12 pr-4 space-y-1">
-                <a href="{{ route('admin.reservations.index', ['status' => 'pending']) }}" class="block py-2 text-xs font-medium {{ request()->routeIs('admin.reservations.index') && request()->get('status') === 'pending' ? 'text-amber-400' : 'text-slate-500 hover:text-slate-300' }} transition-colors whitespace-nowrap">Room Quotes</a>
-                <a href="{{ route('admin.events.index', ['status' => 'pending']) }}" class="block py-2 text-xs font-medium {{ request()->routeIs('admin.events.index') && request()->get('status') === 'pending' ? 'text-amber-400' : 'text-slate-500 hover:text-slate-300' }} transition-colors whitespace-nowrap">Event Quotes</a>
-                <a href="{{ route('admin.garden-bookings.index', ['status' => 'pending']) }}" class="block py-2 text-xs font-medium {{ request()->routeIs('admin.garden-bookings.index') && request()->get('status') === 'pending' ? 'text-amber-400' : 'text-slate-500 hover:text-slate-300' }} transition-colors whitespace-nowrap">Garden Quotes</a>
-            </div>
-        </div>
 
         <!-- Property Management -->
         @if(auth()->user()->isAdmin())
