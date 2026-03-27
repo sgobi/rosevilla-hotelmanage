@@ -21,7 +21,7 @@
     </x-slot>
 
     <div class="py-8" x-data="priceCalculator()">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6 print:hidden">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Calculator Type Selection -->
                 <div class="md:col-span-1 space-y-4">
@@ -88,8 +88,7 @@
 
                         <!-- Form Content -->
                         <div class="flex-1 space-y-10">
-                            <!-- Date Inputs (for Room and Garden) -->
-                            <template x-if="type !== 'event'">
+                            <!-- Date Inputs (for all types) -->
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-4">
                                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Check In</label>
@@ -100,12 +99,10 @@
                                         <input type="date" x-model="checkOut" class="w-full border-gray-100 rounded-2xl text-[13px] bg-gray-50 py-4 px-6 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 font-bold transition-all uppercase">
                                     </div>
                                 </div>
-                            </template>
 
-                            <!-- Room Specific -->
-                            <template x-if="type === 'room'">
+                            <!-- Room Specific (Now available for all types) -->
                                 <div class="space-y-4">
-                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Asset Allocation</label>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Asset Allocation (Rooms)</label>
                                     <div class="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                         @foreach($rooms as $room)
                                             <label class="flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer group"
@@ -116,8 +113,8 @@
                                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                                     </div>
                                                     <div>
-                                                        <p class="text-xs font-black text-gray-900 uppercase">Room {{ $room->room_number }}</p>
-                                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $room->type }}</p>
+                                                        <p class="text-xs font-black text-gray-900 uppercase">{{ $room->title }}</p>
+                                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $room->subtitle ?? 'Room' }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -128,11 +125,30 @@
                                         @endforeach
                                     </div>
                                 </div>
-                            </template>
 
                             <!-- Event Specific -->
                             <template x-if="type === 'event'">
                                 <div class="space-y-6">
+                                    <div class="space-y-4">
+                                        <label class="text-[10px] font-black text-amber-600 uppercase tracking-widest px-1">Space Allocation Mode</label>
+                                        <label class="flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer group"
+                                               :class="includeGarden ? 'border-amber-500 bg-amber-50/30' : 'border-gray-50 bg-gray-50/50 hover:border-gray-200'">
+                                            <div class="flex items-center gap-4">
+                                                <input type="checkbox" x-model="includeGarden" class="hidden">
+                                                <div :class="includeGarden ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-gray-200 text-transparent'" class="h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-xs font-black text-gray-900 uppercase">Include Garden Area</p>
+                                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Automated Garden Pricing Override</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-xs font-black text-amber-600 tabular-nums">LKR {{ number_format($gardenRate, 0) }}</p>
+                                                <p class="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Per Day</p>
+                                            </div>
+                                        </label>
+                                    </div>
                                     <div class="space-y-4">
                                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Base Valuation Input</label>
                                         <div class="relative">
@@ -143,6 +159,29 @@
                                     <div class="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex items-start gap-4 italic text-gray-400 text-xs leading-relaxed">
                                         <svg class="w-5 h-5 flex-shrink-0 text-amber-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         <p>Manual base price entry for modular event packages. Tax and discounts will be automatically computed based on this input.</p>
+                                    </div>
+                                    
+                                    <div class="space-y-4 pt-4 border-t border-gray-100">
+                                        <div class="flex items-center justify-between">
+                                            <label class="text-[10px] font-black text-amber-600 uppercase tracking-widest px-1">Additional Services</label>
+                                            <button @click="addService()" class="text-[10px] font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-xl transition-colors uppercase tracking-widest">+ Add</button>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <template x-for="(service, index) in additionalServices" :key="index">
+                                                <div class="flex items-center gap-3">
+                                                    <input type="text" x-model="service.type" @change="calculate()" placeholder="Service Type (e.g. Catering)" class="w-full border-gray-100 rounded-xl text-xs bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 font-bold transition-all">
+                                                    <div class="relative w-48 shrink-0">
+                                                        <input type="number" x-model="service.price" @change="calculate()" placeholder="Price" class="w-full border-gray-100 rounded-xl text-xs bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 font-bold transition-all tabular-nums text-right">
+                                                    </div>
+                                                    <button @click="removeService(index)" class="shrink-0 p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            <template x-if="additionalServices.length === 0">
+                                                <p class="text-[10px] text-gray-400 italic px-2">No additional services added yet. Press add.</p>
+                                            </template>
+                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -197,6 +236,73 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Print Trigger Button -->
+            <div class="mt-8 flex justify-center print:hidden">
+                <button @click="window.print()" class="bg-indigo-600 border-4 border-indigo-200 text-white px-8 py-4 rounded-3xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-[0_20px_40px_-15px_rgba(79,70,229,0.5)] group">
+                    <svg class="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print Quotation Document
+                </button>
+            </div>
+        </div>
+
+        <!-- Print Area -->
+        <div id="print-area" class="hidden font-sans w-full max-w-4xl mx-auto p-0 bg-white text-black">
+            <!-- Printing Header -->
+            <div class="border-b-4 border-black pb-8 mb-8 flex justify-between items-end">
+                <div>
+                    <h1 class="text-4xl font-black uppercase tracking-tighter">Rosevilla</h1>
+                    <h2 class="text-2xl font-bold uppercase tracking-widest text-gray-500">Official Quotation</h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest" x-text="'Date: ' + new Date().toLocaleDateString()"></p>
+                    <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest" x-text="'Module: ' + type"></p>
+                </div>
+            </div>
+
+            <!-- Parameters -->
+            <div class="mb-8">
+                <h3 class="text-sm font-black uppercase tracking-widest border-b-2 border-gray-200 pb-2 mb-4 text-gray-400">Calculation Parameters</h3>
+                <div class="grid grid-cols-1 gap-4 text-sm font-bold">
+                    <p><span class="text-gray-500 uppercase tracking-widest text-[10px] block mb-1">Duration Window:</span> <span class="text-base" x-text="checkIn + '  to  ' + checkOut"></span></p>
+                </div>
+            </div>
+
+            <!-- Breakdown -->
+            <div class="mb-8">
+                <h3 class="text-sm font-black uppercase tracking-widest border-b-2 border-gray-200 pb-2 mb-4 text-gray-400">Cost Breakdown Details</h3>
+                <ul class="space-y-4 font-mono text-sm leading-relaxed tracking-tight break-all text-gray-800">
+                    <template x-for="detail in results.details">
+                        <li class="flex gap-4">
+                            <span class="text-indigo-500 opacity-50">►</span>
+                            <span x-text="detail"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="border-t-4 border-black pt-8 break-inside-avoid">
+                <div class="space-y-3 text-right font-mono text-sm tracking-tight mb-8">
+                    <p><span class="inline-block w-48 text-gray-500 uppercase font-sans font-bold text-[10px] tracking-widest">Net Asset Total:</span> <span class="inline-block w-32 font-black" x-text="formatCurrency(results.total_price)"></span></p>
+                    <template x-if="results.discount_amount > 0">
+                        <p><span class="inline-block w-48 text-gray-500 uppercase font-sans font-bold text-[10px] tracking-widest" x-text="'Discount (' + discountPercentage + '%):'"></span> <span class="inline-block w-32 text-red-600 font-bold" x-text="'- ' + formatCurrency(results.discount_amount)"></span></p>
+                    </template>
+                    <p><span class="inline-block w-48 text-gray-500 uppercase font-sans font-bold text-[10px] tracking-widest" x-text="'Service Tax (' + results.tax_rate + '%):'"></span> <span class="inline-block w-32 font-bold" x-text="'+ ' + formatCurrency(results.tax_amount)"></span></p>
+                </div>
+
+                <div class="bg-gray-100 p-8 rounded-3xl flex justify-between items-center print-final break-inside-avoid">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1">Final Agreed</p>
+                        <p class="text-xl font-black uppercase tracking-tighter text-gray-900">Total Quotation Value</p>
+                    </div>
+                    <p class="text-3xl font-black tabular-nums tracking-tighter" x-text="formatCurrency(results.final_price)"></p>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-t-2 border-dashed border-gray-200 pt-8 break-inside-avoid">
+                <p>Eligible within 5 days. After that, this quotation will vary.</p>
+            </div>
         </div>
     </div>
 
@@ -209,6 +315,8 @@
                 roomIds: [],
                 basePrice: 0,
                 discountPercentage: 0,
+                includeGarden: false,
+                additionalServices: [],
                 results: {
                     total_price: 0,
                     discount_amount: 0,
@@ -226,6 +334,19 @@
                     this.$watch('roomIds', () => this.calculate());
                     this.$watch('basePrice', () => this.calculate());
                     this.$watch('discountPercentage', () => this.calculate());
+                    this.$watch('includeGarden', () => this.calculate());
+                    
+                    // We watch changes on individual elements via @change in inputs for deep objects
+                    
+                    this.calculate();
+                },
+
+                addService() {
+                    this.additionalServices.push({ type: '', price: '' });
+                },
+
+                removeService(index) {
+                    this.additionalServices.splice(index, 1);
                     this.calculate();
                 },
 
@@ -242,8 +363,10 @@
                                 check_in: this.checkIn,
                                 check_out: this.checkOut,
                                 room_ids: this.roomIds,
+                                include_garden: this.includeGarden,
                                 base_price: this.basePrice,
-                                discount_percentage: this.discountPercentage
+                                discount_percentage: this.discountPercentage,
+                                additional_services: this.additionalServices
                             })
                         });
                         if (response.ok) {
@@ -266,6 +389,31 @@
     </script>
 
     <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block !important;
+                padding: 1cm 2cm !important;
+            }
+            .print-final {
+                background-color: #f3f4f6 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            @page { margin: 0; }
+        }
+        
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }

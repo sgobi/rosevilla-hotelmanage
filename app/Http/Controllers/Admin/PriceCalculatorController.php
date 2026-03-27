@@ -36,7 +36,7 @@ class PriceCalculatorController extends Controller
             foreach ($rooms as $room) {
                 $roomTotal = $room->price_per_night * $days;
                 $totalPrice += $roomTotal;
-                $details[] = "Room {$room->room_number} ({$room->type}): {$room->price_per_night} x {$days} days = {$roomTotal}";
+                $details[] = "{$room->title}: {$room->price_per_night} x {$days} days = {$roomTotal}";
             }
         } elseif ($type === 'garden') {
             $checkIn = \Carbon\Carbon::parse($request->check_in);
@@ -46,9 +46,51 @@ class PriceCalculatorController extends Controller
             
             $totalPrice = $dailyRate * $days;
             $details[] = "Garden Booking: {$dailyRate} x {$days} days = {$totalPrice}";
+            
+            $roomIds = $request->room_ids ?: [];
+            if (!empty($roomIds)) {
+                $rooms = Room::whereIn('id', $roomIds)->get();
+                foreach ($rooms as $room) {
+                    $roomTotal = $room->price_per_night * $days;
+                    $totalPrice += $roomTotal;
+                    $details[] = "{$room->title}: {$room->price_per_night} x {$days} days = {$roomTotal}";
+                }
+            }
         } elseif ($type === 'event') {
+            $checkIn = \Carbon\Carbon::parse($request->check_in);
+            $checkOut = \Carbon\Carbon::parse($request->check_out);
+            $days = $checkIn->diffInDays($checkOut) + 1;
+
             $totalPrice = (float)$request->base_price;
-            $details[] = "Event Base Price: {$totalPrice}";
+            if ($totalPrice > 0) {
+                $details[] = "Event Base Price: {$totalPrice}";
+            }
+
+            $roomIds = $request->room_ids ?: [];
+            if (!empty($roomIds)) {
+                $rooms = Room::whereIn('id', $roomIds)->get();
+                foreach ($rooms as $room) {
+                    $roomTotal = $room->price_per_night * $days;
+                    $totalPrice += $roomTotal;
+                    $details[] = "{$room->title}: {$room->price_per_night} x {$days} days = {$roomTotal}";
+                }
+            }
+
+            if ($request->include_garden) {
+                $dailyRate = ContentSetting::getValue('garden_price_per_day', 30000);
+                $gardenTotal = $dailyRate * $days;
+                $totalPrice += $gardenTotal;
+                $details[] = "Garden Booking: {$dailyRate} x {$days} days = {$gardenTotal}";
+            }
+
+            $additionalServices = $request->additional_services ?: [];
+            foreach ($additionalServices as $service) {
+                if (!empty($service['type']) && !empty($service['price'])) {
+                    $price = (float)$service['price'];
+                    $totalPrice += $price;
+                    $details[] = "Service ({$service['type']}): {$price}";
+                }
+            }
         }
 
         $discountPercentage = (float)$request->discount_percentage ?: 0;
