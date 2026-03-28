@@ -526,16 +526,7 @@
                                         <svg class="relative w-6 h-6 group-hover/btn:translate-x-1 transition-transform z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                     </a>
                                     
-                                    <div class="hidden sm:flex items-center gap-4">
-                                        @foreach(collect($room->amenities)->take(2) as $amenity)
-                                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400" title="{{ $amenity }}">
-                                                @if(Str::contains(Str::lower($amenity), 'wi-fi')) <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.111 16.404a5.503 5.503 0 017.778 0M5.636 13.929a9 9 0 0112.728 0M12 20h.01m-9.091-9.091a13.5 13.5 0 0118.182 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-                                                @elseif(Str::contains(Str::lower($amenity), 'air')) <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 13h1m4 0h1m4 0h1m4 0h1m4 0h1M5 9c0 1.5 2 1.5 2 3s2 1.5 2 3M9 9c0 1.5 2 1.5 2 3s2 1.5 2 3m4-6c0 1.5 2 1.5 2 3s2 1.5 2 3m4-6c0 1.5 2 1.5 2 3s2 1.5 2 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-                                                @else <span class="text-[10px] font-bold">{{ substr($amenity, 0, 1) }}</span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
