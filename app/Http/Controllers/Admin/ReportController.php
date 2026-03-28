@@ -3,296 +3,175 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Reservation;
 use App\Models\EventBooking;
-use Illuminate\Http\Request;
+use App\Models\Reservation;
 use Carbon\Carbon;
-
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Only count 'approved' reservations and event bookings as actual sales
-        $resQuery = Reservation::where('status', 'approved');
-        $eventQuery = EventBooking::where('status', 'approved');
-        $gardenQuery = \App\Models\GardenBooking::where('status', 'approved');
+        $period   = $request->get('period', 'yearly');
+        $typeFilter = $request->get('type', 'all');   // all | room | event | garden
+        $startDate  = $request->get('start_date');
+        $endDate    = $request->get('end_date');
 
-        // Helper to sum final_price from a query (requires get() because final_price is an accessor)
-        $sumFinal = function($query) {
-            return $query->get()->sum('final_price');
-        };
-
-        $today = $sumFinal($resQuery->clone()->whereDate('created_at', Carbon::today())) +
-                 $sumFinal($eventQuery->clone()->whereDate('created_at', Carbon::today())) +
-                 $sumFinal($gardenQuery->clone()->whereDate('created_at', Carbon::today()));
-        
-        $week = $sumFinal($resQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])) +
-                $sumFinal($eventQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])) +
-                $sumFinal($gardenQuery->clone()->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]));
-
-        $month = $sumFinal($resQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)) +
-                 $sumFinal($eventQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)) +
-                 $sumFinal($gardenQuery->clone()->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year));
-
-        $year = $sumFinal($resQuery->clone()->whereYear('created_at', Carbon::now()->year)) +
-                $sumFinal($eventQuery->clone()->whereYear('created_at', Carbon::now()->year)) +
-                $sumFinal($gardenQuery->clone()->whereYear('created_at', Carbon::now()->year));
-
-        // Recent sales list (merged and sorted)
-        $reservations = $resQuery->clone()->get()->map(function($item) {
-            $item->type = 'Room';
-            $item->display_name = $item->guest_name;
-            $item->details = $item->room->title ?? '-';
-            return $item;
-        });
-        $events = $eventQuery->clone()->get()->map(function($item) {
-            $item->type = 'Event';
-            $item->display_name = $item->customer_name;
-            $item->email = $item->customer_email; // EventBooking uses customer_email
-            $item->details = $item->event_type; 
-            return $item;
-        });
-
-        $gardens = $gardenQuery->clone()->get()->map(function($item) {
-            $item->type = 'Garden';
-            $item->display_name = $item->guest_name;
-            $item->details = 'Garden Rental';
-            return $item;
-        });
-
-        $allSales = $reservations->concat($events)->concat($gardens);
-
-        // Search Logic
-        $search = $request->get('search');
-        if ($search) {
-            $search = strtolower($search);
-            $allSales = $allSales->filter(function($sale) use ($search) {
-                return str_contains(strtolower($sale->display_name), $search) ||
-                       str_contains(strtolower($sale->email ?? ''), $search) ||
-                       str_contains(strtolower($sale->address ?? ''), $search) ||
-                       str_contains(strtolower($sale->type), $search) ||
-                       str_contains(strtolower($sale->details), $search) ||
-                       str_contains((string)$sale->total_price, $search) ||
-                       str_contains((string)$sale->final_price, $search) ||
-                       str_contains((string)$sale->id, $search);
-            });
+        // Resolve date range -------------------------------------------------
+        $noDateFilter = false;
+        switch ($period) {
+            case 'daily':
+                $start = Carbon::now()->startOfDay();
+                $end   = Carbon::now()->endOfDay();
+                break;
+            case 'monthly':
+                $start = Carbon::now()->startOfMonth();
+                $end   = Carbon::now()->endOfMonth();
+                break;
+            case 'yearly':
+                $start = Carbon::now()->startOfYear();
+                $end   = Carbon::now()->endOfYear();
+                break;
+            case 'custom':
+                $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfYear();
+                $end   = $endDate   ? Carbon::parse($endDate)->endOfDay()     : Carbon::now()->endOfDay();
+                break;
+            case 'all':
+            default:
+                $noDateFilter = true;
+                $start = Carbon::now()->startOfYear();
+                $end   = Carbon::now()->endOfDay();
         }
 
-        // Sorting Logic
-        $sortBy = $request->get('sort', 'created_at');
-        $direction = $request->get('direction', 'desc');
+        // Helpers ------------------------------------------------------------
+        $sumFinal = fn($q) => $q->get()->sum('final_price');
 
-        if ($direction === 'desc') {
-            $sortedSales = $allSales->sortByDesc($sortBy == 'client' ? 'display_name' : ($sortBy == 'amount' ? 'final_price' : ($sortBy == 'details' ? 'details' : $sortBy)));
+        // ---- Room Reservations ---------------------------------------------
+        $resBase = Reservation::where('status', 'approved');
+        if (!$noDateFilter) {
+            $resBase = $resBase->whereBetween('created_at', [$start, $end]);
+        }
+
+        $roomTotal    = $sumFinal(clone $resBase);
+        $roomCount    = (clone $resBase)->count();
+
+        // ---- Events --------------------------------------------------------
+        $evBase = EventBooking::where('status', 'approved');
+        if (!$noDateFilter) {
+            $evBase = $evBase->whereBetween('created_at', [$start, $end]);
+        }
+
+        $eventTotal   = $sumFinal(clone $evBase);
+        $eventCount   = (clone $evBase)->count();
+
+        // ---- Garden --------------------------------------------------------
+        $gdBase = \App\Models\GardenBooking::where('status', 'approved');
+        if (!$noDateFilter) {
+            $gdBase = $gdBase->whereBetween('created_at', [$start, $end]);
+        }
+
+        $gardenTotal  = $sumFinal(clone $gdBase);
+        $gardenCount  = (clone $gdBase)->count();
+
+        // ---- Build unified ledger ------------------------------------------
+        $roomRows = (clone $resBase)->oldest()->get()->map(function ($item) {
+            $item->ledger_type    = 'Room';
+            $item->ledger_name    = $item->guest_name;
+            $item->ledger_email   = $item->email;
+            $item->ledger_detail  = $item->rooms()->pluck('title')->implode(', ') ?: 'Room Stay';
+            $item->ledger_date    = $item->check_in ? $item->check_in->format('M d, Y') . ' – ' . optional($item->check_out)->format('M d, Y') : '—';
+            return $item;
+        });
+
+        $eventRows = (clone $evBase)->oldest()->get()->map(function ($item) {
+            $servicesLabel = '';
+            $fullTooltip   = '';
+            if (is_array($item->additional_services) && count($item->additional_services) > 0) {
+                $services = collect($item->additional_services)->pluck('type')->filter();
+                if ($services->count() > 0) {
+                    $fullTooltip = $services->implode(', ');
+                    if ($services->count() <= 2) {
+                        $servicesLabel = ' (+ ' . $services->implode(', ') . ')';
+                    } else {
+                        $servicesLabel = ' (+ ' . $services->take(2)->implode(', ') . ' & ' . ($services->count() - 2) . ' more)';
+                    }
+                }
+            }
+            
+            $item->ledger_type     = 'Event';
+            $item->ledger_name     = $item->customer_name;
+            $item->ledger_email    = $item->customer_email;
+            $item->ledger_detail   = $item->event_type . $servicesLabel;
+            $item->ledger_tooltip  = $fullTooltip;
+            $item->ledger_date    = $item->event_date ? $item->event_date->format('M d, Y') : '—';
+            return $item;
+        });
+
+        $gardenRows = (clone $gdBase)->oldest()->get()->map(function ($item) {
+            $item->ledger_type    = 'Garden';
+            $item->ledger_name    = $item->guest_name;
+            $item->ledger_email   = $item->email;
+            $item->ledger_detail  = 'Garden Rental';
+            $item->ledger_date    = $item->check_in ? $item->check_in->format('M d, Y') . ' – ' . optional($item->check_out)->format('M d, Y') : '—';
+            return $item;
+        });
+
+        // Filter by type
+        if ($typeFilter === 'room') {
+            $allRows = $roomRows;
+        } elseif ($typeFilter === 'event') {
+            $allRows = $eventRows;
+        } elseif ($typeFilter === 'garden') {
+            $allRows = $gardenRows;
         } else {
-            $sortedSales = $allSales->sortBy($sortBy == 'client' ? 'display_name' : ($sortBy == 'amount' ? 'final_price' : ($sortBy == 'details' ? 'details' : $sortBy)));
+            $allRows = $roomRows->concat($eventRows)->concat($gardenRows)->sortByDesc('created_at');
         }
 
-        // Manual Pagination (10 per page)
-        $perPage = 10;
-        $currentPage = Paginator::resolveCurrentPage() ?: 1;
-        $pagedData = $sortedSales->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $recentSales = new LengthAwarePaginator($pagedData, $sortedSales->count(), $perPage, $currentPage, [
-            'path' => Paginator::resolveCurrentPath(),
-            'query' => $request->query(),
-        ]);
-
-        return view('admin.reports.index', compact('today', 'week', 'month', 'year', 'recentSales', 'sortBy', 'direction', 'search'));
-    }
-
-    public function print(Request $request)
-    {
-        $resQuery = Reservation::where('status', 'approved');
-        $gardenQuery = \App\Models\GardenBooking::where('status', 'approved');
-        $title = 'Sales Report';
-        $period = $request->input('period');
-
-        if ($request->has(['start_date', 'end_date'])) {
-            $start = Carbon::parse($request->start_date)->startOfDay();
-            $end = Carbon::parse($request->end_date)->endOfDay();
-            $resQuery->whereBetween('created_at', [$start, $end]);
-            $eventQuery->whereBetween('created_at', [$start, $end]);
-            $gardenQuery->whereBetween('created_at', [$start, $end]);
-            $title .= ': ' . $start->format('M d, Y') . ' - ' . $end->format('M d, Y');
-        } elseif ($period === 'today') {
-            $resQuery->whereDate('created_at', Carbon::today());
-            $eventQuery->whereDate('created_at', Carbon::today());
-            $gardenQuery->whereDate('created_at', Carbon::today());
-            $title .= ': Today (' . now()->format('M d, Y') . ')';
-        } elseif ($period === 'week') {
-            $start = Carbon::now()->startOfWeek();
-            $end = Carbon::now()->endOfWeek();
-            $resQuery->whereBetween('created_at', [$start, $end]);
-            $eventQuery->whereBetween('created_at', [$start, $end]);
-            $gardenQuery->whereBetween('created_at', [$start, $end]);
-            $title .= ': This Week (' . $start->format('M d') . ' - ' . $end->format('M d, Y') . ')';
-        } elseif ($period === 'month') {
-            $resQuery->whereMonth('created_at', Carbon::now()->month)
-                     ->whereYear('created_at', Carbon::now()->year);
-            $eventQuery->whereMonth('created_at', Carbon::now()->month)
-                       ->whereYear('created_at', Carbon::now()->year);
-            $gardenQuery->whereMonth('created_at', Carbon::now()->month)
-                        ->whereYear('created_at', Carbon::now()->year);
-            $title .= ': ' . now()->format('F Y');
-        } elseif ($period === 'year') {
-            $resQuery->whereYear('created_at', Carbon::now()->year);
-            $eventQuery->whereYear('created_at', Carbon::now()->year);
-            $gardenQuery->whereYear('created_at', Carbon::now()->year);
-            $title .= ': ' . now()->format('Y');
-        }
-
-        $resSales = $resQuery->oldest()->get()->map(function($item) {
-            $item->report_type = 'Room';
-            $item->report_name = $item->guest_name;
-            $item->report_desc = $item->room->title ?? 'Accommodation';
-            $item->report_discount = $item->discount_amount;
-            return $item;
-        });
-        $eventSales = $eventQuery->oldest()->get()->map(function($item) {
-            $item->report_type = 'Event';
-            $item->report_name = $item->customer_name;
-            $item->report_desc = $item->event_type;
-            $item->report_discount = $item->discount_amount;
-            return $item;
-        });
-        $gardenSales = $gardenQuery->oldest()->get()->map(function($item) {
-            $item->report_type = 'Garden';
-            $item->report_name = $item->guest_name;
-            $item->report_desc = 'Garden Space';
-            $item->report_discount = $item->discount_amount;
-            return $item;
-        });
-
-        $sales = $resSales->concat($eventSales)->concat($gardenSales)->sortBy('created_at');
-        
-        $totalSubtotal = $sales->sum('total_price');
-        $totalTax = $sales->sum('tax_amount');
-        $totalDiscount = $sales->sum('report_discount');
-        $totalNet = $sales->sum('final_price');
-
-        return view('admin.reports.print', compact('sales', 'totalSubtotal', 'totalTax', 'totalDiscount', 'totalNet', 'title'));
-    }
-
-    public function frontDeskReport(Request $request)
-    {
-        $start = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->startOfMonth();
-        $end = $request->filled('end_date') ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
-
-        $checkIns = Reservation::with('room')
-            ->whereBetween('checked_in_at', [$start, $end])
-            ->orderBy('checked_in_at')
-            ->get();
-
-        $checkOuts = Reservation::with('room')
-            ->whereBetween('checked_out_at', [$start, $end])
-            ->orderBy('checked_out_at')
-            ->get();
-
-        $occupancyData = Reservation::where('status', 'approved')
-            ->where(function($q) use ($start, $end) {
-                $q->whereBetween('check_in', [$start, $end])
-                  ->orWhereBetween('check_out', [$start, $end])
-                  ->orWhere(function($sub) use ($start, $end) {
-                      $sub->where('check_in', '<', $start)->where('check_out', '>', $end);
-                  });
-            })
-            ->get();
-
-        return view('admin.reports.front-desk', compact('checkIns', 'checkOuts', 'occupancyData', 'start', 'end'));
-    }
-
-    public function frontDeskPrint(Request $request)
-    {
-        $start = Carbon::parse($request->start_date)->startOfDay();
-        $end = Carbon::parse($request->end_date)->endOfDay();
-        $title = "Front Desk Operational Report: " . $start->format('M d') . " - " . $end->format('M d, Y');
-
-        $checkIns = Reservation::with('room')
-            ->whereBetween('checked_in_at', [$start, $end])
-            ->orderBy('checked_in_at')
-            ->get();
-
-        $checkOuts = Reservation::with('room')
-            ->whereBetween('checked_out_at', [$start, $end])
-            ->orderBy('checked_out_at')
-            ->get();
-
-        return view('admin.reports.front-desk-print', compact('checkIns', 'checkOuts', 'title', 'start', 'end'));
-    }
-
-    public function bookingStatusReport(Request $request)
-    {
-        $status = $request->get('status', 'all');
+        // Search
         $search = $request->get('search');
-
-        $resQuery = Reservation::with('room');
-        $eventQuery = EventBooking::query();
-        $gardenQuery = \App\Models\GardenBooking::query();
-
-        if ($status !== 'all') {
-            $resQuery->where('status', $status);
-            $eventQuery->where('status', $status);
-            $gardenQuery->where('status', $status);
-        }
-
-        $reservations = $resQuery->get()->map(function($item) {
-            $item->type = 'Room';
-            $item->display_name = $item->guest_name;
-            $item->details = $item->room->title ?? '-';
-            $item->notes = $item->additional_notes;
-            $item->special = $item->special_requirements;
-            $item->date = $item->check_in->format('M d, Y') . ' - ' . $item->check_out->format('M d, Y');
-            return $item;
-        });
-
-        $events = $eventQuery->get()->map(function($item) {
-            $item->type = 'Event';
-            $item->display_name = $item->customer_name;
-            $item->details = $item->event_type;
-            $item->notes = $item->message;
-            $item->special = $item->conflict_note;
-            $item->date = $item->event_date->format('M d, Y') . ' (' . $item->start_time->format('H:i') . ')';
-            return $item;
-        });
-
-        $gardens = $gardenQuery->get()->map(function($item) {
-            $item->type = 'Garden';
-            $item->display_name = $item->guest_name;
-            $item->details = 'Garden Rental';
-            $item->notes = $item->additional_notes;
-            $item->special = $item->special_requirements;
-            $item->date = $item->check_in->format('M d, Y') . ' - ' . $item->check_out->format('M d, Y');
-            return $item;
-        });
-
-        $allBookings = $reservations->concat($events)->concat($gardens);
-
         if ($search) {
-            $search = strtolower($search);
-            $allBookings = $allBookings->filter(function($item) use ($search) {
-                return str_contains(strtolower($item->display_name), $search) ||
-                       str_contains(strtolower($item->type), $search) ||
-                       str_contains(strtolower($item->details), $search) ||
-                       str_contains(strtolower($item->notes ?? ''), $search) ||
-                       str_contains(strtolower($item->special ?? ''), $search) ||
-                       str_contains(strtolower($item->cancellation_reason ?? ''), $search);
-            });
+            $q = strtolower($search);
+            $allRows = $allRows->filter(fn($r) =>
+                str_contains(strtolower($r->ledger_name), $q) ||
+                str_contains(strtolower($r->ledger_email ?? ''), $q) ||
+                str_contains(strtolower($r->ledger_type), $q) ||
+                str_contains(strtolower($r->ledger_detail), $q) ||
+                str_contains((string) $r->id, $q)
+            );
         }
 
-        $allBookings = $allBookings->sortByDesc('created_at');
+        $grandTotal = $roomTotal + $eventTotal + $gardenTotal;
+        $grandCount = $roomCount + $eventCount + $gardenCount;
 
-        // Pagination
-        $perPage = 15;
-        $currentPage = Paginator::resolveCurrentPage() ?: 1;
-        $pagedData = $allBookings->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $bookings = new LengthAwarePaginator($pagedData, $allBookings->count(), $perPage, $currentPage, [
-            'path' => Paginator::resolveCurrentPath(),
+        // If print request, return full unpaginated view
+        if ($request->has('print')) {
+            return view('admin.reports.print', compact(
+                'allRows', 'period', 'typeFilter', 'search',
+                'start', 'end', 'noDateFilter',
+                'roomTotal', 'roomCount',
+                'eventTotal', 'eventCount',
+                'gardenTotal', 'gardenCount',
+                'grandTotal', 'grandCount'
+            ));
+        }
+
+        // Paginate for UI view
+        $perPage     = 15;
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $pagedData   = $allRows->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $ledger      = new \Illuminate\Pagination\LengthAwarePaginator($pagedData, $allRows->count(), $perPage, $currentPage, [
+            'path'  => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
             'query' => $request->query(),
         ]);
 
-        return view('admin.reports.bookings', compact('bookings', 'status', 'search'));
+        return view('admin.reports.index', compact(
+            'ledger', 'period', 'typeFilter', 'search',
+            'start', 'end',
+            'roomTotal', 'roomCount',
+            'eventTotal', 'eventCount',
+            'gardenTotal', 'gardenCount',
+            'grandTotal', 'grandCount',
+            'startDate', 'endDate'
+        ));
     }
 }

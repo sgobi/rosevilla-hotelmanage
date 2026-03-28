@@ -101,10 +101,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Accountant & Admin (Reports)
         Route::middleware('role:admin,accountant')->group(function () {
             Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-            Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
-            Route::get('/reports/front-desk', [ReportController::class, 'frontDeskReport'])->name('reports.front-desk');
-            Route::get('/reports/front-desk/print', [ReportController::class, 'frontDeskPrint'])->name('reports.front-desk-print');
-            Route::get('/reports/bookings', [ReportController::class, 'bookingStatusReport'])->name('reports.bookings');
         });
 
         // Admin Only

@@ -121,7 +121,7 @@
         <!-- Finance -->
         @if(auth()->user()->isAdmin() || auth()->user()->isAccountant())
             <a href="{{ route('admin.reports.index') }}" 
-               class="flex items-center gap-4 px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.reports.index') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+               class="flex items-center gap-4 px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.reports.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <div class="shrink-0 w-6 h-6 flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div>
