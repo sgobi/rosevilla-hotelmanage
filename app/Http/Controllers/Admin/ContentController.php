@@ -36,6 +36,7 @@ class ContentController extends Controller
             'signature' => ['nullable', 'image', 'max:2048'],
             'logo' => ['nullable', 'image', 'max:2048'],
             'favicon' => ['nullable', 'image', 'max:1024'],
+            'hero_image' => ['nullable', 'image', 'max:5120'],
             'tax_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
@@ -55,6 +56,12 @@ class ContentController extends Controller
         if ($request->hasFile('signature')) {
             $path = $request->file('signature')->store('signatures', 'public');
             $fields['signature_path'] = $path;
+        }
+
+        // Handle hero image upload
+        if ($request->hasFile('hero_image')) {
+            $path = $request->file('hero_image')->store('hero', 'public');
+            $fields['hero_image_path'] = $path;
         }
 
         foreach ($fields as $key => $value) {

@@ -40,7 +40,7 @@ class InvoiceController extends Controller
         $content = ContentSetting::pluck('value', 'key');
         
         // Calculate days logic (inclusive)
-        $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
+        $days = max(1, $reservation->check_in->diffInDays($reservation->check_out));
 
         return view('admin.invoices.show', compact('reservation', 'content', 'days'));
     }
@@ -106,7 +106,7 @@ class InvoiceController extends Controller
 
         $content = ContentSetting::pluck('value', 'key');
         
-        $days = $gardenBooking->check_in->diffInDays($gardenBooking->check_out) + 1;
+        $days = max(1, $gardenBooking->check_in->diffInDays($gardenBooking->check_out));
 
         return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days'));
     }
@@ -114,7 +114,7 @@ class InvoiceController extends Controller
     public function showProforma(Reservation $reservation)
     {
         $content = ContentSetting::pluck('value', 'key');
-        $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
+        $days = max(1, $reservation->check_in->diffInDays($reservation->check_out));
         $isProforma = true;
 
         return view('admin.invoices.show', compact('reservation', 'content', 'days', 'isProforma'));
@@ -131,7 +131,7 @@ class InvoiceController extends Controller
     public function showGardenProforma(\App\Models\GardenBooking $gardenBooking)
     {
         $content = ContentSetting::pluck('value', 'key');
-        $days = $gardenBooking->check_in->diffInDays($gardenBooking->check_out) + 1;
+        $days = max(1, $gardenBooking->check_in->diffInDays($gardenBooking->check_out));
         $isProforma = true;
 
         return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days', 'isProforma'));

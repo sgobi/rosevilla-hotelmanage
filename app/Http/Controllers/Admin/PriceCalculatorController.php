@@ -30,7 +30,7 @@ class PriceCalculatorController extends Controller
             $roomIds = $request->room_ids ?: [];
             $checkIn = \Carbon\Carbon::parse($request->check_in);
             $checkOut = \Carbon\Carbon::parse($request->check_out);
-            $days = $checkIn->diffInDays($checkOut) + 1;
+            $days = max(1, $checkIn->diffInDays($checkOut));
             
             $rooms = Room::whereIn('id', $roomIds)->get();
             foreach ($rooms as $room) {
@@ -41,7 +41,7 @@ class PriceCalculatorController extends Controller
         } elseif ($type === 'garden') {
             $checkIn = \Carbon\Carbon::parse($request->check_in);
             $checkOut = \Carbon\Carbon::parse($request->check_out);
-            $days = $checkIn->diffInDays($checkOut) + 1;
+            $days = max(1, $checkIn->diffInDays($checkOut));
             $dailyRate = ContentSetting::getValue('garden_price_per_day', 30000);
             
             $totalPrice = $dailyRate * $days;
@@ -59,7 +59,7 @@ class PriceCalculatorController extends Controller
         } elseif ($type === 'event') {
             $checkIn = \Carbon\Carbon::parse($request->check_in);
             $checkOut = \Carbon\Carbon::parse($request->check_out);
-            $days = $checkIn->diffInDays($checkOut) + 1;
+            $days = max(1, $checkIn->diffInDays($checkOut));
 
             $totalPrice = (float)$request->base_price;
             if ($totalPrice > 0) {

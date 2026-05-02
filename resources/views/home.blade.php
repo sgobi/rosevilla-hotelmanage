@@ -23,14 +23,14 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}">
     <meta property="og:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Modern facilities, authentic cuisine, and colonial charm in Jaffna, Sri Lanka.') }}">
-    <meta property="og:image" content="{{ asset('images/rosevilla front view.png') }}">
+    <meta property="og:image" content="{{ \App\Models\ContentSetting::getValue('hero_image_path') ? asset('storage/' . \App\Models\ContentSetting::getValue('hero_image_path')) : asset('images/rosevilla front view.png') }}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="{{ \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes') }}">
     <meta property="twitter:description" content="{{ \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes.') }}">
-    <meta property="twitter:image" content="{{ asset('images/rosevilla front view.png') }}">
+    <meta property="twitter:image" content="{{ \App\Models\ContentSetting::getValue('hero_image_path') ? asset('storage/' . \App\Models\ContentSetting::getValue('hero_image_path')) : asset('images/rosevilla front view.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,7 +164,7 @@
     @php
         $heroTitle = $content['hero_title'] ?? 'Rose Villa';
         $heroSubtitle = $content['hero_subtitle'] ?? 'Experience the Extraordinary in Jaffna';
-        $heroImage = asset('images/rosevilla front view.png'); 
+        $heroImage = isset($content['hero_image_path']) && $content['hero_image_path'] ? asset('storage/' . $content['hero_image_path']) : asset('images/rosevilla front view.png'); 
     @endphp
 
     <!-- Header -->
@@ -835,26 +835,32 @@
             </div>
 
             @if(session('success'))
-                <div class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-emerald-500 shadow-xl p-8 rounded-2xl flex items-center gap-6 animate-fade-in-up">
-                    <div class="shrink-0 w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)" class="fixed top-28 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-[100] bg-white border-l-4 border-emerald-500 shadow-2xl p-6 sm:p-8 rounded-2xl flex items-start gap-4 sm:gap-6 animate-fade-in-down">
+                    <div class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mt-1 sm:mt-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-sm">{{ __('Inquiry Received') }}</h4>
-                        <p class="text-gray-500 text-sm mt-1">{{ session('success') }}</p>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-xs sm:text-sm">{{ __('Inquiry Received') }}</h4>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">{{ session('success') }}</p>
                     </div>
+                    <button @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-rose-500 shadow-xl p-8 rounded-2xl flex items-center gap-6 animate-fade-in-up">
-                    <div class="shrink-0 w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)" class="fixed top-28 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-[100] bg-white border-l-4 border-rose-500 shadow-2xl p-6 sm:p-8 rounded-2xl flex items-start gap-4 sm:gap-6 animate-fade-in-down">
+                    <div class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mt-1 sm:mt-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-sm">{{ __('Booking Unavailable') }}</h4>
-                        <p class="text-gray-500 text-sm mt-1">{{ session('error') }}</p>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-900 uppercase tracking-wider text-xs sm:text-sm">{{ __('Booking Unavailable') }}</h4>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">{{ session('error') }}</p>
                     </div>
+                    <button @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
             @endif
 

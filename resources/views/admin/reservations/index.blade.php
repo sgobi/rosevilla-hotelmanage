@@ -225,7 +225,7 @@
                                                     <div class="grid grid-cols-2 gap-4 py-2 border-y border-white/5 my-1">
                                                         <div>
                                                             <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Duration</div>
-                                                            <div class="font-medium text-white">{{ ($reservation->check_in && $reservation->check_out) ? $reservation->check_in->diffInDays($reservation->check_out) + 1 : 1 }} Day(s)</div>
+                                                            <div class="font-medium text-white">{{ ($reservation->check_in && $reservation->check_out) ? max(1, $reservation->check_in->diffInDays($reservation->check_out)) : 1 }} Day(s)</div>
                                                         </div>
                                                         <div>
                                                             <div class="text-[9px] text-gray-500 uppercase font-bold mb-0.5">Occupancy</div>

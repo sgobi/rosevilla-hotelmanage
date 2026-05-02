@@ -31,6 +31,12 @@
                                 <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-bold">Status</span>
                             @elseif($subtype === 'conflict')
                                 <span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-bold">Conflict</span>
+                            @elseif($type === 'new_reservation')
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-bold">New Room</span>
+                            @elseif($type === 'new_garden_booking')
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">New Garden</span>
+                            @elseif($type === 'new_event_booking')
+                                <span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-bold">New Event</span>
                             @elseif($status === 'approved')
                                 <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">Approved</span>
                             @elseif($status === 'rejected')

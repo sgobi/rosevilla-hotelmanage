@@ -80,6 +80,40 @@
                     </form>
                 </div>
 
+                <!-- Restore MySQL Dump Card -->
+                <div class="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden group">
+                    <div class="p-10 border-b border-slate-100 flex items-center gap-6 bg-orange-50/20">
+                        <div class="h-16 w-16 rounded-[1.25rem] bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-slate-900 tracking-tighter uppercase">Import MySQL Dump</h3>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Cross-Platform Restore</p>
+                        </div>
+                    </div>
+                    
+                    <form action="{{ route('admin.maintenance.import-mysql') }}" method="POST" enctype="multipart/form-data" class="p-10 space-y-8">
+                        @csrf
+                        <div class="p-8 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 hover:border-orange-400 transition-all text-center">
+                            <input type="file" name="mysql_file" id="mysql_file" class="hidden" accept=".sql">
+                            <label for="mysql_file" class="cursor-pointer">
+                                <p class="text-xs font-black text-orange-600 uppercase tracking-widest mb-2">Upload MySQL Dump</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Click to select a previously exported .sql file</p>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center gap-6 max-w-lg mx-auto">
+                            <input type="password" name="password" placeholder="Admin Password" required
+                                   class="flex-1 px-6 py-4 bg-white border border-slate-200 rounded-2xl text-center text-xs focus:bg-white focus:ring-1 focus:ring-orange-600 transition-all font-bold">
+                            <button type="submit" 
+                                    onclick="return confirm('WARNING: This will execute the uploaded SQL commands directly on your database. Make sure you trust this file.')"
+                                    class="shrink-0 px-10 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-black transition-all">
+                                Import SQL
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Wipe Card -->
                 <div class="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden group">
                     <div class="p-10 border-b border-slate-100 flex items-center gap-6 bg-rose-50/20">

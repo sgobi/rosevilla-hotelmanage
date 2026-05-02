@@ -90,7 +90,7 @@ class GardenBooking extends Model
     {
         static::saving(function ($booking) {
             if ($booking->check_in && $booking->check_out) {
-                $days = $booking->check_in->diffInDays($booking->check_out) + 1;
+                $days = max(1, $booking->check_in->diffInDays($booking->check_out));
                 $dailyRate = \App\Models\ContentSetting::getValue('garden_price_per_day', 30000);
                 
                 $booking->total_price = $dailyRate * $days;

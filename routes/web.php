@@ -119,6 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('maintenance/backup', [\App\Http\Controllers\Admin\MaintenanceController::class, 'downloadBackup'])->name('maintenance.backup');
             Route::post('maintenance/restore', [\App\Http\Controllers\Admin\MaintenanceController::class, 'restoreBackup'])->name('maintenance.restore');
             Route::get('maintenance/export-mysql', [\App\Http\Controllers\Admin\MaintenanceController::class, 'exportToMysql'])->name('maintenance.export-mysql');
+            Route::post('maintenance/import-mysql', [\App\Http\Controllers\Admin\MaintenanceController::class, 'importMysql'])->name('maintenance.import-mysql');
         });
     });
 

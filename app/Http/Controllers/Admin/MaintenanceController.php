@@ -205,4 +205,55 @@ class MaintenanceController extends Controller
             return back()->with('error', 'System Error: Failed to wipe data. ' . $e->getMessage());
         }
     }
+
+    /**
+     * Import a MySQL-compatible SQL dump into the current database.
+     */
+    public function importMysql(Request $request)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'mysql_file' => 'required|file',
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->with('error', 'Authentication failed. Import aborted.');
+        }
+
+        $file = $request->file('mysql_file');
+        
+        if ($file->getClientOriginalExtension() !== 'sql') {
+            return back()->with('error', 'Import aborted: Invalid file format (Must be .sql).');
+        }
+
+        try {
+            // Backup CURRENT state just in case before restoring
+            if (config('database.default') === 'sqlite') {
+                $dbPath = database_path('database.sqlite');
+                $emergencyBackupPath = storage_path('app/backups/emergency-pre-mysql-import-' . Carbon::now()->format('Y-m-d-His') . '.sqlite');
+                if (!File::exists(storage_path('app/backups'))) {
+                    File::makeDirectory(storage_path('app/backups'), 0755, true);
+                }
+                File::copy($dbPath, $emergencyBackupPath);
+            }
+
+            $sql = file_get_contents($file->getRealPath());
+            
+            // Remove MySQL specific commands that SQLite might choke on if currently using sqlite
+            if (config('database.default') === 'sqlite') {
+                $sql = str_replace('SET FOREIGN_KEY_CHECKS=0;', 'PRAGMA foreign_keys = OFF;', $sql);
+                $sql = str_replace('SET FOREIGN_KEY_CHECKS=1;', 'PRAGMA foreign_keys = ON;', $sql);
+            }
+
+            DB::unprepared($sql);
+
+            return back()->with('success', 'MySQL Dump Imported Successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Import Failed: ' . $e->getMessage());
+        }
+    }
 }

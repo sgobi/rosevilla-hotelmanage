@@ -30,6 +30,17 @@
                             <input name="hero_subtitle" class="w-full border rounded px-3 py-2" value="{{ old('hero_subtitle', $content['hero_subtitle'] ?? '') }}">
                         </label>
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
+                            <span>Hero Image (Front View)</span>
+                            @if($content['hero_image_path'] ?? null)
+                                <div class="mb-2 p-4 bg-gray-50 rounded-xl w-max">
+                                    <img src="{{ asset('storage/' . $content['hero_image_path']) }}" alt="Current Hero Image" class="h-32 object-cover rounded">
+                                    <p class="text-xs text-gray-500 mt-2">Current hero image</p>
+                                </div>
+                            @endif
+                            <input type="file" name="hero_image" accept="image/*" class="w-full border rounded px-3 py-2">
+                            <p class="text-xs text-gray-500">Upload a high-quality image for the main landing page background (JPEG or PNG, max 5MB)</p>
+                        </label>
+                        <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
                             <span>About</span>
                             <textarea name="about_text" rows="3" class="w-full border rounded px-3 py-2">{{ old('about_text', $content['about_text'] ?? '') }}</textarea>
                         </label>

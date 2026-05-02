@@ -97,7 +97,7 @@ class Reservation extends Model
     {
         static::saving(function ($reservation) {
             if ($reservation->check_in && $reservation->check_out) {
-                $days = $reservation->check_in->diffInDays($reservation->check_out) + 1;
+                $days = max(1, $reservation->check_in->diffInDays($reservation->check_out));
                 $totalPrice = 0;
 
                 if ($reservation->room_ids) {
