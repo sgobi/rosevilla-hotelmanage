@@ -35,9 +35,9 @@
                 box-shadow: none; 
                 margin: 0;
                 width: 100%;
-                padding: 15mm 15mm;
+                padding: 5mm 10mm;
             }
-            .no-print { display: none; }
+            .no-print { display: none !important; }
         }
         .double-line {
             border-top: 3px double #000;
@@ -63,8 +63,8 @@
         .details-row {
             display: grid;
             grid-template-columns: 200px 1fr 150px 1fr;
-            padding: 6px 0;
-            font-size: 14px;
+            padding: 2px 0;
+            font-size: 13px;
         }
         .details-label {
             font-weight: 700;
@@ -77,7 +77,7 @@
 </head>
 <body>
 
-    <div class="no-print fixed top-6 right-6 z-50 flex gap-4">
+    <div class="print:hidden no-print fixed top-6 right-6 z-50 flex gap-4">
         <a href="{{ route('dashboard') }}" class="bg-white text-gray-900 border border-gray-200 px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-gray-50 transition">
             Back to Dashboard
         </a>
@@ -95,31 +95,27 @@
 
     <div class="invoice-container">
         {{-- Header Section --}}
-        <div class="flex justify-between items-start mb-10">
+        <div class="flex justify-between items-start mb-4">
             <div class="flex flex-col items-center">
-                <img src="{{ asset('storage/logos/invoice logo.png') }}" alt="Rose Villa Logo" class="w-72 h-auto">
+                <img src="{{ asset('storage/logos/invoice logo.png') }}" alt="Rose Villa Logo" class="w-64 h-auto">
             </div>
-            <div class="text-right text-[10px] leading-relaxed mt-4 uppercase tracking-widest font-black text-black">
-                <div class="flex justify-end gap-2">
-                    <span class="w-20 text-right">TEL</span>
-                    <span>:</span>
-                    <span class="w-48 text-left">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</span>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <span class="w-20 text-right">EMAIL</span>
-                    <span>:</span>
-                    <span class="w-48 text-left uppercase">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</span>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <span class="w-20 text-right">WEBSITE</span>
-                    <span>:</span>
-                    <span class="w-48 text-left uppercase">www.rosevillaheritagehomes.com</span>
-                </div>
+            <div class="grid grid-cols-[auto_auto_auto] gap-x-2 gap-y-1 text-[10px] leading-relaxed mt-4 uppercase tracking-widest font-black text-black ml-auto w-fit">
+                <div class="text-right">TEL</div>
+                <div>:</div>
+                <div class="text-left">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</div>
+                
+                <div class="text-right">EMAIL</div>
+                <div>:</div>
+                <div class="text-left uppercase">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</div>
+                
+                <div class="text-right">WEBSITE</div>
+                <div>:</div>
+                <div class="text-left uppercase">www.rosevillaheritagehomes.com</div>
             </div>
         </div>
 
         {{-- Meta Data --}}
-        <div class="space-y-1 mb-6">
+        <div class="space-y-1 mb-4">
             <div class="flex gap-4">
                 <span class="info-label w-32">Date</span>
                 <span class="info-label">:</span>
@@ -151,10 +147,10 @@
             </div>
         </div>
 
-        <div class="border-t border-black mb-6"></div>
+        <div class="border-t border-black mb-4"></div>
 
         {{-- Greeting --}}
-        <div class="mb-6 text-[14px] leading-relaxed">
+        <div class="mb-4 text-[13px] leading-relaxed">
             <p>Thank you for choosing <strong>Rose Villa Heritage Homes</strong>. We are pleased to provide the {{ ($isProforma ?? false) ? 'quotation / proforma invoice' : 'confirmation details' }} for your upcoming stay.</p>
         </div>
 
@@ -204,25 +200,25 @@
             @endif
         </div>
 
-        <div class="border-t border-black my-4"></div>
-        <div class="details-row py-1 font-bold text-[16px]">
+        <div class="border-t border-black my-2"></div>
+        <div class="details-row py-1 font-bold text-[15px]">
             <span>Gross Amount</span>
             <span>: LKR {{ number_format($reservation->final_price, 2) }}</span>
         </div>
-        <div class="border-b border-black mb-8"></div>
+        <div class="border-b border-black mb-4"></div>
 
         @if($reservation->advance_amount > 0)
             <div class="details-row text-black">
                 <span class="details-label">Advance Paid</span>
                 <span>: - LKR {{ number_format($reservation->advance_amount, 2) }}</span>
             </div>
-            <div class="details-row font-bold mb-8">
+            <div class="details-row font-bold mb-4">
                 <span class="details-label">Balance Payable</span>
                 <span>: LKR {{ number_format($reservation->final_price - $reservation->advance_amount, 2) }}</span>
             </div>
         @endif
 
-        <div class="text-[13px] leading-relaxed space-y-4 text-black italic">
+        <div class="text-[12px] leading-relaxed space-y-2 text-black italic">
             <p>Should you need to cancel your booking, please do so up to 72 hours prior to your scheduled arrival day to avoid late cancellation or no-show charges (one night charge of room, tax and service charge against the guarantee deposit).</p>
             
             <div class="not-italic">
@@ -237,20 +233,28 @@
         </div>
 
         {{-- Footer Signature --}}
-        <div class="mt-8">
-            <p class="font-bold text-[14px]">Reservation Officer</p>
+        <div class="mt-2">
+            <p class="font-bold text-[13px]">Reservation Officer</p>
             @if($content['signature_path'] ?? null)
-                <div class="mt-2">
-                    <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-16 w-auto object-contain">
+                <div class="mt-1">
+                    <img src="{{ asset('storage/' . $content['signature_path']) }}" alt="Signature" class="h-12 w-auto object-contain">
                 </div>
             @else
-                <div class="h-16"></div> {{-- Placeholder space --}}
+                <div class="h-12"></div> {{-- Placeholder space --}}
             @endif
-            <div class="mt-4 pt-4 border-t border-gray-200">
-                <div class="text-[10px] uppercase tracking-widest text-black font-bold space-y-1">
-                    <p>Tel : {{ $content['contact_phone'] ?? '+94 76 319 3311' }}</p>
-                    <p>Email : {{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</p>
-                    <p>WWW : www.rosevillaheritagehomes.com</p>
+            <div class="mt-2 pt-2 border-t border-gray-200">
+                <div class="grid grid-cols-[auto_auto_auto] gap-x-2 gap-y-0.5 text-[9px] uppercase tracking-widest text-black font-bold w-fit">
+                    <div class="text-right">TEL</div>
+                    <div>:</div>
+                    <div class="text-left">{{ $content['contact_phone'] ?? '+94 76 319 3311' }}</div>
+                    
+                    <div class="text-right">EMAIL</div>
+                    <div>:</div>
+                    <div class="text-left">{{ $content['contact_email'] ?? 'stay@rosevillaheritagehomes.com' }}</div>
+                    
+                    <div class="text-right">WWW</div>
+                    <div>:</div>
+                    <div class="text-left">www.rosevillaheritagehomes.com</div>
                 </div>
             </div>
         </div>
