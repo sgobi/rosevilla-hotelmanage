@@ -706,23 +706,111 @@
     </section>
 
     <!-- Reviews Section -->
-    <section id="reviews" class="py-20 bg-[#f9f9f9]">
+    <section id="reviews" class="py-20 bg-[#f9f9f9]" x-data="{ 
+        showReviewModal: false, 
+        showSuccessMsg: false,
+        successMsgText: '',
+        isSubmitting: false,
+        async submitReview(e) {
+            if(this.isSubmitting) return;
+            this.isSubmitting = true;
+            const form = e.target;
+            const formData = new FormData(form);
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.success) {
+                    this.showReviewModal = false;
+                    this.successMsgText = data.message;
+                    this.showSuccessMsg = true;
+                    setTimeout(() => { this.showSuccessMsg = false; }, 8000);
+                    form.reset();
+                    
+                    const ratingHtml = '<svg class=\'w-3 h-3\' fill=\'currentColor\' viewBox=\'0 0 20 20\'><path d=\'M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\'></path></svg>'.repeat(data.review.rating);
+                    
+                    const reviewHTML = `
+                        <div class='bg-white p-12 rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-gray-50 relative group hover:-translate-y-3 transition-all duration-700 flex flex-col justify-between animate-fade-in-down'>
+                            <div>
+                                <div class='absolute -top-8 left-12 flex'>
+                                     <div class='bg-rose-gold text-white w-16 h-16 flex items-center justify-center rounded-2xl text-4xl font-serif shadow-2xl shadow-rose-gold/30 transform group-hover:rotate-6 transition-transform'>“</div>
+                                </div>
+                                <p class='text-gray-600 text-base leading-relaxed font-medium italic mb-10 pt-8'>
+                                    ${data.review.comment.length > 180 ? data.review.comment.substring(0, 180) + '...' : data.review.comment}
+                                </p>
+                            </div>
+                            <div class='flex items-center gap-5 pt-8 border-t border-gray-50 mt-auto'>
+                                <div class='w-12 h-12 rounded-full bg-rose-gold/10 flex items-center justify-center font-serif text-rose-gold font-bold'>
+                                    ${data.review.guest_name.substring(0, 1)}
+                                </div>
+                                <div>
+                                    <p class='font-serif text-rose-accent uppercase tracking-wider text-sm'>${data.review.guest_name}</p>
+                                    <div class='flex gap-1 text-rose-gold text-[10px] mt-1'>
+                                        ${ratingHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    const grid = document.getElementById('reviews-grid');
+                    grid.insertAdjacentHTML('afterbegin', reviewHTML);
+                    if (grid.children.length > 3) {
+                        grid.removeChild(grid.lastElementChild);
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+            } finally {
+                this.isSubmitting = false;
+            }
+        }
+    }">
         <div class="max-w-6xl mx-auto px-6">
+            <!-- Dynamic Success Message -->
+            <div x-show="showSuccessMsg" x-transition style="display: none;" class="mb-10 max-w-2xl mx-auto bg-white border-l-4 border-emerald-500 shadow-xl p-6 sm:p-8 rounded-2xl flex items-start gap-4 sm:gap-6 animate-fade-in-down">
+                <div class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mt-1 sm:mt-0">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-gray-900 uppercase tracking-wider text-xs sm:text-sm">{{ __('Review Submitted') }}</h4>
+                    <p class="text-gray-500 text-xs sm:text-sm mt-1" x-text="successMsgText"></p>
+                </div>
+                <button @click="showSuccessMsg = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
              <div class="text-center mb-20">
                 <span class="text-rose-gold text-xs font-black tracking-[0.4em] uppercase block mb-4">{{ __('Testimonials') }}</span>
                 <h2 class="font-serif text-3xl md:text-5xl text-rose-accent mb-6 uppercase tracking-tight">{{ __('Guest Stories') }}</h2>
                 <div class="w-20 h-1 bg-gradient-to-r from-transparent via-rose-gold to-transparent mx-auto mb-8 rounded-full"></div>
+                <div class="flex justify-center mt-10">
+                    <button @click="showReviewModal = true" class="group relative inline-flex items-center gap-4 px-10 py-4 bg-rose-accent text-white rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(145,108,82,0.3)] active:scale-95">
+                        <span class="absolute inset-0 w-full h-full bg-rose-gold transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+                        <span class="relative text-xs font-black uppercase tracking-[0.2em] z-10">{{ __('Share Your Experience') }}</span>
+                        <svg class="relative w-5 h-5 group-hover:translate-x-1 transition-transform z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </button>
+                </div>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
+            
+            <div class="grid md:grid-cols-3 gap-8" id="reviews-grid">
                 @foreach($reviews as $review)
-                    <div class="bg-white p-12 rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-gray-50 relative group hover:-translate-y-3 transition-all duration-700">
-                        <div class="absolute -top-8 left-12 flex">
-                             <div class="bg-rose-gold text-white w-16 h-16 flex items-center justify-center rounded-2xl text-4xl font-serif shadow-2xl shadow-rose-gold/30 transform group-hover:rotate-6 transition-transform">“</div>
+                    <div class="bg-white p-12 rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-gray-50 relative group hover:-translate-y-3 transition-all duration-700 flex flex-col justify-between">
+                        <div>
+                            <div class="absolute -top-8 left-12 flex">
+                                 <div class="bg-rose-gold text-white w-16 h-16 flex items-center justify-center rounded-2xl text-4xl font-serif shadow-2xl shadow-rose-gold/30 transform group-hover:rotate-6 transition-transform">“</div>
+                            </div>
+                            <p class="text-gray-600 text-base leading-relaxed font-medium italic mb-10 pt-8">
+                                {{ Str::limit($review->comment, 180) }}
+                            </p>
                         </div>
-                        <p class="text-gray-600 text-base leading-relaxed font-medium italic mb-10 pt-8">
-                            {{ Str::limit($review->comment, 180) }}
-                        </p>
-                        <div class="flex items-center gap-5 pt-8 border-t border-gray-50">
+                        <div class="flex items-center gap-5 pt-8 border-t border-gray-50 mt-auto">
                             <div class="w-12 h-12 rounded-full bg-rose-gold/10 flex items-center justify-center font-serif text-rose-gold font-bold">
                                 {{ substr($review->guest_name, 0, 1) }}
                             </div>
@@ -735,6 +823,68 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+
+            <!-- Review Modal -->
+            <div x-show="showReviewModal" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div x-show="showReviewModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="showReviewModal = false"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    <div x-show="showReviewModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-[3rem] px-8 pt-10 pb-10 text-left overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] transform transition-all sm:my-8 sm:align-middle sm:max-w-xl w-full sm:p-12">
+                        <div class="absolute top-8 right-8">
+                            <button type="button" @click="showReviewModal = false" class="bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-2 rounded-full transition-colors">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-3xl leading-none font-serif text-rose-accent uppercase tracking-tight mb-2" id="modal-title">{{ __('Share Your Experience') }}</h3>
+                                <p class="text-sm text-gray-500 font-medium mb-8">{{ __('We would love to hear about your stay at Rose Villa.') }}</p>
+                                
+                                <form action="{{ route('reviews.store') }}" method="POST" class="space-y-6" @submit.prevent="submitReview">
+                                    @csrf
+                                    <div>
+                                        <label for="guest_name" class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-2">{{ __('Your Name') }} <span class="text-rose-gold">*</span></label>
+                                        <input type="text" name="guest_name" id="guest_name" required class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all outline-none font-bold text-gray-900 text-sm">
+                                    </div>
+
+                                    <div x-data="{ rating: 5, hoverRating: 0 }">
+                                        <label class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-2">{{ __('Rating') }} <span class="text-rose-gold">*</span></label>
+                                        <input type="hidden" name="rating" x-model="rating">
+                                        <div class="flex gap-2">
+                                            <template x-for="i in 5">
+                                                <button type="button" 
+                                                        @click="rating = i" 
+                                                        @mouseenter="hoverRating = i" 
+                                                        @mouseleave="hoverRating = 0"
+                                                        class="focus:outline-none transition-transform hover:scale-110">
+                                                    <svg class="w-8 h-8 transition-colors" 
+                                                         :class="(hoverRating >= i || (!hoverRating && rating >= i)) ? 'text-rose-gold' : 'text-gray-300'" 
+                                                         fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                    </svg>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="comment" class="block text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-2">{{ __('Your Story') }} <span class="text-rose-gold">*</span></label>
+                                        <textarea name="comment" id="comment" rows="4" required class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/5 transition-all outline-none font-bold text-gray-900 text-sm resize-none placeholder-gray-400" placeholder="{{ __('Tell us about your favorite moments...') }}"></textarea>
+                                    </div>
+
+                                    <div class="pt-4">
+                                        <button type="submit" :disabled="isSubmitting" class="w-full bg-rose-accent text-white hover:bg-rose-dark px-8 py-5 rounded-full text-xs font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-xl active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed">
+                                            <span x-show="!isSubmitting">{{ __('Submit Review') }}</span>
+                                            <span x-show="isSubmitting" style="display: none;">{{ __('Submitting...') }}</span>
+                                        </button>
+                                        <p class="text-center mt-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ __('Your review will be instantly published on our site') }}</p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

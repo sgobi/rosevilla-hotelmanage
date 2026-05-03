@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/reservations', [HomeController::class, 'storeReservation'])->name('reservations.store');
+Route::post('/reviews', [HomeController::class, 'storeReview'])->name('reviews.store');
 Route::post('/garden-booking', [GardenBookingController::class, 'store'])->name('garden.store');
 Route::get('/faq', function () {
     return view('faq');
