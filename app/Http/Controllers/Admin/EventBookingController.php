@@ -459,7 +459,17 @@ class EventBookingController extends Controller
             'additional_services' => 'nullable|array',
             'additional_services.*.type' => 'nullable|string|max:255',
             'additional_services.*.price' => 'nullable|numeric|min:0',
+            'advance_amount' => 'nullable|numeric|min:0',
+            'advance_payment_method' => 'nullable|string|in:bank,cash',
+            'advance_guest_name' => 'nullable|string|max:255',
+            'advance_nic_no' => 'nullable|string|max:20',
+            'advance_bank_name' => 'nullable|string|max:255',
+            'advance_bank_branch' => 'nullable|string|max:255',
         ]);
+
+        if (isset($validated['advance_amount']) && $validated['advance_amount'] > 0 && !$event->advance_paid_at) {
+            $validated['advance_paid_at'] = now();
+        }
 
         // Check for conflicts excluding this event
         $conflict = EventBooking::whereDate('event_date', $validated['event_date'])

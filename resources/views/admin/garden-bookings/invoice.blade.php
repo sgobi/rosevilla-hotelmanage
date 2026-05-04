@@ -198,9 +198,36 @@
         <div class="border-b border-black mb-4"></div>
 
         @if($gardenBooking->advance_amount > 0)
-            <div class="details-row text-black">
-                <span class="details-label">Deposit Paid</span>
-                <span>: - LKR {{ number_format($gardenBooking->advance_amount, 2) }}</span>
+            <div class="my-4 p-3 bg-gray-50 border border-gray-100 rounded-lg space-y-1">
+                <p class="text-[11px] font-black uppercase tracking-wider text-gray-500 mb-1 italic">Advance Payment Receipt</p>
+                <div class="grid grid-cols-2 gap-x-8 gap-y-1">
+                    <div class="flex justify-between">
+                        <span class="details-label">Payment Method</span>
+                        <span class="text-xs">: {{ ucfirst($gardenBooking->advance_payment_method) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="details-label">Amount Paid</span>
+                        <span class="text-xs">: LKR {{ number_format($gardenBooking->advance_amount, 2) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="details-label">Payee Name</span>
+                        <span class="text-xs">: {{ $gardenBooking->advance_guest_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="details-label">Payee NIC</span>
+                        <span class="text-xs">: {{ $gardenBooking->advance_nic_no }}</span>
+                    </div>
+                    @if($gardenBooking->advance_payment_method === 'bank')
+                        <div class="flex justify-between">
+                            <span class="details-label">Bank Name</span>
+                            <span class="text-xs">: {{ $gardenBooking->advance_bank_name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="details-label">Bank Branch</span>
+                            <span class="text-xs">: {{ $gardenBooking->advance_bank_branch }}</span>
+                        </div>
+                    @endif
+                </div>
             </div>
             <div class="details-row font-bold mb-4">
                 <span class="details-label">Balance Payable</span>

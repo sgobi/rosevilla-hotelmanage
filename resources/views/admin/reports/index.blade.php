@@ -290,6 +290,11 @@
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-gray-900 text-sm group-hover:text-indigo-600 transition-colors leading-tight">{{ $row->ledger_name }}</div>
                                         <div class="text-[10px] text-gray-400 font-medium mt-0.5">{{ $row->ledger_email }}</div>
+                                        @if($row->advance_amount > 0)
+                                            <div class="text-[9px] font-bold text-indigo-500 mt-1 uppercase tracking-tighter bg-indigo-50 px-1.5 py-0.5 rounded inline-block">
+                                                Payee: {{ $row->advance_guest_name ?: 'N/A' }} ({{ $row->advance_nic_no ?: 'NIC N/A' }})
+                                            </div>
+                                        @endif
                                         <div class="text-[9px] font-black text-gray-300 uppercase tracking-widest mt-0.5">#{{ $row->id }}</div>
                                     </td>
                                     <td class="px-6 py-4">

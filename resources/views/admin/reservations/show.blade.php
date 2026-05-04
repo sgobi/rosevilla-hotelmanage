@@ -75,7 +75,7 @@
                     @endif
 
                     <div class="flex gap-4">
-                        @if(auth()->user()->isAdmin() || !in_array($reservation->status, ['approved', 'cancelled']))
+                        @if(auth()->user()->isAdmin() || $reservation->status !== 'cancelled')
                             <a href="{{ route('admin.reservations.edit', $reservation) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Edit Reservation</a>
                         @endif
                         @if($reservation->status === 'approved')

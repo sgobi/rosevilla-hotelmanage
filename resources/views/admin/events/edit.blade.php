@@ -9,6 +9,9 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white/80 backdrop-blur-xl overflow-hidden shadow-2xl sm:rounded-3xl border border-white/50">
                 <form action="{{ route('admin.events.update', $event) }}" method="POST" class="p-8 md:p-12 space-y-10"
+                    @php
+                        $isStaffApproved = !auth()->user()->isAdmin() && $event->status === 'approved';
+                    @endphp
                     x-data="{ 
                         services: {{ old('additional_services', $event->additional_services) ? json_encode(old('additional_services', $event->additional_services)) : '[]' }},
                         basePrice: 0,
@@ -58,28 +61,32 @@
                             <div class="space-y-2">
                                 <label for="customer_name" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Full Name</label>
                                 <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name', $event->customer_name) }}" required
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) readonly @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
                                 @error('customer_name') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-2">
                                 <label for="customer_email" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Email Address</label>
                                 <input type="email" name="customer_email" id="customer_email" value="{{ old('customer_email', $event->customer_email) }}" required
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) readonly @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
                                 @error('customer_email') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-2">
                                 <label for="customer_phone" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Phone Number</label>
                                 <input type="text" name="customer_phone" id="customer_phone" value="{{ old('customer_phone', $event->customer_phone) }}" required
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) readonly @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
                                 @error('customer_phone') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-2">
                                 <label for="address" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Customer Address</label>
                                 <input type="text" name="address" id="address" value="{{ old('address', $event->address) }}"
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) readonly @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
                                 @error('address') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -98,7 +105,11 @@
                             <label class="group relative flex items-center gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-emerald-500 transition-all shadow-sm">
                                 <input type="hidden" name="garden_selection" value="0">
                                 <input type="checkbox" name="garden_selection" id="garden_selection" value="1" x-model="gardenSelection"
+                                    @if($isStaffApproved) disabled @endif
                                     class="w-6 h-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-slate-300">
+                                @if($isStaffApproved)
+                                    <input type="hidden" name="garden_selection" :value="gardenSelection ? '1' : '0'">
+                                @endif
                                 <div class="flex flex-col">
                                     <span class="text-base font-bold text-slate-800">Garden Venue</span>
                                     <span class="text-xs text-slate-500">Outdoor spaces & grounds</span>
@@ -114,7 +125,13 @@
                                     <label class="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-3xl cursor-pointer hover:border-indigo-500 transition-all shadow-sm">
                                         <div class="mt-1">
                                             <input type="checkbox" name="room_ids[]" value="{{ $room->id }}" x-model="selectedRooms"
+                                                @if($isStaffApproved) disabled @endif
                                                 class="w-6 h-6 text-indigo-600 rounded-lg focus:ring-indigo-500 border-slate-300">
+                                            @if($isStaffApproved)
+                                                <template x-if="selectedRooms.includes('{{ $room->id }}')">
+                                                    <input type="hidden" name="room_ids[]" value="{{ $room->id }}">
+                                                </template>
+                                            @endif
                                         </div>
                                         <div class="flex flex-col border-l border-slate-100 pl-4 space-y-1">
                                             <span class="text-sm font-black text-slate-800">{{ $room->title }}</span>
@@ -140,7 +157,11 @@
                             <div class="space-y-2">
                                 <label for="event_type" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Event Type</label>
                                 <select name="event_type" id="event_type" required
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) disabled @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
+                                    @if($isStaffApproved)
+                                        <input type="hidden" name="event_type" value="{{ old('event_type', $event->event_type) }}">
+                                    @endif
                                     <option value="Wedding" @selected(old('event_type', $event->event_type) == 'Wedding')>Wedding Ceremony</option>
                                     <option value="Party" @selected(old('event_type', $event->event_type) == 'Party')>Social Party</option>
                                     <option value="Corporate" @selected(old('event_type', $event->event_type) == 'Corporate')>Corporate Meeting</option>
@@ -152,7 +173,8 @@
                                 <label for="event_date" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Check-in Date</label>
                                 <div class="relative group">
                                     <input type="text" name="event_date" id="event_date" value="{{ old('event_date', optional($event->event_date)->format('Y-m-d')) }}" required x-model="checkIn"
-                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
+                                        @if($isStaffApproved) readonly @endif
+                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed pointer-events-none @else cursor-pointer @endif">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-indigo-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     </div>
@@ -163,7 +185,8 @@
                                 <label for="check_out" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Check-out Date</label>
                                 <div class="relative group">
                                     <input type="text" name="check_out" id="check_out" value="{{ old('check_out', optional($event->check_out)->format('Y-m-d')) }}" required x-model="checkOut"
-                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
+                                        @if($isStaffApproved) readonly @endif
+                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed pointer-events-none @else cursor-pointer @endif">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-amber-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     </div>
@@ -175,14 +198,16 @@
                             <div class="space-y-2">
                                 <label for="guests" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Total Guests</label>
                                 <input type="number" name="guests" id="guests" value="{{ old('guests', $event->guests) }}" min="1" required
-                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    @if($isStaffApproved) readonly @endif
+                                    class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">
                             </div>
 
                             <div class="space-y-2">
                                 <label for="arrival_time" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Arrival Time</label>
                                 <div class="relative group">
                                     <input type="text" name="arrival_time" id="arrival_time" value="{{ old('arrival_time', $event->arrival_time ? \Carbon\Carbon::parse($event->arrival_time)->format('H:i') : '') }}"
-                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
+                                        @if($isStaffApproved) readonly @endif
+                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed pointer-events-none @else cursor-pointer @endif">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-indigo-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
@@ -193,7 +218,8 @@
                                 <label for="start_time" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">Start Time</label>
                                 <div class="relative group">
                                     <input type="text" name="start_time" id="start_time" value="{{ old('start_time', \Carbon\Carbon::parse($event->start_time)->format('H:i')) }}" required
-                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
+                                        @if($isStaffApproved) readonly @endif
+                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed pointer-events-none @else cursor-pointer @endif">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-emerald-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
@@ -204,7 +230,8 @@
                                 <label for="end_time" class="block text-xs font-black text-slate-400 uppercase tracking-[0.1em]">End Time</label>
                                 <div class="relative group">
                                     <input type="text" name="end_time" id="end_time" value="{{ old('end_time', \Carbon\Carbon::parse($event->end_time)->format('H:i')) }}" required
-                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
+                                        @if($isStaffApproved) readonly @endif
+                                        class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed pointer-events-none @else cursor-pointer @endif">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors group-hover:text-rose-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
@@ -222,7 +249,9 @@
                                 </div>
                                 <h3 class="text-lg font-bold text-slate-800">Additional Services</h3>
                             </div>
-                            <button type="button" @click="addService()" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95">
+                            <button type="button" @click="addService()" 
+                                    @if($isStaffApproved) disabled @endif
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95 @if($isStaffApproved) opacity-50 cursor-not-allowed @endif">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Add Service
                             </button>
@@ -234,15 +263,19 @@
                                     <div class="md:col-span-7 space-y-2">
                                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Type</label>
                                         <input type="text" x-model="service.type" :name="'additional_services['+index+'][type]'" 
-                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" placeholder="e.g. Photography, Catering...">
+                                            @if($isStaffApproved) readonly @endif
+                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif" placeholder="e.g. Photography, Catering...">
                                     </div>
                                     <div class="md:col-span-4 space-y-2">
                                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Price (LKR)</label>
                                         <input type="number" x-model="service.price" :name="'additional_services['+index+'][price]'" step="0.01"
-                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" placeholder="0.00">
+                                            @if($isStaffApproved) readonly @endif
+                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif" placeholder="0.00">
                                     </div>
                                     <div class="md:col-span-1 flex justify-center pb-2">
-                                        <button type="button" @click="removeService(index)" class="p-2.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-all active:scale-90">
+                                        <button type="button" @click="removeService(index)" 
+                                                @if($isStaffApproved) disabled @endif
+                                                class="p-2.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-all active:scale-90 @if($isStaffApproved) opacity-50 cursor-not-allowed @endif">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </div>
@@ -264,8 +297,67 @@
                                 <h3 class="text-base font-bold text-slate-800">Event Details</h3>
                             </div>
                             <textarea name="message" id="message" rows="5"
-                                class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">{{ old('message', $event->message) }}</textarea>
+                                @if($isStaffApproved) readonly @endif
+                                class="w-full bg-slate-50/50 border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all @if($isStaffApproved) cursor-not-allowed @endif">{{ old('message', $event->message) }}</textarea>
                             @error('message') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-4" x-data="{ method: '{{ old('advance_payment_method', $event->advance_payment_method) }}' }">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-800">Advance Payment Details</h3>
+                            </div>
+                            <div class="bg-slate-50/80 rounded-3xl p-6 border border-slate-100 space-y-4">
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Method</label>
+                                        <select name="advance_payment_method" x-model="method" class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                            <option value="">Select Method...</option>
+                                            <option value="cash">Cash</option>
+                                            <option value="bank">Bank Transfer</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div x-show="method">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Amount (LKR)</label>
+                                        <input type="number" name="advance_amount" step="0.01" min="0" value="{{ old('advance_amount', $event->advance_amount ?? ($event->final_price * 0.10)) }}" 
+                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    </div>
+
+                                    <div x-show="method">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Payee Name</label>
+                                        <input type="text" name="advance_guest_name" value="{{ old('advance_guest_name', $event->advance_guest_name) }}"
+                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    </div>
+
+                                    <div x-show="method">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Payee NIC No</label>
+                                        <input type="text" name="advance_nic_no" value="{{ old('advance_nic_no', $event->advance_nic_no) }}"
+                                            class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                    </div>
+
+                                    <div x-show="method === 'bank'" class="space-y-4">
+                                        <div>
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Bank Name</label>
+                                            <select name="advance_bank_name" class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                                <option value="">Select Bank...</option>
+                                                <option value="Bank of Ceylon (BOC)" {{ old('advance_bank_name', $event->advance_bank_name) == 'Bank of Ceylon (BOC)' ? 'selected' : '' }}>Bank of Ceylon (BOC)</option>
+                                                <option value="People’s Bank" {{ old('advance_bank_name', $event->advance_bank_name) == 'People’s Bank' ? 'selected' : '' }}>People’s Bank</option>
+                                                <option value="Commercial Bank of Ceylon PLC" {{ old('advance_bank_name', $event->advance_bank_name) == 'Commercial Bank of Ceylon PLC' ? 'selected' : '' }}>Commercial Bank of Ceylon PLC</option>
+                                                <option value="Hatton National Bank PLC (HNB)" {{ old('advance_bank_name', $event->advance_bank_name) == 'Hatton National Bank PLC (HNB)' ? 'selected' : '' }}>Hatton National Bank PLC (HNB)</option>
+                                                <option value="Sampath Bank PLC" {{ old('advance_bank_name', $event->advance_bank_name) == 'Sampath Bank PLC' ? 'selected' : '' }}>Sampath Bank PLC</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Branch</label>
+                                            <input type="text" name="advance_bank_branch" value="{{ old('advance_bank_branch', $event->advance_bank_branch) }}"
+                                                class="w-full bg-white border-slate-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="space-y-4">

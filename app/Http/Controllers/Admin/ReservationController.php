@@ -323,7 +323,18 @@ class ReservationController extends Controller
                 'check_in' => ['required', 'date'],
                 'check_out' => ['required', 'date', 'after_or_equal:check_in'],
                 'guests' => ['required', 'integer', 'min:1'],
+                'advance_amount' => ['nullable', 'numeric', 'min:0'],
+                'advance_payment_method' => ['nullable', 'string', 'in:bank,cash'],
+                'advance_guest_name' => ['nullable', 'string', 'max:255'],
+                'advance_nic_no' => ['nullable', 'string', 'max:20'],
+                'advance_bank_name' => ['nullable', 'string', 'max:255'],
+                'advance_bank_branch' => ['nullable', 'string', 'max:255'],
             ]);
+
+            if (isset($data['advance_amount']) && $data['advance_amount'] > 0 && !$reservation->advance_paid_at) {
+                $data['advance_paid_at'] = now();
+            }
+
             $reservation->update($data);
         }
 

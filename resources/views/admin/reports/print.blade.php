@@ -129,6 +129,11 @@
                         <td class="py-3 px-2 align-top">
                             <div class="font-bold text-gray-900">{{ $row->ledger_name }}</div>
                             <div class="text-[10px] text-gray-500">{{ $row->ledger_email ?? 'No Email' }}</div>
+                            @if($row->advance_amount > 0)
+                                <div class="text-[9px] font-bold text-indigo-500 mt-1 uppercase tracking-tighter">
+                                    Payee: {{ $row->advance_guest_name ?: 'N/A' }} ({{ $row->advance_nic_no ?: 'NIC N/A' }})
+                                </div>
+                            @endif
                         </td>
                         <td class="py-3 px-2 align-top">
                             <div class="font-medium text-gray-800">{{ $row->ledger_detail }}</div>

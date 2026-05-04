@@ -239,7 +239,17 @@ class GardenBookingController extends Controller
             'guests' => 'required|integer|min:1',
             'special_requirements' => 'nullable|string',
             'additional_notes' => 'nullable|string',
+            'advance_amount' => 'nullable|numeric|min:0',
+            'advance_payment_method' => 'nullable|string|in:bank,cash',
+            'advance_guest_name' => 'nullable|string|max:255',
+            'advance_nic_no' => 'nullable|string|max:20',
+            'advance_bank_name' => 'nullable|string|max:255',
+            'advance_bank_branch' => 'nullable|string|max:255',
         ]);
+
+        if (isset($validated['advance_amount']) && $validated['advance_amount'] > 0 && !$gardenBooking->advance_paid_at) {
+            $validated['advance_paid_at'] = now();
+        }
 
         $conflict = GardenBooking::whereNotIn('status', ['cancelled', 'rejected', 'completed'])
             ->where('id', '!=', $gardenBooking->id)

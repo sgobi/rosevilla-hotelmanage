@@ -21,60 +21,117 @@
             <form action="{{ route('admin.garden-bookings.update', $gardenBooking) }}" method="POST" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 space-y-6">
                 @csrf
                 @method('PUT')
+                @php
+                    $isStaffApproved = !auth()->user()->isAdmin() && $gardenBooking->status === 'approved';
+                @endphp
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <x-input-label for="guest_name" :value="__('Guest Name')" />
-                        <x-text-input id="guest_name" class="block mt-1 w-full" type="text" name="guest_name" value="{{ old('guest_name', $gardenBooking->guest_name) }}" required />
+                        <x-text-input id="guest_name" class="block mt-1 w-full" type="text" name="guest_name" value="{{ old('guest_name', $gardenBooking->guest_name) }}" required :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('guest_name')" />
                     </div>
 
                     <div>
                         <x-input-label for="email" :value="__('Email')" />
-                        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" value="{{ old('email', $gardenBooking->email) }}" required />
+                        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" value="{{ old('email', $gardenBooking->email) }}" required :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('email')" />
                     </div>
 
                     <div>
                         <x-input-label for="phone" :value="__('Phone')" />
-                        <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" value="{{ old('phone', $gardenBooking->phone) }}" />
+                        <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" value="{{ old('phone', $gardenBooking->phone) }}" :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('phone')" />
                     </div>
 
                     <div>
                         <x-input-label for="address" :value="__('Address')" />
-                        <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" value="{{ old('address', $gardenBooking->address) }}" />
+                        <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" value="{{ old('address', $gardenBooking->address) }}" :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('address')" />
                     </div>
 
                     <div>
                         <x-input-label for="check_in" :value="__('Check In Date')" />
-                        <x-text-input id="check_in" class="block mt-1 w-full" type="date" name="check_in" value="{{ old('check_in', $gardenBooking->check_in->format('Y-m-d')) }}" required />
+                        <x-text-input id="check_in" class="block mt-1 w-full" type="date" name="check_in" value="{{ old('check_in', $gardenBooking->check_in->format('Y-m-d')) }}" required :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('check_in')" />
                     </div>
 
                     <div>
                         <x-input-label for="check_out" :value="__('Check Out Date')" />
-                        <x-text-input id="check_out" class="block mt-1 w-full" type="date" name="check_out" value="{{ old('check_out', $gardenBooking->check_out->format('Y-m-d')) }}" required />
+                        <x-text-input id="check_out" class="block mt-1 w-full" type="date" name="check_out" value="{{ old('check_out', $gardenBooking->check_out->format('Y-m-d')) }}" required :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('check_out')" />
                     </div>
 
                     <div>
                         <x-input-label for="guests" :value="__('Number of Guests')" />
-                        <x-text-input id="guests" class="block mt-1 w-full" type="number" min="1" name="guests" value="{{ old('guests', $gardenBooking->guests) }}" required />
+                        <x-text-input id="guests" class="block mt-1 w-full" type="number" min="1" name="guests" value="{{ old('guests', $gardenBooking->guests) }}" required :readonly="$isStaffApproved" />
                         <x-input-error class="mt-2" :messages="$errors->get('guests')" />
+                    </div>
+
+                </div>
+
+                <div class="col-span-full border-t border-gray-100 pt-6 mt-2" x-data="{ method: '{{ old('advance_payment_method', $gardenBooking->advance_payment_method) }}' }">
+                    <h3 class="text-lg font-black text-gray-900 mb-4">Advance Payment Details</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <x-input-label for="advance_payment_method" :value="__('Advance Payment Method')" />
+                            <select id="advance_payment_method" name="advance_payment_method" x-model="method" class="block mt-1 w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-md shadow-sm">
+                                <option value="">Select Method...</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank Transfer</option>
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_payment_method')" />
+                        </div>
+
+                        <div x-show="method" x-cloak>
+                            <x-input-label for="advance_amount" :value="__('Advance Payment Amount')" />
+                            <x-text-input id="advance_amount" class="block mt-1 w-full" type="number" step="0.01" min="0" name="advance_amount" value="{{ old('advance_amount', $gardenBooking->advance_amount ?? ($gardenBooking->total_price * 0.10)) }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_amount')" />
+                        </div>
+
+                        <div x-show="method" x-cloak>
+                            <x-input-label for="advance_guest_name" :value="__('Payee Name')" />
+                            <x-text-input id="advance_guest_name" class="block mt-1 w-full" type="text" name="advance_guest_name" value="{{ old('advance_guest_name', $gardenBooking->advance_guest_name) }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_guest_name')" />
+                        </div>
+
+                        <div x-show="method" x-cloak>
+                            <x-input-label for="advance_nic_no" :value="__('Payee NIC No')" />
+                            <x-text-input id="advance_nic_no" class="block mt-1 w-full" type="text" name="advance_nic_no" value="{{ old('advance_nic_no', $gardenBooking->advance_nic_no) }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_nic_no')" />
+                        </div>
+
+                        <div x-show="method === 'bank'" x-cloak>
+                            <x-input-label for="advance_bank_name" :value="__('Bank Name')" />
+                            <select id="advance_bank_name" name="advance_bank_name" class="block mt-1 w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-md shadow-sm">
+                                <option value="">Select Bank...</option>
+                                <option value="Bank of Ceylon (BOC)" {{ old('advance_bank_name', $gardenBooking->advance_bank_name) == 'Bank of Ceylon (BOC)' ? 'selected' : '' }}>Bank of Ceylon (BOC)</option>
+                                <option value="People’s Bank" {{ old('advance_bank_name', $gardenBooking->advance_bank_name) == 'People’s Bank' ? 'selected' : '' }}>People’s Bank</option>
+                                <option value="Commercial Bank of Ceylon PLC" {{ old('advance_bank_name', $gardenBooking->advance_bank_name) == 'Commercial Bank of Ceylon PLC' ? 'selected' : '' }}>Commercial Bank of Ceylon PLC</option>
+                                <option value="Hatton National Bank PLC (HNB)" {{ old('advance_bank_name', $gardenBooking->advance_bank_name) == 'Hatton National Bank PLC (HNB)' ? 'selected' : '' }}>Hatton National Bank PLC (HNB)</option>
+                                <option value="Sampath Bank PLC" {{ old('advance_bank_name', $gardenBooking->advance_bank_name) == 'Sampath Bank PLC' ? 'selected' : '' }}>Sampath Bank PLC</option>
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_bank_name')" />
+                        </div>
+
+                        <div x-show="method === 'bank'" x-cloak>
+                            <x-input-label for="advance_bank_branch" :value="__('Bank Branch')" />
+                            <x-text-input id="advance_bank_branch" class="block mt-1 w-full" type="text" name="advance_bank_branch" value="{{ old('advance_bank_branch', $gardenBooking->advance_bank_branch) }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('advance_bank_branch')" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-4 pt-4 border-t border-gray-100">
                     <div>
                         <x-input-label for="special_requirements" :value="__('Special Requirements')" />
-                        <textarea id="special_requirements" name="special_requirements" class="rounded-xl shadow-sm border-gray-300 focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 block mt-1 w-full" rows="3">{{ old('special_requirements', $gardenBooking->special_requirements) }}</textarea>
+                        <textarea id="special_requirements" name="special_requirements" class="rounded-xl shadow-sm border-gray-300 focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 block mt-1 w-full" rows="3" @if($isStaffApproved) readonly @endif>{{ old('special_requirements', $gardenBooking->special_requirements) }}</textarea>
                     </div>
 
                     <div>
                         <x-input-label for="additional_notes" :value="__('Additional Notes (Internal)')" />
-                        <textarea id="additional_notes" name="additional_notes" class="rounded-xl shadow-sm border-gray-300 focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 block mt-1 w-full" rows="3">{{ old('additional_notes', $gardenBooking->additional_notes) }}</textarea>
+                        <textarea id="additional_notes" name="additional_notes" class="rounded-xl shadow-sm border-gray-300 focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 block mt-1 w-full" rows="3" @if($isStaffApproved) readonly @endif>{{ old('additional_notes', $gardenBooking->additional_notes) }}</textarea>
                     </div>
                 </div>
 
