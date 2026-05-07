@@ -140,69 +140,81 @@ class InvoiceController extends Controller
         return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days', 'isProforma'));
     }
 
-    public function sendEmail(Reservation $reservation)
+    public function sendEmail(Request $request, Reservation $reservation)
     {
-        if (!$reservation->email) {
-            return back()->with('error', 'Guest does not have an email address.');
+        $recipientEmail = $request->input('email', $reservation->email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($reservation->email)->send(new InvoiceMail($reservation, 'reservation'));
+        Mail::to($recipientEmail)->send(new InvoiceMail($reservation, 'reservation'));
 
-        return back()->with('success', 'Invoice sent successfully to ' . $reservation->email);
+        return back()->with('success', 'Invoice sent successfully to ' . $recipientEmail);
     }
 
-    public function sendEventEmail(EventBooking $event)
+    public function sendEventEmail(Request $request, EventBooking $event)
     {
-        if (!$event->customer_email) {
-            return back()->with('error', 'Customer does not have an email address.');
+        $recipientEmail = $request->input('email', $event->customer_email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($event->customer_email)->send(new InvoiceMail($event, 'event'));
+        Mail::to($recipientEmail)->send(new InvoiceMail($event, 'event'));
 
-        return back()->with('success', 'Invoice sent successfully to ' . $event->customer_email);
+        return back()->with('success', 'Invoice sent successfully to ' . $recipientEmail);
     }
 
-    public function sendGardenEmail(GardenBooking $gardenBooking)
+    public function sendGardenEmail(Request $request, GardenBooking $gardenBooking)
     {
-        if (!$gardenBooking->email) {
-            return back()->with('error', 'Customer does not have an email address.');
+        $recipientEmail = $request->input('email', $gardenBooking->email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($gardenBooking->email)->send(new InvoiceMail($gardenBooking, 'garden'));
+        Mail::to($recipientEmail)->send(new InvoiceMail($gardenBooking, 'garden'));
 
-        return back()->with('success', 'Invoice sent successfully to ' . $gardenBooking->email);
+        return back()->with('success', 'Invoice sent successfully to ' . $recipientEmail);
     }
 
-    public function sendProformaEmail(Reservation $reservation)
+    public function sendProformaEmail(Request $request, Reservation $reservation)
     {
-        if (!$reservation->email) {
-            return back()->with('error', 'Guest does not have an email address.');
+        $recipientEmail = $request->input('email', $reservation->email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($reservation->email)->send(new InvoiceMail($reservation, 'reservation', true));
+        Mail::to($recipientEmail)->send(new InvoiceMail($reservation, 'reservation', true));
 
-        return back()->with('success', 'Proforma Invoice sent successfully to ' . $reservation->email);
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $recipientEmail);
     }
 
-    public function sendEventProformaEmail(EventBooking $event)
+    public function sendEventProformaEmail(Request $request, EventBooking $event)
     {
-        if (!$event->customer_email) {
-            return back()->with('error', 'Customer does not have an email address.');
+        $recipientEmail = $request->input('email', $event->customer_email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($event->customer_email)->send(new InvoiceMail($event, 'event', true));
+        Mail::to($recipientEmail)->send(new InvoiceMail($event, 'event', true));
 
-        return back()->with('success', 'Proforma Invoice sent successfully to ' . $event->customer_email);
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $recipientEmail);
     }
 
-    public function sendGardenProformaEmail(GardenBooking $gardenBooking)
+    public function sendGardenProformaEmail(Request $request, GardenBooking $gardenBooking)
     {
-        if (!$gardenBooking->email) {
-            return back()->with('error', 'Customer does not have an email address.');
+        $recipientEmail = $request->input('email', $gardenBooking->email);
+
+        if (!$recipientEmail) {
+            return back()->with('error', 'Please provide a recipient email address.');
         }
 
-        Mail::to($gardenBooking->email)->send(new InvoiceMail($gardenBooking, 'garden', true));
+        Mail::to($recipientEmail)->send(new InvoiceMail($gardenBooking, 'garden', true));
 
-        return back()->with('success', 'Proforma Invoice sent successfully to ' . $gardenBooking->email);
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $recipientEmail);
     }
 }

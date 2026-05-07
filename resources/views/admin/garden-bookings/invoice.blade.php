@@ -84,8 +84,14 @@
             Back to Dashboard
         </a>
 
-        <form action="{{ ($isProforma ?? false) ? route('admin.garden.proforma-email', $gardenBooking) : route('admin.garden.email-invoice', $gardenBooking) }}" method="POST" class="inline">
+        <form action="{{ ($isProforma ?? false) ? route('admin.garden.proforma-email', $gardenBooking) : route('admin.garden.email-invoice', $gardenBooking) }}" method="POST" class="flex items-center gap-2">
             @csrf
+            <div class="relative group">
+                <input type="email" name="email" value="{{ $gardenBooking->email }}" class="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 shadow-lg transition-all" placeholder="Recipient Email">
+                <div class="absolute -top-8 left-0 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    Edit recipient email if needed
+                </div>
+            </div>
             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-blue-700 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 Send via Email
