@@ -67,10 +67,31 @@
 </head>
 <body>
 
+    @if(session('success'))
+        <div class="fixed top-6 left-6 z-[60] bg-green-500 text-white px-6 py-3 rounded-lg shadow-2xl no-print animate-bounce">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="fixed top-6 left-6 z-[60] bg-red-500 text-white px-6 py-3 rounded-lg shadow-2xl no-print">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="print:hidden no-print fixed top-6 right-6 z-50 flex gap-4">
         <a href="{{ route('dashboard') }}" class="bg-white text-gray-900 border border-gray-200 px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-gray-50 transition">
             Back to Dashboard
         </a>
+
+        <form action="{{ ($isProforma ?? false) ? route('admin.events.proforma-email', $event) : route('admin.events.email-invoice', $event) }}" method="POST" class="inline">
+            @csrf
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-blue-700 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                Send via Email
+            </button>
+        </form>
+
         <button onclick="window.print()" class="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:bg-black transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
             Print {{ ($isProforma ?? false) ? 'Proforma' : 'Confirmation' }}

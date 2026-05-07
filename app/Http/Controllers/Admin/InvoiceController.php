@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\ContentSetting;
 use App\Models\Reservation;
 use App\Models\EventBooking;
+use App\Models\GardenBooking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 
 class InvoiceController extends Controller
 {
@@ -128,12 +131,78 @@ class InvoiceController extends Controller
         return view('admin.events.invoice', compact('event', 'content', 'isProforma'));
     }
 
-    public function showGardenProforma(\App\Models\GardenBooking $gardenBooking)
+    public function showGardenProforma(GardenBooking $gardenBooking)
     {
         $content = ContentSetting::pluck('value', 'key');
         $days = max(1, $gardenBooking->check_in->diffInDays($gardenBooking->check_out));
         $isProforma = true;
 
         return view('admin.garden-bookings.invoice', compact('gardenBooking', 'content', 'days', 'isProforma'));
+    }
+
+    public function sendEmail(Reservation $reservation)
+    {
+        if (!$reservation->email) {
+            return back()->with('error', 'Guest does not have an email address.');
+        }
+
+        Mail::to($reservation->email)->send(new InvoiceMail($reservation, 'reservation'));
+
+        return back()->with('success', 'Invoice sent successfully to ' . $reservation->email);
+    }
+
+    public function sendEventEmail(EventBooking $event)
+    {
+        if (!$event->customer_email) {
+            return back()->with('error', 'Customer does not have an email address.');
+        }
+
+        Mail::to($event->customer_email)->send(new InvoiceMail($event, 'event'));
+
+        return back()->with('success', 'Invoice sent successfully to ' . $event->customer_email);
+    }
+
+    public function sendGardenEmail(GardenBooking $gardenBooking)
+    {
+        if (!$gardenBooking->email) {
+            return back()->with('error', 'Customer does not have an email address.');
+        }
+
+        Mail::to($gardenBooking->email)->send(new InvoiceMail($gardenBooking, 'garden'));
+
+        return back()->with('success', 'Invoice sent successfully to ' . $gardenBooking->email);
+    }
+
+    public function sendProformaEmail(Reservation $reservation)
+    {
+        if (!$reservation->email) {
+            return back()->with('error', 'Guest does not have an email address.');
+        }
+
+        Mail::to($reservation->email)->send(new InvoiceMail($reservation, 'reservation', true));
+
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $reservation->email);
+    }
+
+    public function sendEventProformaEmail(EventBooking $event)
+    {
+        if (!$event->customer_email) {
+            return back()->with('error', 'Customer does not have an email address.');
+        }
+
+        Mail::to($event->customer_email)->send(new InvoiceMail($event, 'event', true));
+
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $event->customer_email);
+    }
+
+    public function sendGardenProformaEmail(GardenBooking $gardenBooking)
+    {
+        if (!$gardenBooking->email) {
+            return back()->with('error', 'Customer does not have an email address.');
+        }
+
+        Mail::to($gardenBooking->email)->send(new InvoiceMail($gardenBooking, 'garden', true));
+
+        return back()->with('success', 'Proforma Invoice sent successfully to ' . $gardenBooking->email);
     }
 }

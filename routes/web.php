@@ -97,6 +97,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('proforma-invoices/{reservation}', [InvoiceController::class, 'showProforma'])->name('invoices.proforma');
             Route::get('event-proforma-invoices/{event}', [InvoiceController::class, 'showEventProforma'])->name('events.proforma');
             Route::get('garden-proforma-invoices/{gardenBooking}', [InvoiceController::class, 'showGardenProforma'])->name('garden.proforma');
+
+            Route::post('invoices/{reservation}/email', [InvoiceController::class, 'sendEmail'])->name('invoices.email');
+            Route::post('event-invoices/{event}/email', [InvoiceController::class, 'sendEventEmail'])->name('events.email-invoice');
+            Route::post('garden-invoices/{gardenBooking}/email', [InvoiceController::class, 'sendGardenEmail'])->name('garden.email-invoice');
+
+            Route::post('proforma-invoices/{reservation}/email', [InvoiceController::class, 'sendProformaEmail'])->name('invoices.proforma-email');
+            Route::post('event-proforma-invoices/{event}/email', [InvoiceController::class, 'sendEventProformaEmail'])->name('events.proforma-email');
+            Route::post('garden-proforma-invoices/{gardenBooking}/email', [InvoiceController::class, 'sendGardenProformaEmail'])->name('garden.proforma-email');
         });
 
         // Accountant & Admin (Reports)
