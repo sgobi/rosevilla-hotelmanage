@@ -114,6 +114,7 @@
                             <span>Reach time from Bus Stand</span>
                             <input name="reach_time_bus" class="w-full border rounded px-3 py-2" value="{{ old('reach_time_bus', $content['reach_time_bus'] ?? '5-10 Mins') }}" placeholder="e.g. 5-10 Mins">
                         </label>
+
                         <label class="text-sm text-gray-700 space-y-1 md:col-span-2">
                             <span>Invoice Signature</span>
                             @if($content['signature_path'] ?? null)
