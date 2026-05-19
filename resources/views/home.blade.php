@@ -1792,7 +1792,7 @@
                      x-transition:leave="transition ease-in duration-300"
                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                      x-transition:leave-end="opacity-0 translate-y-12 scale-95"
-                     class="relative w-full max-w-4xl bg-[#FBF9F6] rounded-2xl md:rounded-[2rem] shadow-2xl border border-white/50 overflow-hidden flex flex-col md:flex-row z-10 mx-auto">
+                     class="relative w-full max-w-4xl rounded-2xl md:rounded-[2rem] shadow-2xl border border-white/50 overflow-hidden flex flex-col md:flex-row z-10 mx-auto" style="background-color: #FBF9F6;">
                      
                     <!-- Close Button -->
                     <button @click="open = false" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-900 transition-colors duration-300">
@@ -1809,18 +1809,18 @@
                     <!-- Right Side: Content -->
                     <div class="{{ $activePopup->image_path ? 'md:w-1/2' : 'w-full text-center' }} p-8 md:p-12 flex flex-col justify-center">
                         <div class="mb-6">
-                            <h2 class="font-serif text-3xl md:text-4xl text-rose-950 uppercase tracking-tight leading-tight mb-4">{{ $activePopup->title }}</h2>
+                            <h2 class="font-serif text-3xl md:text-4xl text-gray-900 uppercase tracking-tight leading-tight mb-4">{{ $activePopup->title }}</h2>
                             @if($activePopup->subtitle)
-                                <p class="text-rose-900/70 font-medium uppercase tracking-widest text-xs md:text-sm">{{ $activePopup->subtitle }}</p>
+                                <p class="text-gray-600 font-medium uppercase tracking-widest text-xs md:text-sm">{{ $activePopup->subtitle }}</p>
                             @endif
                         </div>
 
                         @if($activePopup->warning_text)
-                        <div class="bg-[#e4d4b9]/30 rounded-xl p-5 mb-8 border border-[#e4d4b9]/50 flex items-start gap-4">
-                            <div class="w-6 h-6 flex-shrink-0 bg-[#D4AF37] rounded-full flex items-center justify-center text-white mt-0.5">
+                        <div class="rounded-xl p-5 mb-8 border flex items-start gap-4" style="background-color: rgba(228, 212, 185, 0.3); border-color: rgba(228, 212, 185, 0.5);">
+                            <div class="w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center text-white mt-0.5" style="background-color: #D4AF37;">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                             </div>
-                            <p class="text-[#8c6d3d] text-sm leading-relaxed font-medium">
+                            <p class="text-sm leading-relaxed font-medium" style="color: #8c6d3d;">
                                 {{ $activePopup->warning_text }}
                             </p>
                         </div>
@@ -1831,7 +1831,7 @@
                             <a href="{{ $activePopup->button_link ?? '#reservation' }}" 
                                @click="if(!'{{ $activePopup->button_link }}'.startsWith('http')) open = false" 
                                {{ Str::startsWith($activePopup->button_link, 'http') ? 'target="_blank" rel="noopener noreferrer"' : '' }}
-                               class="inline-flex items-center justify-center px-8 py-4 bg-[#8B0000] hover:bg-[#660000] text-white font-black uppercase tracking-widest text-xs rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                               class="inline-flex items-center justify-center px-8 py-4 text-white font-black uppercase tracking-widest text-xs rounded-full shadow-lg hover:shadow-xl transition-all duration-300" style="background-color: #8B0000;" onmouseover="this.style.backgroundColor='#660000'" onmouseout="this.style.backgroundColor='#8B0000'">
                                 {{ $activePopup->button_text }}
                             </a>
                         </div>
