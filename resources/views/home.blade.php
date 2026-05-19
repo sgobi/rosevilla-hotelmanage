@@ -1768,5 +1768,79 @@
             }
         });
     </script>
+    @if(isset($activePopup) && $activePopup)
+    <!-- Promotional Popup Modal -->
+    <div x-data="{ open: false }" x-init="setTimeout(() => open = true, 1500)">
+        <template x-teleport="body">
+            <div x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center px-4" x-cloak>
+                <!-- Backdrop with dark translucent overlay and blur -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 backdrop-blur-none"
+                     x-transition:enter-end="opacity-100 backdrop-blur-md"
+                     x-transition:leave="transition ease-in duration-300"
+                     x-transition:leave-start="opacity-100 backdrop-blur-md"
+                     x-transition:leave-end="opacity-0 backdrop-blur-none"
+                     @click="open = false" 
+                     class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+                     
+                <!-- Modal Card -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-700"
+                     x-transition:enter-start="opacity-0 translate-y-12 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-300"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-12 scale-95"
+                     class="relative w-full max-w-4xl bg-[#FBF9F6] rounded-2xl md:rounded-[2rem] shadow-2xl border border-white/50 overflow-hidden flex flex-col md:flex-row z-10 mx-auto">
+                     
+                    <!-- Close Button -->
+                    <button @click="open = false" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-900 transition-colors duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+
+                    @if($activePopup->image_path)
+                    <!-- Left Side: Flyer Image -->
+                    <div class="md:w-1/2 relative bg-rose-900 overflow-hidden">
+                        <img src="{{ asset('storage/' . $activePopup->image_path) }}" alt="{{ $activePopup->title }}" class="w-full h-64 md:h-full object-cover">
+                    </div>
+                    @endif
+                    
+                    <!-- Right Side: Content -->
+                    <div class="{{ $activePopup->image_path ? 'md:w-1/2' : 'w-full text-center' }} p-8 md:p-12 flex flex-col justify-center">
+                        <div class="mb-6">
+                            <h2 class="font-serif text-3xl md:text-4xl text-rose-950 uppercase tracking-tight leading-tight mb-4">{{ $activePopup->title }}</h2>
+                            @if($activePopup->subtitle)
+                                <p class="text-rose-900/70 font-medium uppercase tracking-widest text-xs md:text-sm">{{ $activePopup->subtitle }}</p>
+                            @endif
+                        </div>
+
+                        @if($activePopup->warning_text)
+                        <div class="bg-[#e4d4b9]/30 rounded-xl p-5 mb-8 border border-[#e4d4b9]/50 flex items-start gap-4">
+                            <div class="w-6 h-6 flex-shrink-0 bg-[#D4AF37] rounded-full flex items-center justify-center text-white mt-0.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            </div>
+                            <p class="text-[#8c6d3d] text-sm leading-relaxed font-medium">
+                                {{ $activePopup->warning_text }}
+                            </p>
+                        </div>
+                        @endif
+
+                        @if($activePopup->button_text)
+                        <div class="mt-auto {{ !$activePopup->image_path ? 'flex justify-center' : '' }}">
+                            <a href="{{ $activePopup->button_link ?? '#reservation' }}" 
+                               @click="if(!'{{ $activePopup->button_link }}'.startsWith('http')) open = false" 
+                               {{ Str::startsWith($activePopup->button_link, 'http') ? 'target="_blank" rel="noopener noreferrer"' : '' }}
+                               class="inline-flex items-center justify-center px-8 py-4 bg-[#8B0000] hover:bg-[#660000] text-white font-black uppercase tracking-widest text-xs rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                                {{ $activePopup->button_text }}
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    @endif
 </body>
 </html>

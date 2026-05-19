@@ -85,7 +85,7 @@
         <!-- Property Management -->
         @if(auth()->user()->isAdmin())
             @php
-                $isPropertyActive = request()->routeIs('admin.rooms.*', 'admin.gallery.*', 'admin.landmarks.*', 'admin.content.*', 'admin.home-events.*', 'admin.garden-profile.*');
+                $isPropertyActive = request()->routeIs('admin.rooms.*', 'admin.gallery.*', 'admin.landmarks.*', 'admin.content.*', 'admin.home-events.*', 'admin.garden-profile.*', 'admin.popups.*');
             @endphp
             <div class="space-y-1">
                 <button @click="activeMenu = activeMenu === 'property' ? '' : 'property'" 
@@ -107,6 +107,7 @@
                             ['label' => 'Local Landmarks', 'route' => 'admin.landmarks.index'],
                             ['label' => 'Identity & SEO', 'route' => 'admin.content.edit'],
                             ['label' => 'Experience Cards', 'route' => 'admin.home-events.index'],
+                            ['label' => 'Modal Popups', 'route' => 'admin.popups.index'],
                         ];
                     @endphp
                     @foreach($propertyLinks as $link)

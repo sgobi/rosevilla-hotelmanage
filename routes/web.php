@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\HomeEventController;
 use App\Http\Controllers\Admin\FrontDeskController;
 use App\Http\Controllers\Admin\EventFrontDeskController;
 use App\Http\Controllers\Admin\PriceCalculatorController;
+use App\Http\Controllers\Admin\PopupController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -129,6 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('maintenance/restore', [\App\Http\Controllers\Admin\MaintenanceController::class, 'restoreBackup'])->name('maintenance.restore');
             Route::get('maintenance/export-mysql', [\App\Http\Controllers\Admin\MaintenanceController::class, 'exportToMysql'])->name('maintenance.export-mysql');
             Route::post('maintenance/import-mysql', [\App\Http\Controllers\Admin\MaintenanceController::class, 'importMysql'])->name('maintenance.import-mysql');
+            Route::resource('popups', PopupController::class)->except(['show']);
         });
     });
 

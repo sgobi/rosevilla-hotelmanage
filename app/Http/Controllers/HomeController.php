@@ -103,6 +103,8 @@ class HomeController extends Controller
             'image_path' => 'garden/garden img.png'
         ]);
 
+        $activePopup = \App\Models\Popup::where('is_active', true)->first();
+
         return view('home', [
             'content' => $content,
             'rooms' => $rooms,
@@ -114,6 +116,7 @@ class HomeController extends Controller
             'bookedDatesGarden' => json_encode($bookedDatesGarden),
             'allRoomIds' => $rooms->pluck('id'),
             'garden' => $garden,
+            'activePopup' => $activePopup,
         ]);
     }
 
