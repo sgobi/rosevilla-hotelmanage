@@ -1,4 +1,4 @@
-name: Deploy Laravel to LankaHost cPanel
+name: Deploy Rose Villa to LankaHost cPanel
 
 on:
   push:
@@ -6,29 +6,31 @@ on:
       - main
 
 jobs:
-  laravel-deploy:
+  web-deploy:
+    name: Sync Code and Trigger Deployment
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: 1. Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: 2. Setup PHP Environment
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, dom, fileinfo, mysql, gd
+          extensions: mbstring, dom, fileinfo, mysql, gd, curl
 
-      - name: Install Composer Dependencies
-        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --optimize-autoloader
+      - name: 3. Install Composer Dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: Build Frontend Assets
+      - name: 4. Build Frontend Assets
         run: |
           npm ci
           npm run build
 
-      - name: Sync Laravel Core Source
-        uses: SamKirland/FTP-Deploy-Action@v4.3.5
+      - name: 5. Sync Laravel Core Source via FTP
+        uses: SamKirsch/ftp-deploy-action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -39,10 +41,11 @@ jobs:
             **/.git*/**
             **/public/**
             **/node_modules/**
+            **/tests/**
             .env
 
-      - name: Sync Public Directory Assets
-        uses: SamKirland/FTP-Deploy-Action@v4.3.5
+      - name: 6. Sync Public Directory Assets via FTP
+        uses: SamKirsch/ftp-deploy-action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -52,4 +55,3 @@ jobs:
           exclude: |
             index.php
             .htaccess
-            
