@@ -9,49 +9,18 @@ jobs:
   web-deploy:
     name: Sync Code and Trigger Deployment
     runs-on: ubuntu-latest
-
     steps:
-      - name: 1. Checkout Source Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: 2. Setup PHP Environment
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, dom, fileinfo, mysql, gd, curl
-
-      - name: 3. Install Composer Dependencies
-        run: |
-          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-      - name: 4. Build Frontend Assets
-        run: |
-          npm ci
-          npm run build
-
-      - name: 5. Sync Laravel Core Source via FTP
-        uses: SamKirsch/ftp-deploy-action@v4.3.5
+      - name: Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /rosevilla_core/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/public/**
-            **/node_modules/**
-            **/tests/**
-            .env
+          server-dir: /public_html/   # அல்லது உங்கள் cPanel Rose Villa folder path
 
-      - name: 6. Sync Public Directory Assets via FTP
-        uses: SamKirsch/ftp-deploy-action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./public/
-          server-dir: /public_html/
-          exclude: |
-            index.php
-            .htaccess
+      - name: Trigger Deployment Webhook
+        run: |
+          curl -s "https://rosevillaheritagehomes.com/deploy.php?key=${{ secrets.DEPLOY_KEY }}"
