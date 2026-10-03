@@ -159,6 +159,20 @@
             box-shadow: none !important;
         }
     </style>
+    <noscript>
+        <style>
+            .page-fade-in { opacity: 1 !important; }
+        </style>
+    </noscript>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (document.body && !document.body.classList.contains('ready')) {
+                    document.body.classList.add('ready');
+                }
+            }, 300);
+        });
+    </script>
 </head>
 <body class="font-sans text-rose-text antialiased bg-white page-fade-in" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 100)" :class="{ 'ready': ready }">
     @php

@@ -1,0 +1,54 @@
+name: Deploy Laravel to LankaHost cPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  laravel-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, fileinfo, mysql, gd
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --optimize-autoloader
+
+      - name: Build Frontend Assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync Laravel Core Source
+        uses: SamKirland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /rosevilla_core/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/public/**
+            **/node_modules/**
+            .env
+
+      - name: Sync Public Directory Assets
+        uses: SamKirland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./public/
+          server-dir: /public_html/
+          exclude: |
+            index.php
+            .htaccess
