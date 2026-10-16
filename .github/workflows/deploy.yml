@@ -19,7 +19,11 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ./   # அல்லது உங்கள் cPanel Rose Villa folder path
+          server-dir: ./
+          exclude: |
+            **/storage/**
+            .env
+            node_modules
 
       - name: Trigger Deployment Webhook
         run: |
