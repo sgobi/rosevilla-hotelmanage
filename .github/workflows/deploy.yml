@@ -21,10 +21,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ./
           exclude: |
-            **/storage/**
-            .env
-            node_modules
-
-      - name: Trigger Deployment Webhook
-        run: |
-          curl -s "https://rosevillaheritagehomes.com/deploy.php?key=${{ secrets.DEPLOY_KEY }}"
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
