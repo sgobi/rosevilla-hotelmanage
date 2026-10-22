@@ -1,15 +1,35 @@
+@props(['content' => null])
+
+@php
+    $content = $content ?? \App\Models\ContentSetting::pluck('value', 'key');
+    $phone = !empty($content['contact_phone']) ? $content['contact_phone'] : '+94 76 569 2476';
+    $email = !empty($content['contact_email']) ? $content['contact_email'] : 'stay@rosevillaheritagehomes.com';
+    $address = !empty($content['contact_address']) ? $content['contact_address'] : 'Rosevilla Heritage Homes, Jaffna, Sri Lanka';
+    $footerText = !empty($content['footer_text']) ? $content['footer_text'] : 'A heritage boutique homestay in Jaffna offering courtyard evenings, timeless architecture, and warm Northern hospitality.';
+    $siteTitle = !empty($content['site_title']) ? $content['site_title'] : 'ROSE VILLA';
+    $logoPath = $content['logo_path'] ?? null;
+    $cleanWhatsapp = preg_replace('/[^0-9]/', '', $phone);
+    if (empty($cleanWhatsapp)) {
+        $cleanWhatsapp = '94765692476';
+    }
+@endphp
+
 <!-- 11. FOOTER -->
 <footer class="bg-heritageGreen text-white py-16 px-6 lg:px-12 border-t border-white/10">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
         <div class="md:col-span-4 space-y-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-roseRed shadow-sm">
-                    <i class="fa-solid fa-rose text-lg"></i>
-                </div>
-                <span class="font-serif font-bold text-xl tracking-wider text-white">ROSE VILLA</span>
+                @if($logoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($logoPath))
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" alt="{{ $siteTitle }}" class="h-12 w-auto object-contain">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-roseRed shadow-sm">
+                        <i class="fa-solid fa-rose text-lg"></i>
+                    </div>
+                    <span class="font-serif font-bold text-xl tracking-wider text-white">{{ $siteTitle }}</span>
+                @endif
             </div>
             <p class="text-creamBg/80 text-xs leading-relaxed max-w-sm">
-                A heritage boutique homestay in Jaffna offering courtyard evenings, timeless architecture, and warm Northern hospitality.
+                {{ $footerText }}
             </p>
             <div class="flex items-center gap-4 pt-2 text-lg text-creamBg">
                 <a href="#" class="hover:text-antiqueGold transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
@@ -31,18 +51,18 @@
 
         <div class="md:col-span-3 space-y-3">
             <h3 class="font-serif font-bold text-sm text-antiqueGold tracking-wider uppercase">Contact</h3>
-            <p class="text-xs text-creamBg/80 leading-relaxed">
-                Jaffna, Northern Province, Sri Lanka<br>
-                Phone: +94 21 222 4567<br>
-                WhatsApp: +94 77 123 4567<br>
-                Email: stay@rosevilla.lk
-            </p>
+            <div class="text-xs text-creamBg/80 leading-relaxed space-y-1">
+                <p>{{ $address }}</p>
+                <p>Phone: <a href="tel:{{ $phone }}" class="hover:text-white transition-colors">{{ $phone }}</a></p>
+                <p>WhatsApp: <a href="https://wa.me/{{ $cleanWhatsapp }}" target="_blank" class="hover:text-white transition-colors">+{{ $cleanWhatsapp }}</a></p>
+                <p>Email: <a href="mailto:{{ $email }}" class="hover:text-white transition-colors">{{ $email }}</a></p>
+            </div>
         </div>
 
         <div class="md:col-span-3 space-y-3">
             <h3 class="font-serif font-bold text-sm text-antiqueGold tracking-wider uppercase">Newsletter</h3>
             <p class="text-xs text-creamBg/80">Subscribe for seasonal offers and Jaffna travel guides.</p>
-            <form onsubmit="event.preventDefault(); alert('Thank you for subscribing to Rose Villa updates!');" class="flex gap-2">
+            <form onsubmit="event.preventDefault(); alert('Thank you for subscribing to updates!');" class="flex gap-2">
                 <input type="email" placeholder="Your email" required class="bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white placeholder-creamBg/50 focus:outline-none flex-1">
                 <button type="submit" class="bg-antiqueGold hover:bg-goldHover text-white px-4 py-2.5 rounded-xl text-xs font-semibold">Join</button>
             </form>
@@ -50,7 +70,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-creamBg/60">
-        <p>&copy; {{ date('Y') }} Rose Villa Heritage Homes. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} {{ $siteTitle }}. All rights reserved.</p>
         <p class="mt-2 sm:mt-0">Designed with heritage-luxury tone for Jaffna, Sri Lanka.</p>
     </div>
 </footer>

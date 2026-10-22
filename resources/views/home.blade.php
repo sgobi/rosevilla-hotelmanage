@@ -12,7 +12,7 @@
     <x-landing.culinary />
 
     <!-- 6. Reserve the Garden & Events -->
-    <x-landing.events :garden="$garden" />
+    <x-landing.events :garden="$garden" :content="$content" />
 
     <!-- 7. Gallery -->
     <x-landing.gallery :gallery="$gallery" />
@@ -24,5 +24,5 @@
     <x-landing.booking :rooms="$rooms" :bookedDatesByRoom="$bookedDatesByRoom" :bookedDatesGarden="$bookedDatesGarden" />
 
     <!-- 10. Find Us & Map -->
-    <x-landing.find-us />
+    <x-landing.find-us :content="$content" />
 </x-landing-layout>
