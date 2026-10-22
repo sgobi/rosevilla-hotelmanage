@@ -96,23 +96,29 @@ class Reservation extends Model
     protected static function booted()
     {
         static::saving(function ($reservation) {
+            if (!empty($reservation->room_id) && empty($reservation->room_ids)) {
+                $reservation->room_ids = [$reservation->room_id];
+            } elseif (!empty($reservation->room_ids) && empty($reservation->room_id)) {
+                $reservation->room_id = $reservation->room_ids[0];
+            }
+
             if ($reservation->check_in && $reservation->check_out) {
-                $days = max(1, $reservation->check_in->diffInDays($reservation->check_out));
+                $days = max(1, (int) $reservation->check_in->diffInDays($reservation->check_out));
                 $totalPrice = 0;
 
-                if ($reservation->room_ids) {
+                if (!empty($reservation->room_ids)) {
                     $rooms = Room::whereIn('id', $reservation->room_ids)->get();
                     foreach ($rooms as $room) {
                         $totalPrice += $room->price_per_night * $days;
                     }
-                } elseif ($reservation->room_id) {
+                } elseif (!empty($reservation->room_id)) {
                     $room = Room::find($reservation->room_id);
                     if ($room) {
                         $totalPrice = $room->price_per_night * $days;
                     }
                 }
 
-                if ($totalPrice > 0) {
+                if ($totalPrice > 0 || !empty($reservation->room_ids) || !empty($reservation->room_id)) {
                     $reservation->total_price = $totalPrice;
                 }
                 

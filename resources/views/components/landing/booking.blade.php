@@ -80,9 +80,15 @@
                     </div>
                     <div id="room-selection-container">
                         <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Room Preference</label>
-                        <select id="room-type-select" name="room_preference" class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
-                            <option value="Heritage Room">Heritage Room (LKR 22,000 / night)</option>
-                            <option value="Garden Villa">Garden Villa (LKR 32,000 / night)</option>
+                        <select id="room-type-select" name="room_id" class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
+                            @php
+                                $roomList = ($rooms && count($rooms) > 0) ? $rooms : \App\Models\Room::where('is_active', true)->orderBy('price_per_night')->get();
+                            @endphp
+                            @foreach($roomList as $room)
+                                <option value="{{ $room->id }}" data-price="{{ $room->price_per_night }}">
+                                    {{ $room->title }} (LKR {{ number_format($room->price_per_night, 2) }} / night)
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -253,12 +259,20 @@
         const email = document.getElementById('guest-email')?.value || '';
         const stayType = document.getElementById('stay-type-input')?.value || 'Room';
         const checkin = document.getElementById('booking-checkin')?.value || '';
-        const checkout = document.getElementById('booking-checkout')?.value || '';
-        const msg = `Hello Rose Villa, I would like to request a reservation.%0A*Type:* ${stayType}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Email:* ${email}`;
+        const roomSelect = document.getElementById('room-type-select');
+        const selectedRoomText = (roomSelect && roomSelect.selectedIndex >= 0) ? roomSelect.options[roomSelect.selectedIndex].text.trim() : '';
+        const roomInfo = (stayType === 'Room' && selectedRoomText) ? `%0A*Room:* ${encodeURIComponent(selectedRoomText)}` : '';
+        const msg = `Hello Rose Villa, I would like to request a reservation.%0A*Type:* ${stayType}${roomInfo}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Email:* ${email}`;
         window.open(`https://wa.me/94771234567?text=${msg}`, '_blank');
     }
 
     function handleBookingSubmit(event) {
-        // Allows default form POST to Laravel controller if required fields are valid
+        const stayType = document.getElementById('stay-type-input')?.value;
+        const form = document.getElementById('booking-form');
+        if (stayType === 'Garden Event' && form) {
+            form.action = "{{ route('garden.store') }}";
+        } else if (form) {
+            form.action = "{{ route('reservations.store') }}";
+        }
     }
 </script>

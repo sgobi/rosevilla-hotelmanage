@@ -45,6 +45,7 @@
                                 <p><span class="font-medium">Check In:</span> {{ $reservation->check_in->format('M d, Y') }}</p>
                                 <p><span class="font-medium">Check Out:</span> {{ $reservation->check_out->format('M d, Y') }}</p>
                                 <p><span class="font-medium">Guests:</span> {{ $reservation->guests }}</p>
+                                <p><span class="font-medium">Room:</span> {{ $reservation->rooms()->pluck('title')->implode(', ') ?: 'Unassigned / Any' }}</p>
                             </div>
                         </div>
 
