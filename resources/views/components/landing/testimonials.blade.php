@@ -1,5 +1,11 @@
 @props(['reviews' => null])
 
+@php
+    $reviewList = ($reviews && count($reviews) > 0)
+        ? $reviews
+        : \App\Models\Review::where('is_published', true)->latest()->take(3)->get();
+@endphp
+
 <!-- 8. GUEST STORIES (TESTIMONIALS) -->
 <section class="py-24 px-6 lg:px-12 max-w-7xl mx-auto" x-data="{ reviewModalOpen: false }">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
@@ -17,50 +23,43 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-stoneBeige/40 rounded-3xl p-8 border border-stoneBeige shadow-sm flex flex-col justify-between">
-            <div class="space-y-4">
-                <div class="text-antiqueGold flex gap-1 text-sm">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        @forelse($reviewList as $review)
+            <div class="bg-stoneBeige/40 rounded-3xl p-8 border border-stoneBeige shadow-sm flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="text-antiqueGold flex gap-1 text-sm">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= ($review->rating ?? 5))
+                                <i class="fa-solid fa-star"></i>
+                            @else
+                                <i class="fa-regular fa-star text-stoneBeige"></i>
+                            @endif
+                        @endfor
+                    </div>
+                    <p class="text-darkText/80 text-sm leading-relaxed italic">
+                        "{{ $review->comment }}"
+                    </p>
                 </div>
-                <p class="text-darkText/80 text-sm leading-relaxed italic">
-                    "Staying at Rose Villa was the highlight of our Jaffna trip. The historic architecture, peaceful mornings in the garden, and genuine warmth made us feel right at home."
-                </p>
-            </div>
-            <div class="pt-6 border-t border-stoneBeige/60 mt-6">
-                <h3 class="font-serif font-bold text-heritageGreen text-base">Anjali & Ramesh</h3>
-                <span class="text-xs text-darkText/60">Colombo, Sri Lanka</span>
-            </div>
-        </div>
-
-        <div class="bg-stoneBeige/40 rounded-3xl p-8 border border-stoneBeige shadow-sm flex flex-col justify-between">
-            <div class="space-y-4">
-                <div class="text-antiqueGold flex gap-1 text-sm">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                <div class="pt-6 border-t border-stoneBeige/60 mt-6">
+                    <h3 class="font-serif font-bold text-heritageGreen text-base">{{ $review->guest_name }}</h3>
+                    <span class="text-xs text-darkText/60">{{ $review->source ?? 'Verified Guest' }}</span>
                 </div>
-                <p class="text-darkText/80 text-sm leading-relaxed italic">
-                    "An absolute sanctuary of calm. The home-cooked Jaffna breakfast was outstanding, and the rooms combine old-world charm with impeccable cleanliness."
-                </p>
             </div>
-            <div class="pt-6 border-t border-stoneBeige/60 mt-6">
-                <h3 class="font-serif font-bold text-heritageGreen text-base">Dr. Marcus Vance</h3>
-                <span class="text-xs text-darkText/60">London, United Kingdom</span>
-            </div>
-        </div>
-
-        <div class="bg-stoneBeige/40 rounded-3xl p-8 border border-stoneBeige shadow-sm flex flex-col justify-between">
-            <div class="space-y-4">
-                <div class="text-antiqueGold flex gap-1 text-sm">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        @empty
+            <div class="bg-stoneBeige/40 rounded-3xl p-8 border border-stoneBeige shadow-sm flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="text-antiqueGold flex gap-1 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-darkText/80 text-sm leading-relaxed italic">
+                        "Staying at Rose Villa was the highlight of our Jaffna trip. The historic architecture, peaceful mornings in the garden, and genuine warmth made us feel right at home."
+                    </p>
                 </div>
-                <p class="text-darkText/80 text-sm leading-relaxed italic">
-                    "We hosted our family reunion dinner in the garden. The ambiance under the palm trees was magical. Our guests are still talking about how wonderful it was!"
-                </p>
+                <div class="pt-6 border-t border-stoneBeige/60 mt-6">
+                    <h3 class="font-serif font-bold text-heritageGreen text-base">Anjali & Ramesh</h3>
+                    <span class="text-xs text-darkText/60">Colombo, Sri Lanka</span>
+                </div>
             </div>
-            <div class="pt-6 border-t border-stoneBeige/60 mt-6">
-                <h3 class="font-serif font-bold text-heritageGreen text-base">Kavitha Selvarajah</h3>
-                <span class="text-xs text-darkText/60">Jaffna, Sri Lanka</span>
-            </div>
-        </div>
+        @endforelse
     </div>
 
     <!-- Review Modal with Laravel Form submission -->
