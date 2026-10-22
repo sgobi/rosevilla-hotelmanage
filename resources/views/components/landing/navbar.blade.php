@@ -1,12 +1,11 @@
 <nav x-data="{
-        scrolled: false,
         mobileOpen: false,
         langOpen: false,
         currencyOpen: false
-     }" x-init="scrolled = (window.pageYOffset > 20)" @scroll.window="scrolled = (window.pageYOffset > 20)" :class="{
-        'bg-creamBg/95 backdrop-blur-md shadow-md py-3 border-b border-stoneBeige text-darkText': scrolled,
-        'bg-heritageGreen/75 backdrop-blur-md py-4 border-b border-white/10 text-white': !scrolled
-     }" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 lg:px-12" id="navbar">
+     }"
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 sm:px-6 lg:px-12 py-3.5 bg-heritageGreen/90 backdrop-blur-md border-b border-white/10 text-white shadow-md"
+    id="navbar">
+
     <div class="max-w-7xl mx-auto flex items-center justify-between">
 
         <!-- DYNAMIC LOGO / BRANDING -->
@@ -27,57 +26,45 @@
                     <i class="fa-solid fa-rose text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-serif font-bold text-xl tracking-wider text-white">ROSE VILLA</span>
-                    <span class="text-[10px] tracking-widest uppercase text-creamBg/80 -mt-1 font-sans font-semibold">
+                    <span class="font-serif font-bold text-lg sm:text-xl tracking-wider text-white">ROSE VILLA</span>
+                    <span
+                        class="text-[9px] sm:text-[10px] tracking-widest uppercase text-creamBg/80 -mt-1 font-sans font-semibold">
                         Heritage Homes · Jaffna
                     </span>
                 </div>
             @endif
         </a>
 
-        <!-- Desktop Navigation Links inside a High-Contrast Pill Container -->
-        <div class="hidden xl:flex items-center gap-6 font-semibold text-sm transition-all duration-300 px-6 py-2 rounded-full shadow-lg"
-            :class="{
-                'bg-transparent border-transparent shadow-none': scrolled,
-                'bg-black/35 backdrop-blur-md border border-white/20 text-white': !scrolled
-             }">
-            <a href="#about" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+        <!-- Desktop Navigation Links (Visible on XL screens) -->
+        <div
+            class="hidden xl:flex items-center gap-6 font-semibold text-sm transition-all duration-300 px-6 py-2 rounded-full shadow-lg bg-black/25 backdrop-blur-md border border-white/20 text-white">
+            <a href="#about" class="transition-colors text-white hover:text-antiqueGold">
                 The Heritage
             </a>
-            <a href="#rooms" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+            <a href="#rooms" class="transition-colors text-white hover:text-antiqueGold">
                 Sanctuary Stays
             </a>
-            <a href="#culinary" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+            <a href="#culinary" class="transition-colors text-white hover:text-antiqueGold">
                 Flavors of Jaffna
             </a>
-            <a href="#gallery" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+            <a href="#gallery" class="transition-colors text-white hover:text-antiqueGold">
                 Gallery
             </a>
-            <a href="#events" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+            <a href="#events" class="transition-colors text-white hover:text-antiqueGold">
                 Garden Events
             </a>
-            <a href="#find-us" class="transition-colors hover:text-antiqueGold"
-                :class="{ 'text-darkText hover:text-heritageGreen': scrolled, 'text-white': !scrolled }">
+            <a href="#find-us" class="transition-colors text-white hover:text-antiqueGold">
                 Find Us
             </a>
         </div>
 
         <!-- Desktop Right Controls: Currency, Language & CTA -->
-        <div class="hidden md:flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-3 lg:gap-4">
 
             <!-- Currency Switcher Dropdown -->
             <div class="relative" @click.away="currencyOpen = false">
                 <button type="button" @click="currencyOpen = !currencyOpen"
-                    class="text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer backdrop-blur-md"
-                    :class="{
-                        'bg-stoneBeige/60 border-stoneBeige text-darkText hover:bg-stoneBeige': scrolled,
-                        'bg-black/35 border-white/30 text-white hover:bg-black/50': !scrolled
-                    }">
+                    class="text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer backdrop-blur-md bg-black/25 border-white/30 text-white hover:bg-black/40">
                     <span>{{ session('currency', 'LKR') }}</span>
                     <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200"
                         :class="{ 'rotate-180': currencyOpen }"></i>
@@ -98,11 +85,7 @@
             <!-- Language Switcher Dropdown -->
             <div class="relative" @click.away="langOpen = false">
                 <button type="button" @click="langOpen = !langOpen"
-                    class="text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer backdrop-blur-md"
-                    :class="{
-                        'bg-stoneBeige/60 border-stoneBeige text-darkText hover:bg-stoneBeige': scrolled,
-                        'bg-black/35 border-white/30 text-white hover:bg-black/50': !scrolled
-                    }">
+                    class="text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer backdrop-blur-md bg-black/25 border-white/30 text-white hover:bg-black/40">
                     <span>{{ strtoupper(app()->getLocale() ?? 'EN') }}</span>
                     <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200"
                         :class="{ 'rotate-180': langOpen }"></i>
@@ -122,15 +105,15 @@
 
             <!-- Reserve Now Button -->
             <a href="#reserve"
-                class="bg-antiqueGold hover:bg-goldHover text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5">
+                class="bg-antiqueGold hover:bg-goldHover text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5">
                 Reserve Now
             </a>
         </div>
 
-        <!-- Mobile Menu Toggle Button -->
+        <!-- Mobile Menu Toggle Button (Visible below XL screens) -->
         <button type="button" id="menu-btn" @click="mobileOpen = !mobileOpen"
-            class="xl:hidden text-2xl focus:outline-none p-2 transition-colors duration-300"
-            :class="{ 'text-darkText': scrolled, 'text-white': !scrolled }" aria-label="Toggle navigation menu">
+            class="xl:hidden text-2xl focus:outline-none p-2 text-white transition-colors duration-300 cursor-pointer"
+            aria-label="Toggle navigation menu">
             <i class="fa-solid" :class="{ 'fa-xmark': mobileOpen, 'fa-bars': !mobileOpen }"></i>
         </button>
     </div>
@@ -138,7 +121,8 @@
     <!-- Mobile Drawer / Menu -->
     <div x-show="mobileOpen" x-cloak x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
-        class="xl:hidden absolute top-full left-0 right-0 bg-creamBg border-b border-stoneBeige shadow-2xl py-6 px-8 flex flex-col gap-4 text-darkText"
+        @click.away="mobileOpen = false"
+        class="xl:hidden absolute top-full left-0 right-0 bg-creamBg border-b border-stoneBeige shadow-2xl py-6 px-6 sm:px-8 flex flex-col gap-4 text-darkText"
         id="mobile-menu">
         <a href="#about" @click="mobileOpen = false"
             class="mobile-link text-base font-medium py-1 hover:text-heritageGreen transition-colors">The Heritage</a>
