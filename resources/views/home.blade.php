@@ -21,7 +21,7 @@
     <x-landing.testimonials :reviews="$reviews" />
 
     <!-- 9. Booking Form -->
-    <x-landing.booking :rooms="$rooms" />
+    <x-landing.booking :rooms="$rooms" :bookedDatesByRoom="$bookedDatesByRoom" :bookedDatesGarden="$bookedDatesGarden" />
 
     <!-- 10. Find Us & Map -->
     <x-landing.find-us />

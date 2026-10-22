@@ -1,4 +1,61 @@
-@props(['rooms' => null])
+@props(['rooms' => null, 'bookedDatesByRoom' => '{}', 'bookedDatesGarden' => '[]'])
+
+<style>
+    .flatpickr-calendar {
+        font-family: inherit !important;
+        border-radius: 1.25rem !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        border: 1px solid #e7e5e4 !important;
+        background: #fffdfa !important;
+        overflow: hidden;
+    }
+    .flatpickr-months {
+        background: #1e3d34 !important;
+        color: #ffffff !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        padding: 8px 0 !important;
+    }
+    .flatpickr-months .flatpickr-month {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
+    .flatpickr-current-month .cur-month, 
+    .flatpickr-current-month input.cur-year {
+        font-weight: 700 !important;
+        color: #ffffff !important;
+    }
+    .flatpickr-weekdays {
+        background: #1e3d34 !important;
+    }
+    span.flatpickr-weekday {
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-weight: 600 !important;
+        font-size: 11px !important;
+    }
+    .flatpickr-day.selected, 
+    .flatpickr-day.startRange, 
+    .flatpickr-day.endRange {
+        background: #1e3d34 !important;
+        border-color: #1e3d34 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    .flatpickr-day.inRange {
+        background: #e7eee8 !important;
+        border-color: #e7eee8 !important;
+        box-shadow: -5px 0 0 #e7eee8, 5px 0 0 #e7eee8 !important;
+    }
+    .flatpickr-day.flatpickr-disabled,
+    .flatpickr-day.booked-date,
+    .flatpickr-day.booked-date:hover {
+        color: #ef4444 !important;
+        background: #fee2e2 !important;
+        text-decoration: line-through !important;
+        opacity: 0.7 !important;
+        cursor: not-allowed !important;
+        border-radius: 6px !important;
+    }
+</style>
 
 <!-- 9. BOOKING FORM -->
 <section id="reserve" class="py-24 px-6 lg:px-12 bg-heritageGreen text-white">
@@ -49,24 +106,37 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Check-In Date</label>
-                        <input type="date" 
-                               name="check_in" 
-                               id="booking-checkin"
-                               onchange="handleCheckinChange(); updatePriceCalculation();"
-                               required 
-                               class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
+                <div class="space-y-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Check-In Date</label>
+                            <input type="text" 
+                                   name="check_in" 
+                                   id="booking-checkin"
+                                   placeholder="Select Check-in Date..."
+                                   required 
+                                   readonly
+                                   class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Check-Out Date</label>
+                            <input type="text" 
+                                   name="check_out" 
+                                   id="booking-checkout"
+                                   placeholder="Select Check-out Date..."
+                                   required 
+                                   readonly
+                                   class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen cursor-pointer">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Check-Out Date</label>
-                        <input type="date" 
-                               name="check_out" 
-                               id="booking-checkout"
-                               onchange="updatePriceCalculation()"
-                               required 
-                               class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
+                    <!-- Calendar Availability Legend -->
+                    <div class="flex items-center justify-between text-[11px] text-darkText/60 px-1 pt-1">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm"></span> Available Dates
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-sm"></span> Red Strikethrough = Already Booked
+                        </span>
                     </div>
                 </div>
 
@@ -219,6 +289,107 @@
 </section>
 
 <script>
+    window.bookedDatesByRoom = {!! is_string($bookedDatesByRoom) ? $bookedDatesByRoom : json_encode($bookedDatesByRoom) !!};
+    window.bookedDatesGarden = {!! is_string($bookedDatesGarden) ? $bookedDatesGarden : json_encode($bookedDatesGarden) !!};
+
+    let fpCheckIn = null;
+    let fpCheckOut = null;
+
+    function formatDateToYMD(date) {
+        if (!date) return '';
+        const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+        return d.toISOString().split('T')[0];
+    }
+
+    function isDateBooked(dateStr) {
+        if (!dateStr) return false;
+        const stayType = document.getElementById('stay-type-input')?.value || 'Room';
+        const roomSelect = document.getElementById('room-type-select');
+
+        if (stayType === 'Garden Event' && window.bookedDatesGarden) {
+            for (let j = 0; j < window.bookedDatesGarden.length; j++) {
+                const range = window.bookedDatesGarden[j];
+                if (dateStr >= range.check_in && dateStr <= range.check_out) {
+                    return true;
+                }
+            }
+        }
+
+        if (stayType === 'Room' && roomSelect && window.bookedDatesByRoom) {
+            const selectedRoomId = roomSelect.value;
+            if (selectedRoomId && window.bookedDatesByRoom[selectedRoomId]) {
+                const ranges = window.bookedDatesByRoom[selectedRoomId];
+                for (let j = 0; j < ranges.length; j++) {
+                    const range = ranges[j];
+                    const isBooked = (range.check_in === range.check_out)
+                        ? (dateStr === range.check_in)
+                        : (dateStr >= range.check_in && dateStr < range.check_out);
+                    if (isBooked) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function initFlatpickrCalendar() {
+        if (typeof flatpickr === 'undefined') {
+            setTimeout(initFlatpickrCalendar, 100);
+            return;
+        }
+
+        const commonConfig = {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "M d, Y",
+            altInputClass: "w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen cursor-pointer",
+            minDate: "today",
+            disableMobile: true,
+            disable: [
+                function(date) {
+                    return isDateBooked(formatDateToYMD(date));
+                }
+            ],
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const dateStr = formatDateToYMD(dayElem.dateObj);
+                if (isDateBooked(dateStr)) {
+                    dayElem.classList.add('booked-date');
+                    dayElem.title = "Already Booked / Unavailable";
+                }
+            }
+        };
+
+        fpCheckIn = flatpickr("#booking-checkin", {
+            ...commonConfig,
+            onChange: function(selectedDates, dateStr) {
+                if (selectedDates[0]) {
+                    const nextDay = new Date(selectedDates[0]);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    if (fpCheckOut) {
+                        fpCheckOut.set("minDate", formatDateToYMD(nextDay));
+                        const currentCheckout = fpCheckOut.selectedDates[0];
+                        if (!currentCheckout || currentCheckout <= selectedDates[0]) {
+                            fpCheckOut.setDate(nextDay, true);
+                        }
+                    }
+                }
+                updatePriceCalculation();
+            }
+        });
+
+        fpCheckOut = flatpickr("#booking-checkout", {
+            ...commonConfig,
+            onChange: function(selectedDates, dateStr) {
+                updatePriceCalculation();
+            }
+        });
+    }
+
+    function refreshCalendarAvailability() {
+        if (fpCheckIn) fpCheckIn.redraw();
+        if (fpCheckOut) fpCheckOut.redraw();
+        updatePriceCalculation();
+    }
+
     function goToStep(step) {
         const step1 = document.getElementById('form-step-1');
         const step2 = document.getElementById('form-step-2');
@@ -226,15 +397,16 @@
         const ind2 = document.getElementById('step-indicator-2');
 
         if (step === 2) {
-            // Basic step 1 validation
             const checkin = document.getElementById('booking-checkin');
             const checkout = document.getElementById('booking-checkout');
             if (checkin && !checkin.value) {
-                checkin.focus();
+                if (fpCheckIn) fpCheckIn.open();
+                else checkin.focus();
                 return;
             }
             if (checkout && !checkout.value) {
-                checkout.focus();
+                if (fpCheckOut) fpCheckOut.open();
+                else checkout.focus();
                 return;
             }
 
@@ -251,19 +423,6 @@
             ind2.classList.add('bg-stoneBeige', 'text-darkText/50');
             ind1.classList.remove('bg-stoneBeige', 'text-darkText/50');
             ind1.classList.add('bg-heritageGreen', 'text-white');
-        }
-    }
-
-    function handleCheckinChange() {
-        const checkinInput = document.getElementById('booking-checkin');
-        const checkoutInput = document.getElementById('booking-checkout');
-        if (!checkinInput || !checkoutInput || !checkinInput.value) return;
-
-        checkoutInput.min = checkinInput.value;
-        if (!checkoutInput.value || checkoutInput.value <= checkinInput.value) {
-            const nextDay = new Date(checkinInput.value);
-            nextDay.setDate(nextDay.getDate() + 1);
-            checkoutInput.value = nextDay.toISOString().split('T')[0];
         }
     }
 
@@ -339,7 +498,7 @@
             if (roomContainer) roomContainer.style.display = 'none';
         }
 
-        updatePriceCalculation();
+        refreshCalendarAvailability();
     }
 
     function selectRoom(roomName) {
@@ -353,7 +512,7 @@
             }
         }
         setStayType('Room');
-        updatePriceCalculation();
+        refreshCalendarAvailability();
     }
 
     function selectStayType(type) {
@@ -390,6 +549,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        initFlatpickrCalendar();
         updatePriceCalculation();
     });
 </script>
