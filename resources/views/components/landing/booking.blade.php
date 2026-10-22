@@ -254,6 +254,69 @@
         }
     }
 
+    function handleCheckinChange() {
+        const checkinInput = document.getElementById('booking-checkin');
+        const checkoutInput = document.getElementById('booking-checkout');
+        if (!checkinInput || !checkoutInput || !checkinInput.value) return;
+
+        checkoutInput.min = checkinInput.value;
+        if (!checkoutInput.value || checkoutInput.value <= checkinInput.value) {
+            const nextDay = new Date(checkinInput.value);
+            nextDay.setDate(nextDay.getDate() + 1);
+            checkoutInput.value = nextDay.toISOString().split('T')[0];
+        }
+    }
+
+    function updatePriceCalculation() {
+        const stayType = document.getElementById('stay-type-input')?.value || 'Room';
+        const checkinInput = document.getElementById('booking-checkin');
+        const checkoutInput = document.getElementById('booking-checkout');
+        const roomSelect = document.getElementById('room-type-select');
+
+        const roomTitleEl = document.getElementById('summary-room-title');
+        const roomRateEl = document.getElementById('summary-room-rate');
+        const durationEl = document.getElementById('summary-duration');
+        const totalDisplayEl = document.getElementById('summary-total-display');
+        const step2TextEl = document.getElementById('step2-summary-text');
+        const step2PriceEl = document.getElementById('step2-summary-price');
+
+        let days = 1;
+        if (checkinInput && checkoutInput && checkinInput.value && checkoutInput.value) {
+            const d1 = new Date(checkinInput.value);
+            const d2 = new Date(checkoutInput.value);
+            const diffTime = d2.getTime() - d1.getTime();
+            const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+            days = Math.max(1, diffDays);
+        }
+
+        let title = 'Heritage Room';
+        let unitPrice = 8000;
+        let unitLabel = 'night';
+
+        if (stayType === 'Garden Event') {
+            title = 'Garden Event Sanctuary';
+            unitPrice = 30000;
+            unitLabel = 'day';
+        } else if (roomSelect && roomSelect.selectedIndex >= 0) {
+            const opt = roomSelect.options[roomSelect.selectedIndex];
+            unitPrice = parseFloat(opt.getAttribute('data-price')) || 8000;
+            title = opt.getAttribute('data-title') || opt.text.split('(')[0].trim();
+        }
+
+        const total = unitPrice * days;
+        const formattedUnitPrice = 'LKR ' + unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedTotal = 'LKR ' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const durationText = `${days} ${unitLabel}${days > 1 ? 's' : ''}`;
+
+        if (roomTitleEl) roomTitleEl.textContent = title;
+        if (roomRateEl) roomRateEl.textContent = `${formattedUnitPrice} / ${unitLabel}`;
+        if (durationEl) durationEl.textContent = durationText;
+        if (totalDisplayEl) totalDisplayEl.textContent = formattedTotal;
+
+        if (step2TextEl) step2TextEl.textContent = `${title} • ${durationText}`;
+        if (step2PriceEl) step2PriceEl.textContent = formattedTotal;
+    }
+
     function setStayType(type) {
         const roomBtn = document.getElementById('type-room-btn');
         const eventBtn = document.getElementById('type-event-btn');
@@ -275,6 +338,8 @@
             roomBtn.classList.add('bg-stoneBeige/50', 'text-darkText', 'border-stoneBeige');
             if (roomContainer) roomContainer.style.display = 'none';
         }
+
+        updatePriceCalculation();
     }
 
     function selectRoom(roomName) {
@@ -288,6 +353,7 @@
             }
         }
         setStayType('Room');
+        updatePriceCalculation();
     }
 
     function selectStayType(type) {
@@ -302,10 +368,14 @@
         const email = document.getElementById('guest-email')?.value || '';
         const stayType = document.getElementById('stay-type-input')?.value || 'Room';
         const checkin = document.getElementById('booking-checkin')?.value || '';
+        const checkout = document.getElementById('booking-checkout')?.value || '';
         const roomSelect = document.getElementById('room-type-select');
         const selectedRoomText = (roomSelect && roomSelect.selectedIndex >= 0) ? roomSelect.options[roomSelect.selectedIndex].text.trim() : '';
         const roomInfo = (stayType === 'Room' && selectedRoomText) ? `%0A*Room:* ${encodeURIComponent(selectedRoomText)}` : '';
-        const msg = `Hello Rose Villa, I would like to request a reservation.%0A*Type:* ${stayType}${roomInfo}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Email:* ${email}`;
+        const totalAmountText = document.getElementById('summary-total-display')?.textContent.trim() || '';
+        const durationText = document.getElementById('summary-duration')?.textContent.trim() || '';
+        const costInfo = totalAmountText ? `%0A*Duration:* ${encodeURIComponent(durationText)}%0A*Total Amount:* ${encodeURIComponent(totalAmountText)}` : '';
+        const msg = `Hello Rose Villa, I would like to request a reservation.%0A*Type:* ${stayType}${roomInfo}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}${costInfo}%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Email:* ${email}`;
         window.open(`https://wa.me/94771234567?text=${msg}`, '_blank');
     }
 
@@ -318,4 +388,8 @@
             form.action = "{{ route('reservations.store') }}";
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePriceCalculation();
+    });
 </script>
