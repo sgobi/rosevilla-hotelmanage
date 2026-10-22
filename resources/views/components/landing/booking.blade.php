@@ -382,6 +382,9 @@
                 updatePriceCalculation();
             }
         });
+
+        window.fpCheckIn = fpCheckIn;
+        window.fpCheckOut = fpCheckOut;
     }
 
     function refreshCalendarAvailability() {
@@ -389,6 +392,11 @@
         if (fpCheckOut) fpCheckOut.redraw();
         updatePriceCalculation();
     }
+
+    window.refreshCalendarAvailability = refreshCalendarAvailability;
+    window.setStayType = setStayType;
+    window.selectRoom = selectRoom;
+    window.updatePriceCalculation = updatePriceCalculation;
 
     function goToStep(step) {
         const step1 = document.getElementById('form-step-1');

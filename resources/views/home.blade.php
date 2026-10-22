@@ -1,6 +1,6 @@
 <x-landing-layout>
     <!-- 2. Hero Section -->
-    <x-landing.hero :content="$content" />
+    <x-landing.hero :content="$content" :rooms="$rooms" />
 
     <!-- 3. The Heritage & Courtyard Story -->
     <x-landing.about :content="$content" />
