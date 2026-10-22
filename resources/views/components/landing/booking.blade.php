@@ -55,6 +55,7 @@
                         <input type="date" 
                                name="check_in" 
                                id="booking-checkin"
+                               onchange="handleCheckinChange(); updatePriceCalculation();"
                                required 
                                class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
                     </div>
@@ -63,6 +64,7 @@
                         <input type="date" 
                                name="check_out" 
                                id="booking-checkout"
+                               onchange="updatePriceCalculation()"
                                required 
                                class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
                     </div>
@@ -80,12 +82,12 @@
                     </div>
                     <div id="room-selection-container">
                         <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Room Preference</label>
-                        <select id="room-type-select" name="room_id" class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
+                        <select id="room-type-select" name="room_id" onchange="updatePriceCalculation()" class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
                             @php
                                 $roomList = ($rooms && count($rooms) > 0) ? $rooms : \App\Models\Room::where('is_active', true)->orderBy('price_per_night')->get();
                             @endphp
                             @foreach($roomList as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price_per_night }}">
+                                <option value="{{ $room->id }}" data-price="{{ $room->price_per_night }}" data-title="{{ $room->title }}">
                                     {{ $room->title }} (LKR {{ number_format($room->price_per_night, 2) }} / night)
                                 </option>
                             @endforeach
@@ -93,7 +95,31 @@
                     </div>
                 </div>
 
-                <div class="pt-4 flex justify-end">
+                <!-- Live Total Price Breakdown Card -->
+                <div id="booking-price-card" class="bg-stoneBeige/60 border border-stoneBeige rounded-2xl p-4 sm:p-5 transition-all">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-heritageGreen flex items-center gap-1.5">
+                                <i class="fa-solid fa-calculator text-xs"></i> Total Price Calculation
+                            </span>
+                            <div id="price-calculation-breakdown" class="text-xs text-darkText/75 flex items-center gap-2 flex-wrap">
+                                <span id="summary-room-title" class="font-bold text-darkText">Heritage Room</span>
+                                <span class="text-darkText/30">•</span>
+                                <span id="summary-room-rate">LKR 8,000.00 / night</span>
+                                <span class="text-darkText/40 font-bold">×</span>
+                                <span id="summary-duration" class="font-bold text-heritageGreen">1 night</span>
+                            </div>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-darkText/50 block">Total Amount</span>
+                            <div id="summary-total-display" class="text-2xl font-serif font-black text-heritageGreen leading-tight">
+                                LKR 8,000.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end">
                     <button type="button" 
                             onclick="goToStep(2)" 
                             class="bg-heritageGreen text-white font-semibold px-8 py-3.5 rounded-xl shadow-md hover:bg-heritageGreen/90 transition-all text-sm">
@@ -104,6 +130,23 @@
 
             <!-- Step 2: Guest Details -->
             <div id="form-step-2" class="space-y-6 hidden">
+                <!-- Step 2 Summary Banner -->
+                <div class="bg-stoneBeige/40 border border-stoneBeige rounded-2xl px-5 py-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-xl bg-heritageGreen/10 text-heritageGreen flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-darkText/50 block">Booking Breakdown</span>
+                            <span class="text-xs font-semibold text-darkText" id="step2-summary-text">Heritage Room • 1 night</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-darkText/50 block">Total Amount</span>
+                        <span class="text-base font-serif font-black text-heritageGreen" id="step2-summary-price">LKR 8,000.00</span>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-heritageGreen mb-2">Full Name</label>
