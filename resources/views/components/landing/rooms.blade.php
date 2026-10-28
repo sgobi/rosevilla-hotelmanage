@@ -17,47 +17,132 @@
             @forelse($roomList as $index => $room)
                 @php
                     $isOdd = $index % 2 === 1;
-                    $mainImg = $room->featured_image 
+                    $featuredSrc = $room->featured_image 
                         ? (str_starts_with($room->featured_image, 'http') ? $room->featured_image : asset('storage/' . $room->featured_image)) 
                         : ($index === 0 ? asset('images/room-heritage-1.jpg') : asset('images/room-garden-1.jpg'));
-                    $gallery = is_array($room->gallery_urls) ? $room->gallery_urls : [];
+                    
+                    $rawGallery = is_array($room->gallery_urls) ? array_filter($room->gallery_urls) : [];
+                    
+                    // Compile all photos: featured photo first, followed by all gallery items
+                    $allPhotos = [];
+                    if (!empty($featuredSrc)) {
+                        $allPhotos[] = $featuredSrc;
+                    }
+                    foreach ($rawGallery as $url) {
+                        $src = str_starts_with($url, 'http') ? $url : asset('storage/' . $url);
+                        if (!in_array($src, $allPhotos)) {
+                            $allPhotos[] = $src;
+                        }
+                    }
+
+                    $mainImg = $allPhotos[0] ?? $featuredSrc;
                     $lkrPrice = number_format($room->price_per_night, 0);
                     $usdPrice = round($room->price_per_night / 300);
                     $imgElementId = 'room-main-img-' . $room->id;
                 @endphp
 
-                <div class="bg-creamBg rounded-3xl p-6 sm:p-10 shadow-lg border border-stoneBeige grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div x-data="{ 
+                        activeImg: '{{ $mainImg }}',
+                        isFading: false,
+                        activeIdx: 0,
+                        photos: {{ json_encode($allPhotos) }},
+                        selectPhoto(src, idx) {
+                            if (this.activeImg === src) return;
+                            this.isFading = true;
+                            this.activeIdx = idx;
+                            setTimeout(() => {
+                                this.activeImg = src;
+                                this.isFading = false;
+                            }, 120);
+                        },
+                        prevPhoto() {
+                            if (this.photos.length <= 1) return;
+                            let newIdx = (this.activeIdx - 1 + this.photos.length) % this.photos.length;
+                            this.selectPhoto(this.photos[newIdx], newIdx);
+                        },
+                        nextPhoto() {
+                            if (this.photos.length <= 1) return;
+                            let newIdx = (this.activeIdx + 1) % this.photos.length;
+                            this.selectPhoto(this.photos[newIdx], newIdx);
+                        }
+                     }"
+                     class="bg-creamBg rounded-3xl p-6 sm:p-10 shadow-lg border border-stoneBeige grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
                     <!-- Image Column -->
                     <div class="lg:col-span-6 space-y-4 {{ $isOdd ? 'lg:order-2' : '' }}">
-                        <div class="relative rounded-2xl overflow-hidden shadow-inner aspect-[4/3] bg-stoneBeige">
+                        <div class="relative rounded-2xl overflow-hidden shadow-inner aspect-[4/3] bg-stoneBeige group cursor-pointer"
+                             @click="typeof openLightbox === 'function' ? openLightbox(activeImg, '{{ addslashes($room->title) }}') : null"
+                             title="Click to view fullscreen">
                             <img id="{{ $imgElementId }}" 
+                                 :src="activeImg" 
                                  src="{{ $mainImg }}" 
                                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200';" 
                                  alt="{{ $room->title }}" 
-                                 class="w-full h-full object-cover transition-opacity duration-300">
-                            <div class="absolute top-4 left-4 bg-heritageGreen text-white text-xs font-semibold px-3.5 py-1.5 rounded-xl shadow">
+                                 :class="isFading ? 'opacity-30 scale-[0.99]' : 'opacity-100 scale-100'"
+                                 class="w-full h-full object-cover transition-all duration-200">
+                            
+                            <div class="absolute top-4 left-4 bg-heritageGreen text-white text-xs font-semibold px-3.5 py-1.5 rounded-xl shadow pointer-events-none z-10">
                                 <span class="price-tag" data-lkr="{{ $lkrPrice }}" data-usd="{{ $usdPrice }}">From LKR {{ $lkrPrice }} / night</span>
+                            </div>
+
+                            <!-- Photo Counter Badge (if multiple photos) -->
+                            <template x-if="photos.length > 1">
+                                <div class="absolute top-4 right-4 bg-black/60 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm shadow z-10 flex items-center gap-1.5 pointer-events-none">
+                                    <i class="fa-solid fa-camera text-[10px]"></i>
+                                    <span x-text="(activeIdx + 1) + ' / ' + photos.length"></span>
+                                </div>
+                            </template>
+
+                            <!-- Navigation arrows on hover (if multiple photos) -->
+                            <template x-if="photos.length > 1">
+                                <div class="absolute inset-x-0 inset-y-0 flex items-center justify-between px-3 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button type="button" 
+                                            @click.stop="prevPhoto()" 
+                                            class="pointer-events-auto h-9 w-9 rounded-full bg-black/60 hover:bg-heritageGreen text-white flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 focus:outline-none"
+                                            title="Previous photo">
+                                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                                    </button>
+                                    <button type="button" 
+                                            @click.stop="nextPhoto()" 
+                                            class="pointer-events-auto h-9 w-9 rounded-full bg-black/60 hover:bg-heritageGreen text-white flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 focus:outline-none"
+                                            title="Next photo">
+                                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- Fullscreen hint on bottom right -->
+                            <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[11px] font-medium px-2.5 py-1 rounded-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 shadow pointer-events-none z-10">
+                                <i class="fa-solid fa-expand text-[10px]"></i>
+                                <span>Fullscreen</span>
                             </div>
                         </div>
 
-                        <!-- Gallery Thumbnails -->
-                        @if(!empty($gallery))
-                            <div class="grid grid-cols-3 gap-3">
-                                <button type="button" 
-                                        onclick="changeImage('{{ $imgElementId }}', '{{ $mainImg }}')" 
-                                        class="rounded-xl overflow-hidden border-2 border-heritageGreen h-16 shadow-sm focus:outline-none transition-all hover:scale-105">
-                                    <img src="{{ $mainImg }}" alt="{{ $room->title }} Featured" class="w-full h-full object-cover">
-                                </button>
-                                @foreach(array_slice($gallery, 0, 2) as $thumb)
-                                    @php
-                                        $thumbSrc = str_starts_with($thumb, 'http') ? $thumb : asset('storage/' . $thumb);
-                                    @endphp
-                                    <button type="button" 
-                                            onclick="changeImage('{{ $imgElementId }}', '{{ $thumbSrc }}')" 
-                                            class="rounded-xl overflow-hidden border-2 border-transparent hover:border-heritageGreen h-16 shadow-sm focus:outline-none transition-all hover:scale-105">
-                                        <img src="{{ $thumbSrc }}" alt="{{ $room->title }} View" class="w-full h-full object-cover">
-                                    </button>
-                                @endforeach
+                        <!-- Gallery Thumbnails (looping through ALL photos) -->
+                        @if(count($allPhotos) > 1)
+                            <div class="space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px] text-darkText/60 px-1 font-medium">
+                                    <span>Gallery Photos ({{ count($allPhotos) }})</span>
+                                    <span class="text-[10px] text-heritageGreen font-semibold">Click to preview</span>
+                                </div>
+                                <div class="flex items-center gap-2.5 overflow-x-auto pb-2 pt-1 px-1 scrollbar-thin scrollbar-thumb-stoneBeige">
+                                    @foreach($allPhotos as $pIdx => $pSrc)
+                                        <button type="button" 
+                                                @click="selectPhoto('{{ $pSrc }}', {{ $pIdx }})" 
+                                                :class="activeIdx === {{ $pIdx }} 
+                                                    ? 'border-heritageGreen ring-2 ring-heritageGreen/40 shadow-md scale-105 opacity-100' 
+                                                    : 'border-transparent opacity-70 hover:opacity-100 hover:border-stoneBeige hover:scale-102'"
+                                                class="relative flex-shrink-0 w-16 h-14 sm:w-20 sm:h-16 rounded-xl overflow-hidden border-2 shadow-sm focus:outline-none transition-all duration-200 group bg-stoneBeige"
+                                                title="View photo {{ $pIdx + 1 }}">
+                                            <img src="{{ $pSrc }}" 
+                                                 alt="{{ $room->title }} Thumbnail {{ $pIdx + 1 }}" 
+                                                 onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=200';"
+                                                 class="w-full h-full object-cover">
+                                            <div x-show="activeIdx === {{ $pIdx }}" 
+                                                 class="absolute inset-0 bg-heritageGreen/15 pointer-events-none"></div>
+                                        </button>
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
                     </div>
