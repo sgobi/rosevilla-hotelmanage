@@ -7,7 +7,7 @@
         <i class="fa-solid fa-xmark"></i>
     </button>
     <div class="max-w-4xl max-h-[85vh] overflow-hidden rounded-3xl flex flex-col items-center">
-        <img id="lightbox-img" src="" alt="Enlarged view" class="max-h-[75vh] object-contain rounded-2xl shadow-2xl">
+        <img id="lightbox-img" src="" alt="Enlarged gallery view of Rose Villa Heritage Homes" class="max-h-[75vh] object-contain rounded-2xl shadow-2xl">
         <p id="lightbox-caption" class="text-white text-sm mt-4 text-center font-medium"></p>
     </div>
 </div>

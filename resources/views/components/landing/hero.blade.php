@@ -178,22 +178,31 @@
 
                 <!-- Room Select -->
                 <div x-show="stayType === 'Room'">
+                    @php
+                        $heroCurrency = \App\Helpers\CurrencyHelper::getCurrentCurrency();
+                    @endphp
                     <select id="hero-room" 
                             name="hero_room"
                             x-model="selectedRoom"
                             aria-label="Select Room"
                             class="w-full bg-creamBg border border-stoneBeige rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:border-heritageGreen focus:ring-2 focus:ring-heritageGreen/20 transition-all text-darkText cursor-pointer">
                         @foreach($roomList as $room)
-                            <option value="{{ $room->id }}">{{ $room->title }} (LKR {{ number_format($room->price_per_night, 0) }})</option>
+                            @php
+                                $roomPriceFormatted = \App\Helpers\CurrencyHelper::format($room->price_per_night, $heroCurrency);
+                            @endphp
+                            <option value="{{ $room->id }}">{{ $room->title }} ({{ $roomPriceFormatted }})</option>
                         @endforeach
                     </select>
                 </div>
 
                 <!-- Garden Venue Indicator -->
                 <div x-show="stayType === 'Garden Event'" x-cloak>
+                    @php
+                        $gardenPriceFormatted = \App\Helpers\CurrencyHelper::format(30000, $heroCurrency);
+                    @endphp
                     <div class="w-full bg-creamBg border border-stoneBeige rounded-xl px-3.5 py-3 text-sm text-heritageGreen font-semibold flex items-center gap-2">
                         <i class="fa-solid fa-tree text-xs text-roseRed"></i>
-                        <span>Garden Lawn (LKR 30,000)</span>
+                        <span>Garden Lawn ({{ $gardenPriceFormatted }})</span>
                     </div>
                 </div>
             </div>
@@ -258,8 +267,9 @@
                             aria-label="Number of Attendees"
                             class="w-full bg-creamBg border border-stoneBeige rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:border-heritageGreen focus:ring-2 focus:ring-heritageGreen/20 transition-all text-darkText cursor-pointer">
                         <option value="50">50 - 100 Attendees</option>
+                        <option value="100">100 - 200 Attendees</option>
                         <option value="200">200 - 500 Attendees</option>
-                        <option value="500">500+ Attendees</option>
+                        <option value="500">500 - 1000 Attendees</option>
                     </select>
                 </div>
             </div>

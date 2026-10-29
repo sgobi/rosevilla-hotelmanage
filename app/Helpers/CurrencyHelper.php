@@ -4,46 +4,71 @@ namespace App\Helpers;
 
 class CurrencyHelper
 {
-    protected static $rates = [
-        'LKR' => 1,
-        'USD' => 0.0033, // 1 LKR = 0.0033 USD
-        'EUR' => 0.0031, // 1 LKR = 0.0031 EUR
-        'CAD' => 0.0045, // 1 LKR = 0.0045 CAD
-        'INR' => 0.28,   // 1 LKR = 0.28 INR
-    ];
-
     protected static $symbols = [
-        'LKR' => 'Rs',
+        'LKR' => 'Rs.',
         'USD' => '$',
-        'EUR' => '€',
-        'CAD' => 'C$',
-        'INR' => '₹',
     ];
 
+    /**
+     * Get the active currency from session or cookie, defaulting to LKR.
+     */
+    public static function getCurrentCurrency(): string
+    {
+        $currency = session('currency');
+        if (!$currency && request()) {
+            $currency = request()->cookie('currency');
+        }
+        $currency = strtoupper((string)$currency);
+        if (!in_array($currency, ['LKR', 'USD'])) {
+            $currency = 'LKR';
+        }
+        return $currency;
+    }
+
+    /**
+     * Get the configured conversion exchange rate (LKR per 1 USD).
+     */
+    public static function getUsdRate(): float
+    {
+        $rate = (float) config('rosevilla.usd_rate', 310.0);
+        return $rate > 0 ? $rate : 310.0;
+    }
+
+    /**
+     * Convert an LKR base amount into the target currency.
+     * USD prices are rounded to the nearest whole dollar.
+     */
     public static function convert($amount, $to = null)
     {
-        $to = $to ?? session('currency', 'LKR');
-        $rate = self::$rates[$to] ?? 1;
-        
-        return $amount * $rate;
+        $to = $to ?? self::getCurrentCurrency();
+        if ($to === 'USD') {
+            return round((float)$amount / self::getUsdRate());
+        }
+        return (float)$amount;
     }
 
-    public static function format($amount, $currency = null)
+    /**
+     * Format a price according to currency conventions.
+     * LKR: "LKR 8,000" or "LKR 8,000 / night"
+     * USD: "$26" or "$26 / night"
+     */
+    public static function format($amount, $currency = null, $withUnit = '')
     {
-        $currency = $currency ?? session('currency', 'LKR');
-        $converted = self::convert($amount, $currency);
-        $symbol = self::$symbols[$currency] ?? 'Rs';
-
-        if ($currency === 'LKR') {
-            return $symbol . ' ' . number_format($converted, 0, '.', ',');
+        $currency = $currency ?? self::getCurrentCurrency();
+        if ($currency === 'USD') {
+            $val = round((float)$amount / self::getUsdRate());
+            return '$' . number_format($val, 0) . ($withUnit ? ' / ' . $withUnit : '');
         }
 
-        return $symbol . ' ' . number_format($converted, 2, '.', ',');
+        return 'LKR ' . number_format((float)$amount, 0) . ($withUnit ? ' / ' . $withUnit : '');
     }
 
-    public static function getCurrencySymbol($currency = null)
+    /**
+     * Get the currency symbol.
+     */
+    public static function getCurrencySymbol($currency = null): string
     {
-        $currency = $currency ?? session('currency', 'LKR');
-        return self::$symbols[$currency] ?? 'Rs';
+        $currency = $currency ?? self::getCurrentCurrency();
+        return self::$symbols[$currency] ?? 'Rs.';
     }
 }

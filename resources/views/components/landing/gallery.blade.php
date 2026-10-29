@@ -85,7 +85,7 @@
                 <div class="{{ $itemClasses }} rounded-3xl overflow-hidden shadow-md bg-stoneBeige aspect-[4/3] cursor-pointer group relative" 
                      onclick="openLightbox('{{ addslashes($imgSrc) }}', '{{ addslashes($item->title) }}')">
                     <img src="{{ $imgSrc }}" 
-                         alt="{{ $item->title }}" 
+                         alt="{{ $item->title }} - Rose Villa Heritage Homes Gallery Jaffna" 
                          loading="lazy"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     

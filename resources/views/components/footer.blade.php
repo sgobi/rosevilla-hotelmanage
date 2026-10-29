@@ -1,4 +1,17 @@
 <footer class="bg-[#0f0f0f] text-white pt-24 pb-12 relative overflow-hidden">
+@php
+    $fbUrl = config('rosevilla.social.facebook') ?: env('SOCIAL_FACEBOOK_URL');
+    $igUrl = config('rosevilla.social.instagram') ?: env('SOCIAL_INSTAGRAM_URL');
+    $taUrl = config('rosevilla.social.tripadvisor') ?: env('SOCIAL_TRIPADVISOR_URL');
+
+    $isRealUrl = function($url) {
+        return !empty($url) && trim($url) !== '#' && filter_var($url, FILTER_VALIDATE_URL);
+    };
+
+    $hasFb = $isRealUrl($fbUrl);
+    $hasIg = $isRealUrl($igUrl);
+    $hasTa = $isRealUrl($taUrl);
+@endphp
     <!-- Subtle Background Pattern -->
     <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
         style="background-image: url('{{ asset('images/pattern.png') }}'); background-size: 400px;"></div>
@@ -23,8 +36,11 @@
                     "A sanctuary of heritage and modern facilities in the heart of Jaffna. Experience the timeless charm
                     of our colonial home."
                 </p>
+                @if($hasFb || $hasIg || $hasTa)
                 <div class="flex items-center gap-4">
-                    <a href="#"
+                    @if($hasFb)
+                    <a href="{{ $fbUrl }}"
+                        target="_blank" rel="noopener noreferrer"
                         class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white hover:border-rose-gold transition-all duration-500"
                         aria-label="Facebook">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -32,7 +48,10 @@
                                 d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                     </a>
-                    <a href="#"
+                    @endif
+                    @if($hasIg)
+                    <a href="{{ $igUrl }}"
+                        target="_blank" rel="noopener noreferrer"
                         class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white hover:border-rose-gold transition-all duration-500"
                         aria-label="Instagram">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -40,12 +59,17 @@
                                 d="M12 2.163c3.204 0 3.584.012 4.85.072 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.225-.149-4.771-1.664-4.919-4.919-.059-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                         </svg>
                     </a>
-                    <a href="#"
+                    @endif
+                    @if($hasTa)
+                    <a href="{{ $taUrl }}"
+                        target="_blank" rel="noopener noreferrer"
                         class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-rose-gold hover:bg-rose-gold hover:text-white hover:border-rose-gold transition-all duration-500"
                         aria-label="TripAdvisor" title="TripAdvisor">
                         <span class="text-[10px] font-black uppercase tracking-tighter">TA</span>
                     </a>
+                    @endif
                 </div>
+                @endif
             </div>
 
             <!-- Explore Column -->
@@ -125,47 +149,16 @@
         </div>
 
         <!-- Bottom Bar -->
-        <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-            <div class="flex flex-col items-center md:items-start gap-4">
-                <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] font-medium">
-                    &copy; {{ date('Y') }} Rose Villa Heritage Homes. All Rights Reserved.
-                </p>
-                <div class="flex gap-8">
-                    <a href="#"
-                        class="text-[9px] text-gray-600 hover:text-rose-gold transition-colors uppercase tracking-[0.2em] font-black">Privacy
-                        Policy</a>
-                    <a href="#"
-                        class="text-[9px] text-gray-600 hover:text-rose-gold transition-colors uppercase tracking-[0.2em] font-black">Terms
-                        & Conditions</a>
-                    <a href="#"
-                        class="text-[9px] text-gray-600 hover:text-rose-gold transition-colors uppercase tracking-[0.2em] font-black">Sitemap</a>
-                </div>
+        <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-400">
+            <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+                <span>&copy; 2026 <strong class="text-white font-semibold">CodePortLab</strong>.</span>
+                <span class="hidden sm:inline text-white/30">•</span>
+                <a href="https://codeportlab.com" target="_blank" rel="noopener noreferrer" class="hover:text-rose-gold text-white font-medium underline-offset-4 hover:underline transition-colors">CodePortLab.com</a>
+                <span class="hidden sm:inline text-white/30">•</span>
+                <span>Cloud &amp; DevOps B2B Consulting.</span>
             </div>
-
-            <!-- Enhanced Attribution -->
-            <div class="relative group">
-                <div
-                    class="absolute -inset-4 bg-rose-gold/10 rounded-2xl blur-xl opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-                </div>
-                <div class="relative flex flex-col items-center md:items-end gap-2 pr-0 md:pr-4">
-                    <p
-                        class="text-[9px] text-rose-gold/60 uppercase tracking-[0.5em] font-black group-hover:text-rose-gold transition-colors duration-500">
-                        Architected & Engineered By</p>
-                    <div class="flex flex-col items-center md:items-end">
-                        <p
-                            class="text-base font-serif text-white group-hover:text-rose-gold transition-all duration-500 tracking-[0.05em] scale-100 group-hover:scale-110 origin-right drop-shadow-[0_0_10px_rgba(255,255,255,0.1)] group-hover:drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                            Gobikrishna Subramaniyam
-                        </p>
-                        <p
-                            class="text-[10px] text-gray-400 font-sans tracking-[0.2em] uppercase flex items-center gap-3 mt-1.5 transition-colors duration-500 group-hover:text-gray-200">
-                            <span class="font-bold border-b border-rose-gold/30">BEng (Hons)</span>
-                            <span class="w-3 h-px bg-rose-gold/20 group-hover:bg-rose-gold/50 transition-colors"></span>
-                            <a href="tel:+94766383402"
-                                class="hover:text-rose-gold transition-colors font-black text-rose-gold group-hover:text-white">+94
-                                76 638 3402</a>
-                        </p>
-                    </div>
-                </div>
+            <div class="text-center sm:text-right">
+                <span>Direct / WhatsApp: <a href="https://wa.me/94766383402" target="_blank" rel="noopener noreferrer" class="hover:text-rose-gold text-white font-semibold transition-colors">+94 76 638 3402</a></span>
             </div>
         </div>
     </div>

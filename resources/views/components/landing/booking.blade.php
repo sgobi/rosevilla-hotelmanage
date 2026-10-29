@@ -66,8 +66,12 @@
             <p class="text-darkText/70 text-sm mt-1">Complete the 2-step form below to request your booking.</p>
             
             @if(session('success'))
-                <div class="mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-                    <i class="fa-solid fa-circle-check mr-1.5"></i> {{ session('success') }}
+                <div class="mt-4 p-5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs sm:text-sm font-medium shadow-sm flex items-start gap-3">
+                    <i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-bold text-emerald-950 block text-sm sm:text-base mb-1">{{ __('Booking Request Submitted!') }}</span>
+                        <p class="leading-relaxed">{{ session('success') }}</p>
+                    </div>
                 </div>
             @endif
             @if(session('error'))
@@ -147,7 +151,11 @@
                             <option value="1">1 Guest</option>
                             <option value="2" selected>2 Guests</option>
                             <option value="3">3 - 4 Guests</option>
-                            <option value="5">5+ Guests / Event Attendees</option>
+                            <option value="5">5+ Guests</option>
+                            <option value="50">50 - 100 Attendees</option>
+                            <option value="100">100 - 200 Attendees</option>
+                            <option value="200">200 - 500 Attendees</option>
+                            <option value="500">500 - 1000 Attendees</option>
                         </select>
                     </div>
                     <div id="room-selection-container">
@@ -155,10 +163,20 @@
                         <select id="room-type-select" name="room_id" onchange="updatePriceCalculation()" class="w-full bg-stoneBeige/40 border border-stoneBeige rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-heritageGreen">
                             @php
                                 $roomList = ($rooms && count($rooms) > 0) ? $rooms : \App\Models\Room::where('is_active', true)->orderBy('price_per_night')->get();
+                                $bookingCurrency = \App\Helpers\CurrencyHelper::getCurrentCurrency();
+                                $usdRate = \App\Helpers\CurrencyHelper::getUsdRate();
+                                $firstRoom = $roomList->first();
+                                $firstPriceLkr = $firstRoom ? (float)$firstRoom->price_per_night : 8000;
+                                $firstRoomDisplayRate = \App\Helpers\CurrencyHelper::format($firstPriceLkr, $bookingCurrency);
+                                $firstRoomTitle = $firstRoom->title ?? 'Heritage Room';
                             @endphp
                             @foreach($roomList as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price_per_night }}" data-title="{{ $room->title }}">
-                                    {{ $room->title }} (LKR {{ number_format($room->price_per_night, 2) }} / night)
+                                @php
+                                    $priceLkr = (float) $room->price_per_night;
+                                    $roomOptionRate = \App\Helpers\CurrencyHelper::format($priceLkr, $bookingCurrency, 'night');
+                                @endphp
+                                <option value="{{ $room->id }}" data-price-lkr="{{ $priceLkr }}" data-title="{{ $room->title }}">
+                                    {{ $room->title }} ({{ $roomOptionRate }})
                                 </option>
                             @endforeach
                         </select>
@@ -173,9 +191,9 @@
                                 <i class="fa-solid fa-calculator text-xs"></i> Total Price Calculation
                             </span>
                             <div id="price-calculation-breakdown" class="text-xs text-darkText/75 flex items-center gap-2 flex-wrap">
-                                <span id="summary-room-title" class="font-bold text-darkText">Heritage Room</span>
+                                <span id="summary-room-title" class="font-bold text-darkText">{{ $firstRoomTitle }}</span>
                                 <span class="text-darkText/30">•</span>
-                                <span id="summary-room-rate">LKR 8,000.00 / night</span>
+                                <span id="summary-room-rate">{{ $firstRoomDisplayRate }} / night</span>
                                 <span class="text-darkText/40 font-bold">×</span>
                                 <span id="summary-duration" class="font-bold text-heritageGreen">1 night</span>
                             </div>
@@ -183,7 +201,7 @@
                         <div class="sm:text-right">
                             <span class="text-[10px] uppercase font-bold tracking-wider text-darkText/50 block">Total Amount</span>
                             <div id="summary-total-display" class="text-2xl font-serif font-black text-heritageGreen leading-tight">
-                                LKR 8,000.00
+                                {{ $firstRoomDisplayRate }}
                             </div>
                         </div>
                     </div>
@@ -208,12 +226,12 @@
                         </div>
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-darkText/50 block">Booking Breakdown</span>
-                            <span class="text-xs font-semibold text-darkText" id="step2-summary-text">Heritage Room • 1 night</span>
+                            <span class="text-xs font-semibold text-darkText" id="step2-summary-text">{{ $firstRoomTitle }} • 1 night</span>
                         </div>
                     </div>
                     <div class="text-right">
                         <span class="text-[10px] uppercase font-bold tracking-wider text-darkText/50 block">Total Amount</span>
-                        <span class="text-base font-serif font-black text-heritageGreen" id="step2-summary-price">LKR 8,000.00</span>
+                        <span class="text-base font-serif font-black text-heritageGreen" id="step2-summary-price">{{ $firstRoomDisplayRate }}</span>
                     </div>
                 </div>
 
@@ -283,6 +301,12 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Helper note confirming this is a booking request with no payment required to submit -->
+                <p class="text-[11px] sm:text-xs text-darkText/70 text-center sm:text-right pt-2 leading-relaxed">
+                    <i class="fa-solid fa-shield-halved text-heritageGreen mr-1"></i>
+                    <span>This is a booking request. We will reply within 24 hours via email or WhatsApp. No payment is needed to submit.</span>
+                </p>
             </div>
         </form>
     </div>
@@ -456,23 +480,36 @@
             days = Math.max(1, diffDays);
         }
 
+        const activeCurrency = "{{ $bookingCurrency }}";
+        const usdRate = {{ $usdRate }};
         let title = 'Heritage Room';
-        let unitPrice = 8000;
+        let basePriceLkr = 8000;
         let unitLabel = 'night';
 
         if (stayType === 'Garden Event') {
             title = 'Garden Event Sanctuary';
-            unitPrice = 30000;
+            basePriceLkr = 30000;
             unitLabel = 'day';
         } else if (roomSelect && roomSelect.selectedIndex >= 0) {
             const opt = roomSelect.options[roomSelect.selectedIndex];
-            unitPrice = parseFloat(opt.getAttribute('data-price')) || 8000;
+            basePriceLkr = parseFloat(opt.getAttribute('data-price-lkr')) || 8000;
             title = opt.getAttribute('data-title') || opt.text.split('(')[0].trim();
         }
 
-        const total = unitPrice * days;
-        const formattedUnitPrice = 'LKR ' + unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const formattedTotal = 'LKR ' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        let formattedUnitPrice = '';
+        let formattedTotal = '';
+
+        if (activeCurrency === 'USD') {
+            const unitPriceUsd = Math.round(basePriceLkr / usdRate);
+            const totalUsd = unitPriceUsd * days;
+            formattedUnitPrice = '$' + unitPriceUsd.toLocaleString('en-US');
+            formattedTotal = '$' + totalUsd.toLocaleString('en-US');
+        } else {
+            const totalLkr = basePriceLkr * days;
+            formattedUnitPrice = 'LKR ' + basePriceLkr.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            formattedTotal = 'LKR ' + totalLkr.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
         const durationText = `${days} ${unitLabel}${days > 1 ? 's' : ''}`;
 
         if (roomTitleEl) roomTitleEl.textContent = title;
@@ -530,20 +567,61 @@
     }
 
     function bookViaWhatsApp() {
-        const name = document.getElementById('guest-name')?.value || 'Guest';
+        const name = document.getElementById('guest-name')?.value || '';
         const phone = document.getElementById('guest-phone')?.value || '';
         const email = document.getElementById('guest-email')?.value || '';
         const stayType = document.getElementById('stay-type-input')?.value || 'Room';
         const checkin = document.getElementById('booking-checkin')?.value || '';
         const checkout = document.getElementById('booking-checkout')?.value || '';
+        
+        const guestsSelect = document.querySelector('select[name=guests]');
+        const guestsText = (guestsSelect && guestsSelect.selectedIndex >= 0) 
+            ? guestsSelect.options[guestsSelect.selectedIndex].text.trim() 
+            : (guestsSelect ? guestsSelect.value : '');
+
         const roomSelect = document.getElementById('room-type-select');
-        const selectedRoomText = (roomSelect && roomSelect.selectedIndex >= 0) ? roomSelect.options[roomSelect.selectedIndex].text.trim() : '';
-        const roomInfo = (stayType === 'Room' && selectedRoomText) ? `%0A*Room:* ${encodeURIComponent(selectedRoomText)}` : '';
+        const selectedRoomText = (roomSelect && roomSelect.selectedIndex >= 0) 
+            ? roomSelect.options[roomSelect.selectedIndex].text.trim() 
+            : '';
+
         const totalAmountText = document.getElementById('summary-total-display')?.textContent.trim() || '';
         const durationText = document.getElementById('summary-duration')?.textContent.trim() || '';
-        const costInfo = totalAmountText ? `%0A*Duration:* ${encodeURIComponent(durationText)}%0A*Total Amount:* ${encodeURIComponent(totalAmountText)}` : '';
-        const msg = `Hello Rose Villa, I would like to request a reservation.%0A*Type:* ${stayType}${roomInfo}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}${costInfo}%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Email:* ${email}`;
-        window.open(`https://wa.me/94771234567?text=${msg}`, '_blank');
+
+        const waNumber = "{{ config('rosevilla.whatsapp_number', '94765692476') }}";
+
+        let lines = [
+            'Hello Rose Villa, I would like to request a reservation:',
+            `• *Stay Type:* ${stayType}`
+        ];
+
+        if (stayType === 'Room') {
+            lines.push(`• *Room:* ${selectedRoomText || 'Any Available'}`);
+        } else {
+            lines.push(`• *Venue:* Garden Event Sanctuary`);
+        }
+
+        lines.push(`• *Dates:* ${checkin || 'TBD'} to ${checkout || 'TBD'}`);
+        lines.push(`• *Guests / Attendees:* ${guestsText || 'Not specified'}`);
+
+        if (totalAmountText && durationText) {
+            lines.push(`• *Estimated Rate:* ${totalAmountText} (${durationText})`);
+        }
+
+        if (name && name !== 'Guest') {
+            lines.push(`• *Guest Name:* ${name}`);
+        }
+        if (phone) {
+            lines.push(`• *Contact Number:* ${phone}`);
+        }
+        if (email) {
+            lines.push(`• *Email:* ${email}`);
+        }
+
+        lines.push('');
+        lines.push('Please confirm availability and booking details. Thank you!');
+
+        const encodedMsg = encodeURIComponent(lines.join('\n'));
+        window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
     }
 
     function handleBookingSubmit(event) {

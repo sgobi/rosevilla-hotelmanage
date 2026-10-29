@@ -48,6 +48,6 @@ class GardenBookingController extends Controller
         $users = User::whereIn('role', ['admin', 'staff', 'accountant'])->get();
         Notification::send($users, new NewGardenBookingRequest($booking));
 
-        return back()->with('success', 'Thank you. Your garden booking request has been received. Our team will contact you shortly.');
+        return back()->with('success', 'This is a booking request. We will reply within 24 hours via email or WhatsApp. No payment is needed to submit.');
     }
 }

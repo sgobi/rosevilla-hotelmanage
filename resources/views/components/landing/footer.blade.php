@@ -12,6 +12,18 @@
     if (empty($cleanWhatsapp)) {
         $cleanWhatsapp = '94765692476';
     }
+
+    $facebookUrl = config('rosevilla.social.facebook') ?: env('SOCIAL_FACEBOOK_URL', $content['social_facebook'] ?? null);
+    $instagramUrl = config('rosevilla.social.instagram') ?: env('SOCIAL_INSTAGRAM_URL', $content['social_instagram'] ?? null);
+    $tripadvisorUrl = config('rosevilla.social.tripadvisor') ?: env('SOCIAL_TRIPADVISOR_URL', $content['social_tripadvisor'] ?? null);
+
+    $isRealUrl = function($url) {
+        return !empty($url) && trim($url) !== '#' && filter_var($url, FILTER_VALIDATE_URL);
+    };
+
+    $hasFacebook = $isRealUrl($facebookUrl);
+    $hasInstagram = $isRealUrl($instagramUrl);
+    $hasTripadvisor = $isRealUrl($tripadvisorUrl);
 @endphp
 
 <!-- 11. FOOTER -->
@@ -20,7 +32,7 @@
         <div class="md:col-span-4 space-y-4">
             <div class="flex items-center gap-3">
                 @if($logoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($logoPath))
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" alt="{{ $siteTitle }}" class="h-12 w-auto object-contain">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" alt="{{ $siteTitle }} Footer Logo" loading="lazy" class="h-12 w-auto object-contain">
                 @else
                     <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-roseRed shadow-sm">
                         <i class="fa-solid fa-rose text-lg"></i>
@@ -31,20 +43,32 @@
             <p class="text-creamBg/80 text-xs leading-relaxed max-w-sm">
                 {{ $footerText }}
             </p>
-            <div class="flex items-center gap-4 pt-2 text-lg text-creamBg">
-                <a href="#" class="hover:text-antiqueGold transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#" class="hover:text-antiqueGold transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="hover:text-antiqueGold transition-colors" aria-label="Tripadvisor"><i class="fa-brands fa-tripadvisor"></i></a>
-            </div>
+            @if($hasFacebook || $hasInstagram || $hasTripadvisor)
+                <div class="flex items-center gap-4 pt-2 text-lg text-creamBg">
+                    @if($hasFacebook)
+                        <a href="{{ $facebookUrl }}" target="_blank" rel="noopener noreferrer" class="hover:text-antiqueGold transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    @endif
+                    @if($hasInstagram)
+                        <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" class="hover:text-antiqueGold transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    @endif
+                    @if($hasTripadvisor)
+                        <a href="{{ $tripadvisorUrl }}" target="_blank" rel="noopener noreferrer" class="hover:text-antiqueGold transition-colors" aria-label="Tripadvisor"><i class="fa-brands fa-tripadvisor"></i></a>
+                    @endif
+                </div>
+            @endif
         </div>
 
         <div class="md:col-span-2 space-y-3">
             <h3 class="font-serif font-bold text-sm text-antiqueGold tracking-wider uppercase">Quick Links</h3>
             <ul class="space-y-2 text-xs text-creamBg/80">
                 <li><a href="#about" class="hover:text-white transition-colors">The Heritage</a></li>
+                <li><a href="#our-story" class="hover:text-white transition-colors">Our Story</a></li>
                 <li><a href="#rooms" class="hover:text-white transition-colors">Rooms & Villas</a></li>
+                <li><a href="#amenities" class="hover:text-white transition-colors">Amenities</a></li>
                 <li><a href="#culinary" class="hover:text-white transition-colors">Flavors of Jaffna</a></li>
+                <li><a href="#things-to-do" class="hover:text-white transition-colors">Things to Do</a></li>
                 <li><a href="#gallery" class="hover:text-white transition-colors">Gallery</a></li>
+                <li><a href="#policies" class="hover:text-white transition-colors">Guest Policies</a></li>
                 <li><a href="#find-us" class="hover:text-white transition-colors">Find Us</a></li>
             </ul>
         </div>
@@ -69,8 +93,16 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-creamBg/60">
-        <p>&copy; {{ date('Y') }} {{ $siteTitle }}. All rights reserved.</p>
-        <p class="mt-2 sm:mt-0">Designed with heritage-luxury tone for Jaffna, Sri Lanka.</p>
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-creamBg/70 gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+            <span>&copy; 2026 <strong class="text-white font-semibold">CodePortLab</strong>.</span>
+            <span class="hidden sm:inline text-white/30">•</span>
+            <a href="https://codeportlab.com" target="_blank" rel="noopener noreferrer" class="hover:text-antiqueGold text-white font-medium underline-offset-4 hover:underline transition-colors">CodePortLab.com</a>
+            <span class="hidden sm:inline text-white/30">•</span>
+            <span>Cloud &amp; DevOps B2B Consulting.</span>
+        </div>
+        <div class="text-center sm:text-right">
+            <span>Direct / WhatsApp: <a href="https://wa.me/94766383402" target="_blank" rel="noopener noreferrer" class="hover:text-antiqueGold text-white font-semibold transition-colors">+94 76 638 3402</a></span>
+        </div>
     </div>
 </footer>

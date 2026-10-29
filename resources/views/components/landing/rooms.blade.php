@@ -36,8 +36,10 @@
                     }
 
                     $mainImg = $allPhotos[0] ?? $featuredSrc;
+                    $roomCurrency = \App\Helpers\CurrencyHelper::getCurrentCurrency();
+                    $roomDisplayRate = \App\Helpers\CurrencyHelper::format($room->price_per_night, $roomCurrency, 'night');
+                    $usdPrice = round($room->price_usd);
                     $lkrPrice = number_format($room->price_per_night, 0);
-                    $usdPrice = round($room->price_per_night / 300);
                     $imgElementId = 'room-main-img-' . $room->id;
                 @endphp
 
@@ -77,12 +79,13 @@
                                  :src="activeImg" 
                                  src="{{ $mainImg }}" 
                                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200';" 
-                                 alt="{{ $room->title }}" 
+                                 alt="{{ $room->title }} - Boutique Accommodation at Rose Villa Heritage Homes" 
+                                 loading="lazy"
                                  :class="isFading ? 'opacity-30 scale-[0.99]' : 'opacity-100 scale-100'"
                                  class="w-full h-full object-cover transition-all duration-200">
                             
                             <div class="absolute top-4 left-4 bg-heritageGreen text-white text-xs font-semibold px-3.5 py-1.5 rounded-xl shadow pointer-events-none z-10">
-                                <span class="price-tag" data-lkr="{{ $lkrPrice }}" data-usd="{{ $usdPrice }}">From LKR {{ $lkrPrice }} / night</span>
+                                <span class="price-tag">From {{ $roomDisplayRate }}</span>
                             </div>
 
                             <!-- Photo Counter Badge (if multiple photos) -->
@@ -135,7 +138,8 @@
                                                 class="relative flex-shrink-0 w-16 h-14 sm:w-20 sm:h-16 rounded-xl overflow-hidden border-2 shadow-sm focus:outline-none transition-all duration-200 group bg-stoneBeige"
                                                 title="View photo {{ $pIdx + 1 }}">
                                             <img src="{{ $pSrc }}" 
-                                                 alt="{{ $room->title }} Thumbnail {{ $pIdx + 1 }}" 
+                                                 alt="{{ $room->title }} Photo {{ $pIdx + 1 }} - Rose Villa Heritage Homes" 
+                                                 loading="lazy"
                                                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=200';"
                                                  class="w-full h-full object-cover">
                                             <div x-show="activeIdx === {{ $pIdx }}" 

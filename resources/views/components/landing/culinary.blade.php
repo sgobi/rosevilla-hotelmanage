@@ -22,7 +22,8 @@
             <div class="rounded-3xl overflow-hidden shadow-xl aspect-[16/10] bg-stoneBeige">
                 <img src="{{ asset('images/jaffna_cuisine.jpg') }}" 
                      onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=1200';" 
-                     alt="Authentic Jaffna Cuisine at Rose Villa" 
+                     alt="Authentic Traditional Jaffna Cuisine and Curry Dining at Rose Villa Heritage Homes" 
+                     loading="lazy"
                      class="w-full h-full object-cover">
             </div>
         </div>

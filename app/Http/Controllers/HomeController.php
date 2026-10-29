@@ -205,7 +205,7 @@ class HomeController extends Controller
         }
         */
 
-        return back()->with('success', 'Thank you. Your reservation request has been received. Our team will confirm shortly.');
+        return back()->with('success', 'This is a booking request. We will reply within 24 hours via email or WhatsApp. No payment is needed to submit.');
     }
 
     public function storeReview(Request $request)

@@ -4,9 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    
     @php
         $favicon = \App\Models\ContentSetting::getValue('favicon_path');
         $siteTitle = \App\Models\ContentSetting::getValue('site_title', 'Rose Villa Heritage Homes | Jaffna, Sri Lanka');
+        $pageTitle = config('rosevilla.meta_title', 'Rose Villa Heritage Homes | Boutique Heritage Stay in Jaffna, Sri Lanka');
         $siteDescription = \App\Models\ContentSetting::getValue('site_description', 'Experience the best of Jaffna heritage at Rose Villa Heritage Homes. Timeless architecture, serene courtyard gardens, authentic Northern cuisine, and colonial charm in Jaffna, Sri Lanka.');
         $heroImage = \App\Models\ContentSetting::getValue('hero_image_path') 
             ? asset('storage/' . \App\Models\ContentSetting::getValue('hero_image_path')) 
@@ -19,7 +21,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @endif
 
-    <title>{{ $siteTitle }}</title>
+    <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $siteDescription }}">
     <meta name="keywords" content="Heritage Home Jaffna, Accommodation Jaffna, Boutique Hotel Jaffna, Colonial Villa Jaffna, Best Accommodation in Jaffna, Where to stay in Jaffna, Jaffna Heritage Homes, Near Nallur Temple, Sri Lanka Heritage Home, Jaffna Cultural Tourism">
     <meta name="geo.region" content="LK-41">
@@ -30,16 +32,70 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $siteTitle }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $siteDescription }}">
     <meta property="og:image" content="{{ $heroImage }}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="{{ $siteTitle }}">
+    <meta property="twitter:title" content="{{ $pageTitle }}">
     <meta property="twitter:description" content="{{ $siteDescription }}">
     <meta property="twitter:image" content="{{ $heroImage }}">
+
+    <!-- JSON-LD Structured Data: LodgingBusiness -->
+    @php
+        $lodgingSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'LodgingBusiness',
+            'name' => 'Rose Villa Heritage Homes',
+            'alternateName' => 'Rose Villa Jaffna',
+            'description' => $siteDescription,
+            'url' => url('/'),
+            'telephone' => '+94 76 569 2476',
+            'email' => 'stay@rosevillaheritagehomes.com',
+            'priceRange' => \App\Helpers\CurrencyHelper::getCurrentCurrency() === 'USD' ? '$25 - $100' : 'LKR 8,000 - 30,000',
+            'currenciesAccepted' => 'LKR, USD',
+            'paymentAccepted' => 'Cash, Bank Transfer, Credit Card',
+            'checkinTime' => '14:00',
+            'checkoutTime' => '11:00',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => '[EDIT: Exact Street Address - e.g. Rose Villa Heritage Homes, Main Road, Uduvil / Jaffna]',
+                'addressLocality' => 'Jaffna',
+                'addressRegion' => 'Northern Province',
+                'postalCode' => '[EDIT: Postal Code - e.g. 40000]',
+                'addressCountry' => 'LK',
+            ],
+            'geo' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => 9.6615,
+                'longitude' => 80.0255,
+            ],
+            'image' => [
+                asset('images/rosevilla front view.png'),
+                asset('images/wedding_event_rosevilla.png'),
+                asset('images/jaffna_cuisine.jpg'),
+            ],
+            'amenityFeature' => [
+                ['@type' => 'LocationFeatureSpecification', 'name' => 'High-Speed Wi-Fi', 'value' => true],
+                ['@type' => 'LocationFeatureSpecification', 'name' => 'Air Conditioning', 'value' => true],
+                ['@type' => 'LocationFeatureSpecification', 'name' => 'Free On-Site Parking', 'value' => true],
+                ['@type' => 'LocationFeatureSpecification', 'name' => 'Complimentary Breakfast', 'value' => true],
+                ['@type' => 'LocationFeatureSpecification', 'name' => 'Dedicated Airport & City Transfers', 'value' => true],
+            ],
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => '4.9',
+                'reviewCount' => '28',
+                'bestRating' => '5',
+                'worstRating' => '1',
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($lodgingSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 
     <!-- Google Fonts with Preconnect & Multi-script Fallbacks -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,16 +174,9 @@
             }, 150);
         }
 
-        // Currency Switcher Display Handler (works in tandem with backend session)
+        // Currency Handler
         function updateCurrency(curr) {
-            const priceTags = document.querySelectorAll('.price-tag');
-            priceTags.forEach(tag => {
-                if (curr === 'USD') {
-                    tag.textContent = 'From USD ' + tag.getAttribute('data-usd') + ' / night';
-                } else {
-                    tag.textContent = 'From LKR ' + tag.getAttribute('data-lkr') + ' / night';
-                }
-            });
+            window.location.href = '/currency/' + encodeURIComponent(curr);
         }
     </script>
 

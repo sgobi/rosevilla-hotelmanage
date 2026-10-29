@@ -4,9 +4,12 @@
     $content = $content ?? \App\Models\ContentSetting::pluck('value', 'key');
     $phone = !empty($content['contact_phone']) ? $content['contact_phone'] : '+94 76 569 2476';
     $email = !empty($content['contact_email']) ? $content['contact_email'] : 'stay@rosevillaheritagehomes.com';
-    $address = !empty($content['contact_address']) ? $content['contact_address'] : 'Rosevilla Heritage Homes, Jaffna, Sri Lanka';
+    $address = !empty($content['contact_address']) ? $content['contact_address'] : '[EDIT: Exact Street Address - e.g. Rose Villa Heritage Homes, Main Road, Jaffna, Sri Lanka]';
     $siteTitle = !empty($content['site_title']) ? $content['site_title'] : 'Rose Villa Heritage Homes';
-    $mapEmbed = !empty($content['map_embed']) ? $content['map_embed'] : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7864.813244882406!2d80.00654078217246!3d9.73158141202129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2snl!4v1769480636437!5m2!1sen!2snl';
+    $mapEmbed = config('rosevilla.google_maps_embed_url') 
+        ?: (!empty($content['map_embed']) 
+            ? $content['map_embed'] 
+            : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7864.813244882406!2d80.00654078217246!3d9.73158141202129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe5498b86410df%3A0xd820147055601788!2sRose%20Villa%20Heritage%20Homes%20(pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1769480636437!5m2!1sen!2slk');
     
     $reachAirport = !empty($content['reach_time_airport']) ? $content['reach_time_airport'] : '20-25 Mins';
     $reachRailway = !empty($content['reach_time_railway']) ? $content['reach_time_railway'] : '10-15 Mins';
@@ -15,7 +18,7 @@
 
     $cleanWhatsapp = preg_replace('/[^0-9]/', '', $phone);
     if (empty($cleanWhatsapp)) {
-        $cleanWhatsapp = '94765692476';
+        $cleanWhatsapp = config('rosevilla.whatsapp_number', '94765692476');
     }
 @endphp
 

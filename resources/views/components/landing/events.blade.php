@@ -10,10 +10,10 @@
         ? $content['events_description'] 
         : ($garden->description ?? 'Host your intimate outdoor gatherings, family get-togethers, and celebrations under the canopy of ancient palm trees and starry Jaffna skies.');
 
-    $maxGuests = $garden->max_guests ?? 150;
+    $eventCurrency = \App\Helpers\CurrencyHelper::getCurrentCurrency();
+    $maxGuests = $garden->max_guests ?? 1000;
     $gardenPrice = $garden->price_per_day ?? 30000;
-    $gardenLkr = number_format($gardenPrice, 0);
-    $gardenUsd = number_format($gardenPrice / 310, 0);
+    $gardenDisplay = \App\Helpers\CurrencyHelper::format($gardenPrice, $eventCurrency);
 @endphp
 
 <!-- 6. RESERVE THE GARDEN & EVENTS -->
@@ -22,7 +22,8 @@
         <div class="absolute inset-0 z-0">
             <img src="{{ !empty($garden->image_path) ? (str_starts_with($garden->image_path, 'http') ? $garden->image_path : asset('storage/' . $garden->image_path)) : asset('images/wedding_event_rosevilla.png') }}" 
                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=1200';" 
-                 alt="{{ $eventTitle }}" 
+                 alt="{{ $eventTitle }} - Scenic Outdoor Event Lawn & Garden Venue at Rose Villa Heritage Homes" 
+                 loading="lazy"
                  class="w-full h-full object-cover opacity-25">
             <div class="absolute inset-0 bg-gradient-to-r from-heritageGreen via-heritageGreen/90 to-transparent"></div>
         </div>
@@ -39,10 +40,21 @@
                 </div>
                 <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20">
                     <span class="text-xs text-creamBg/80 block">Starting Fee</span>
-                    <span class="font-bold text-sm price-tag" data-lkr="{{ $gardenLkr }}" data-usd="{{ $gardenUsd }}">From LKR {{ $gardenLkr }}</span>
+                    <span class="font-bold text-sm price-tag">From {{ $gardenDisplay }}</span>
                 </div>
             </div>
-            <div class="pt-4">
+
+            <!-- Starting fee inclusion helper text with editable placeholder -->
+            <div class="bg-black/30 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-xs text-creamBg/90 leading-relaxed space-y-1">
+                <span class="font-semibold text-antiqueGold flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                    <i class="fa-solid fa-circle-info text-xs"></i> Starting Fee Inclusions
+                </span>
+                <p class="text-[11px] sm:text-xs">
+                    [EDIT: Starting fee of {{ $gardenDisplay }} (approx. LKR 30,000 / $97) includes exclusive lawn access, ambient garden illumination, setup & breakdown coordination window, dedicated parking staff, and clean washroom facilities. Bespoke catering, stage canopy, acoustic sound systems, and special floral decorations are quoted separately.]
+                </p>
+            </div>
+
+            <div class="pt-2">
                 <a href="#reserve" onclick="selectStayType('Garden Event')" class="inline-block bg-antiqueGold hover:bg-goldHover text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 text-sm">
                     Reserve Garden Venue
                 </a>

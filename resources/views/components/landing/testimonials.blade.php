@@ -13,11 +13,24 @@
             <span class="text-xs uppercase tracking-widest text-roseRed font-bold block mb-2">Testimonials</span>
             <h2 class="font-serif text-3xl sm:text-4xl font-bold text-heritageGreen">Guest Stories</h2>
         </div>
-        <div class="mt-4 md:mt-0">
+        <div class="mt-4 md:mt-0 flex flex-wrap items-center gap-3">
+            @php
+                $googleReviewsUrl = config('rosevilla.google_reviews_url') ?: env('GOOGLE_REVIEWS_URL', 'https://search.google.com/local/reviews?placeid=ChIJ3xCkuJhU-ToRiBdgVXBUI9g');
+            @endphp
+            @if(!empty($googleReviewsUrl))
+                <a href="{{ $googleReviewsUrl }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="inline-flex items-center gap-2 bg-white hover:bg-stoneBeige/60 text-heritageGreen font-semibold text-xs px-5 py-3.5 rounded-xl transition-all border border-stoneBeige shadow-sm group">
+                    <i class="fa-brands fa-google text-roseRed text-sm"></i>
+                    <span>{{ __('Read more reviews on Google') }}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-darkText/50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                </a>
+            @endif
             <button type="button" 
                     @click="reviewModalOpen = true" 
                     class="bg-stoneBeige hover:bg-stoneBeige/80 text-darkText font-semibold text-xs px-5 py-3.5 rounded-xl transition-all border border-stoneBeige shadow-sm">
-                Share your experience
+                {{ __('Share your experience') }}
             </button>
         </div>
     </div>
