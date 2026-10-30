@@ -19,13 +19,4 @@ class Garden extends Model
         'features' => 'array',
         'price_per_day' => 'decimal:2',
     ];
-
-    public function getPriceUsdAttribute(): float
-    {
-        $rate = (float) config('rosevilla.usd_rate', 310.0);
-        if ($rate <= 0) {
-            $rate = 310.0;
-        }
-        return round((float)($this->price_per_day ?? 30000.0) / $rate, 2);
-    }
 }

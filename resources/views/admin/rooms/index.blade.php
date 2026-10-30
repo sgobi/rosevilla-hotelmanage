@@ -68,140 +68,43 @@
                             <textarea name="amenities" rows="2" class="w-full border rounded px-3 py-2">{{ old('amenities', isset($editingRoom) ? implode(', ', $editingRoom->amenities ?? []) : '') }}</textarea>
                         </label>
                         
-                        @php 
-                            $currentGallery = old('existing_gallery', isset($editingRoom) && is_array($editingRoom->gallery_urls) ? array_values(array_filter($editingRoom->gallery_urls)) : []); 
-                        @endphp
-
-                        <div class="md:col-span-2 space-y-6 border-t pt-5 mt-2">
-                            <!-- Featured Image Block -->
-                            <div class="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-200">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div>
-                                        <span class="text-sm font-bold text-gray-800">Featured / Cover Image</span>
-                                        <p class="text-xs text-gray-500">The primary image displayed on cards, banner previews, and landing page.</p>
+                        <div class="md:col-span-2 grid md:grid-cols-2 gap-4 border-t pt-4">
+                            <div class="space-y-2">
+                                <span class="text-sm font-semibold text-gray-700">Featured Image</span>
+                                @if(isset($editingRoom) && $editingRoom->featured_image)
+                                    <div class="mb-2">
+                                        <img src="{{ str_starts_with($editingRoom->featured_image, 'http') ? $editingRoom->featured_image : asset('storage/' . $editingRoom->featured_image) }}" class="h-20 w-32 object-cover rounded shadow-sm">
                                     </div>
-                                    @if(isset($editingRoom) && $editingRoom->featured_image)
-                                        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Active</span>
-                                    @endif
-                                </div>
-                                <div class="grid sm:grid-cols-12 gap-4 items-start">
-                                    @if(isset($editingRoom) && $editingRoom->featured_image)
-                                        <div class="sm:col-span-4 lg:col-span-3">
-                                            <div class="relative aspect-[4/3] rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-100">
-                                                <img src="{{ str_starts_with($editingRoom->featured_image, 'http') ? $editingRoom->featured_image : asset('storage/' . $editingRoom->featured_image) }}" 
-                                                     alt="{{ $editingRoom->title }}" 
-                                                     onerror="this.onerror=null; this.src='https://placehold.co/300x200?text=No+Cover';"
-                                                     class="w-full h-full object-cover">
-                                            </div>
-                                        </div>
-                                    @endif
-                                    <div class="{{ isset($editingRoom) && $editingRoom->featured_image ? 'sm:col-span-8 lg:col-span-9' : 'sm:col-span-12' }} space-y-3">
-                                        <label class="block">
-                                            <span class="text-xs font-semibold text-gray-700 block mb-1">Upload New Cover File:</span>
-                                            <input type="file" name="featured_image_file" accept="image/*" class="w-full text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-gray-200 rounded-lg p-1 bg-white cursor-pointer">
-                                        </label>
-                                        <label class="block">
-                                            <span class="text-xs font-semibold text-gray-700 block mb-1">Or Direct Image URL:</span>
-                                            <input name="featured_image" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 font-mono" value="{{ old('featured_image', $editingRoom->featured_image ?? '') }}" placeholder="https://example.com/cover.jpg">
-                                        </label>
-                                    </div>
-                                </div>
+                                @endif
+                                <label class="block">
+                                    <span class="text-xs text-gray-500 block">Upload new:</span>
+                                    <input type="file" name="featured_image_file" class="text-sm">
+                                </label>
+                                <label class="block mt-2">
+                                    <span class="text-xs text-gray-500 block">Or use URL:</span>
+                                    <input name="featured_image" class="w-full border rounded px-2 py-1 text-sm" value="{{ old('featured_image', $editingRoom->featured_image ?? '') }}" placeholder="https://...">
+                                </label>
                             </div>
 
-                            <!-- Gallery Images Management (Alpine.js) -->
-                            <div x-data="roomGalleryManager({{ json_encode($currentGallery) }})" class="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-200 space-y-4">
-                                <input type="hidden" name="gallery_management" value="1">
-                                <input type="hidden" name="clear_gallery" :value="isCleared ? '1' : '0'">
-
-                                <!-- Hidden inputs for each retained gallery image -->
-                                <template x-for="(item, idx) in items" :key="idx">
-                                    <input type="hidden" name="existing_gallery[]" :value="item">
-                                </template>
-
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-3">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-gray-800">Room Gallery Photos</span>
-                                            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full tabular-nums" x-text="items.length + ' photos'"></span>
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-0.5">Manage existing gallery images, remove broken or unwanted entries, or clear all.</p>
+                            <div class="space-y-2">
+                                <span class="text-sm font-semibold text-gray-700">Gallery Images</span>
+                                @if(isset($editingRoom) && !empty($editingRoom->gallery_urls))
+                                    <div class="flex gap-1 overflow-x-auto pb-2">
+                                        @foreach($editingRoom->gallery_urls as $url)
+                                            <img src="{{ str_starts_with($url, 'http') ? $url : asset('storage/' . $url) }}" class="h-10 w-10 object-cover rounded">
+                                        @endforeach
                                     </div>
-
-                                    <!-- Clear All Gallery Button -->
-                                    <button type="button" 
-                                            @click="clearAll()" 
-                                            x-show="items.length > 0"
-                                            class="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl border border-red-200 transition shadow-sm self-start sm:self-auto">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        <span>Clear All Gallery</span>
-                                    </button>
-                                </div>
-
-                                <!-- Thumbnails Grid with Delete Actions -->
-                                <div x-show="items.length > 0" class="space-y-2">
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-                                        <template x-for="(item, idx) in items" :key="idx">
-                                            <div class="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white flex flex-col justify-between">
-                                                <img :src="resolveSrc(item)" 
-                                                     :alt="'Gallery ' + (idx + 1)"
-                                                     onerror="this.onerror=null; this.src='https://placehold.co/150x150?text=Broken+Image';" 
-                                                     class="w-full h-full object-cover">
-                                                
-                                                <!-- Hover Overlay with Remove Button -->
-                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2">
-                                                    <button type="button" 
-                                                            @click="removeItem(idx)" 
-                                                            class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transform hover:scale-110 transition flex items-center justify-center focus:outline-none"
-                                                            title="Remove this photo">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                    </button>
-                                                </div>
-
-                                                <!-- Top Index Pill -->
-                                                <div class="absolute top-1.5 left-1.5 bg-black/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs pointer-events-none" x-text="idx + 1"></div>
-                                                
-                                                <!-- Direct Remove Button visible on mobile -->
-                                                <button type="button" 
-                                                        @click="removeItem(idx)" 
-                                                        class="sm:hidden absolute top-1.5 right-1.5 bg-red-600 text-white p-1 rounded-md shadow focus:outline-none"
-                                                        title="Remove photo">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                </button>
-
-                                                <!-- Bottom Name / Source info -->
-                                                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-1 text-[9px] text-white/90 truncate font-mono pointer-events-none" x-text="getFilename(item)"></div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <div x-show="items.length === 0" class="py-6 text-center border-2 border-dashed border-gray-300 rounded-xl bg-white/60">
-                                    <svg class="mx-auto h-8 w-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    <p class="text-xs font-semibold text-gray-700">No gallery images currently stored.</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">Use the upload tool or URL input below to add photos to this room.</p>
-                                </div>
-
-                                <!-- Add New Gallery Images Controls -->
-                                <div class="grid md:grid-cols-2 gap-4 pt-3 border-t border-gray-200/80">
-                                    <div class="space-y-1.5">
-                                        <label class="block">
-                                            <span class="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1">Upload New Gallery Files</span>
-                                            <input type="file" name="gallery_files[]" multiple accept="image/*" class="w-full text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-gray-200 rounded-lg p-1 bg-white cursor-pointer">
-                                        </label>
-                                        <p class="text-[11px] text-gray-500">Select one or multiple images from your device (PNG, JPG, WebP). They will be automatically saved and added to the room gallery.</p>
-                                    </div>
-
-                                    <div class="space-y-1.5">
-                                        <label class="block">
-                                            <span class="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1">Or Add URLs (comma / newline separated)</span>
-                                            <textarea name="gallery_urls" rows="2" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 font-mono">{{ old('gallery_urls') }}</textarea>
-                                        </label>
-                                        <p class="text-[11px] text-gray-500">Paste new image links here (separated by newlines or commas) to append them to the gallery.</p>
-                                    </div>
-                                </div>
+                                @endif
+                                <label class="block">
+                                    <span class="text-xs text-gray-500 block">Upload files:</span>
+                                    <input type="file" name="gallery_files[]" multiple class="text-sm">
+                                </label>
+                                <label class="block mt-2">
+                                    <span class="text-xs text-gray-500 block">Or add URLs (comma/newline separated):</span>
+                                    <textarea name="gallery_urls" rows="1" class="w-full border rounded px-2 py-1 text-sm">{{ old('gallery_urls', isset($editingRoom) ? implode(', ', $editingRoom->gallery_urls ?? []) : '') }}</textarea>
+                                </label>
                             </div>
                         </div>
-
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $editingRoom->is_active ?? true))>
                             <span>Active</span>
@@ -235,26 +138,8 @@
                             @foreach($rooms as $room)
                                 <tr>
                                     <td class="px-6 py-3">
-                                        <div class="flex items-center gap-3">
-                                            @if($room->featured_image)
-                                                <img src="{{ str_starts_with($room->featured_image, 'http') ? $room->featured_image : asset('storage/' . $room->featured_image) }}" 
-                                                     alt="{{ $room->title }}" 
-                                                     class="h-10 w-12 object-cover rounded-lg shadow-xs border border-gray-100 flex-shrink-0"
-                                                     onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=Room';">
-                                            @endif
-                                            <div>
-                                                <p class="font-semibold text-gray-800">{{ $room->title }}</p>
-                                                <div class="flex items-center gap-2 text-gray-500 text-xs">
-                                                    <span>{{ $room->slug }}</span>
-                                                    @if(!empty($room->gallery_urls) && count($room->gallery_urls) > 0)
-                                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
-                                                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                            {{ count($room->gallery_urls) }} photos
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <p class="font-semibold text-gray-800">{{ $room->title }}</p>
+                                        <p class="text-gray-500 text-xs">{{ $room->slug }}</p>
                                     </td>
                                     <td class="px-6 py-3 text-gray-700">LKR {{ number_format($room->price_per_night, 0) }} per day</td>
                                     <td class="px-6 py-3 text-gray-700">{{ $room->capacity }}</td>
@@ -338,40 +223,4 @@
             </div>
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        function roomGalleryManager(initial) {
-            return {
-                items: Array.isArray(initial) ? initial.filter(Boolean) : [],
-                isCleared: false,
-                removeItem(index) {
-                    this.items.splice(index, 1);
-                    if (this.items.length === 0) {
-                        this.isCleared = true;
-                    }
-                },
-                clearAll() {
-                    if (confirm('Are you sure you want to remove all gallery images from this room?')) {
-                        this.items = [];
-                        this.isCleared = true;
-                    }
-                },
-                resolveSrc(path) {
-                    if (!path) return '';
-                    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('//')) {
-                        return path;
-                    }
-                    return '/storage/' + path.replace(/^\/+/, '');
-                },
-                getFilename(path) {
-                    if (!path) return '';
-                    const parts = path.split('/');
-                    return parts[parts.length - 1] || path;
-                }
-            };
-        }
-        window.roomGalleryManager = roomGalleryManager;
-    </script>
-    @endpush
 </x-app-layout>

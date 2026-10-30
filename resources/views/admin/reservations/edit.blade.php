@@ -68,19 +68,6 @@
                         <x-input-error class="mt-2" :messages="$errors->get('guests')" />
                     </div>
 
-                    <div>
-                        <x-input-label for="room_id" :value="__('Assigned Room')" />
-                        <select id="room_id" name="room_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" {{ $isStaffApproved ? 'disabled' : '' }}>
-                            <option value="">-- No Room / Unassigned --</option>
-                            @foreach($rooms ?? \App\Models\Room::all() as $room)
-                                <option value="{{ $room->id }}" {{ old('room_id', $reservation->room_id ?? ($reservation->room_ids[0] ?? '')) == $room->id ? 'selected' : '' }}>
-                                    {{ $room->title }} (LKR {{ number_format($room->price_per_night, 2) }} / night)
-                                </option>
-                            @endforeach
-                        </select>
-                        <x-input-error class="mt-2" :messages="$errors->get('room_id')" />
-                    </div>
-
                 </div>
 
                 <div class="col-span-full border-t border-gray-100 pt-6 mt-2" x-data="{ method: '{{ old('advance_payment_method', $reservation->advance_payment_method) }}' }">

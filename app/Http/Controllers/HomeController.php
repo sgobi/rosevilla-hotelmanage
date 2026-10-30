@@ -128,7 +128,6 @@ class HomeController extends Controller
             'address' => ['nullable', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:50'],
             'room_id' => ['nullable', 'exists:rooms,id'],
-            'room_preference' => ['nullable', 'string'],
             'room_ids' => ['nullable', 'array'],
             'room_ids.*' => ['exists:rooms,id'],
             'check_in' => ['required', 'date'],
@@ -137,20 +136,6 @@ class HomeController extends Controller
             'special_requirements' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],
         ]);
-
-        // Fallback: match room_preference if room_id is empty
-        if (empty($data['room_id']) && $request->filled('room_preference')) {
-            $matchedRoom = \App\Models\Room::where('title', 'like', '%' . $request->room_preference . '%')->first();
-            if ($matchedRoom) {
-                $data['room_id'] = $matchedRoom->id;
-            }
-        }
-
-        if (!empty($data['room_id']) && empty($data['room_ids'])) {
-            $data['room_ids'] = [$data['room_id']];
-        } elseif (!empty($data['room_ids']) && empty($data['room_id'])) {
-            $data['room_id'] = $data['room_ids'][0];
-        }
 
         $requestedCheckIn = $data['check_in'];
         $requestedCheckOut = $data['check_out'];
@@ -181,6 +166,10 @@ class HomeController extends Controller
             }
         }
 
+        if (isset($data['room_id']) && !isset($data['room_ids'])) {
+            $data['room_ids'] = [$data['room_id']];
+        }
+
         $messageParts = [];
         if ($request->special_requirements) $messageParts[] = "Special Requirements: " . $request->special_requirements;
         if ($request->additional_notes) $messageParts[] = "Additional Notes: " . $request->additional_notes;
@@ -205,7 +194,7 @@ class HomeController extends Controller
         }
         */
 
-        return back()->with('success', 'This is a booking request. We will reply within 24 hours via email or WhatsApp. No payment is needed to submit.');
+        return back()->with('success', 'Thank you. Your reservation request has been received. Our team will confirm shortly.');
     }
 
     public function storeReview(Request $request)

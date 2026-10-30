@@ -80,8 +80,7 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        $rooms = \App\Models\Room::where('is_active', true)->orderBy('price_per_night')->get();
-        return view('admin.reservations.edit', compact('reservation', 'rooms'));
+        return view('admin.reservations.edit', compact('reservation'));
     }
 
     /**
@@ -321,7 +320,6 @@ class ReservationController extends Controller
                 'email' => ['required', 'email', 'max:255'],
                 'phone' => ['nullable', 'string', 'max:20'],
                 'address' => ['nullable', 'string', 'max:500'],
-                'room_id' => ['nullable', 'exists:rooms,id'],
                 'check_in' => ['required', 'date'],
                 'check_out' => ['required', 'date', 'after_or_equal:check_in'],
                 'guests' => ['required', 'integer', 'min:1'],
@@ -332,11 +330,6 @@ class ReservationController extends Controller
                 'advance_bank_name' => ['nullable', 'string', 'max:255'],
                 'advance_bank_branch' => ['nullable', 'string', 'max:255'],
             ]);
-
-            if ($request->has('room_id')) {
-                $data['room_id'] = $request->filled('room_id') ? $request->room_id : null;
-                $data['room_ids'] = $request->filled('room_id') ? [$request->room_id] : null;
-            }
 
             if (isset($data['advance_amount']) && $data['advance_amount'] > 0 && !$reservation->advance_paid_at) {
                 $data['advance_paid_at'] = now();

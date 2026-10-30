@@ -40,7 +40,13 @@ class RoomController extends Controller
             $data['featured_image'] = $request->file('featured_image_file')->store('rooms', 'public');
         }
 
-        $data['gallery_urls'] = $this->syncGallery($request);
+        if ($request->hasFile('gallery_files')) {
+            $gallery = [];
+            foreach ($request->file('gallery_files') as $file) {
+                $gallery[] = $file->store('rooms/gallery', 'public');
+            }
+            $data['gallery_urls'] = array_merge($data['gallery_urls'] ?? [], $gallery);
+        }
 
         Room::create($data);
 
@@ -77,7 +83,13 @@ class RoomController extends Controller
             $data['featured_image'] = $request->file('featured_image_file')->store('rooms', 'public');
         }
 
-        $data['gallery_urls'] = $this->syncGallery($request, $room);
+        if ($request->hasFile('gallery_files')) {
+            $gallery = [];
+            foreach ($request->file('gallery_files') as $file) {
+                $gallery[] = $file->store('rooms/gallery', 'public');
+            }
+            $data['gallery_urls'] = array_merge($data['gallery_urls'] ?? [], $gallery);
+        }
 
         $room->update($data);
 
@@ -102,58 +114,6 @@ class RoomController extends Controller
         return back()->with('success', 'Room removed.');
     }
 
-    /**
-     * Process, merge, sanitize, and synchronize gallery images.
-     */
-    protected function syncGallery(Request $request, ?Room $room = null): array
-    {
-        // 1. Determine existing retained items
-        $existing = [];
-
-        if ($request->boolean('clear_gallery')) {
-            $existing = [];
-        } elseif ($request->has('existing_gallery')) {
-            $existing = is_array($request->input('existing_gallery')) ? $request->input('existing_gallery') : [];
-        } elseif ($request->boolean('gallery_management')) {
-            // When submitted from our gallery manager and existing_gallery is empty, all were removed
-            $existing = [];
-        } elseif ($room && is_array($room->gallery_urls)) {
-            $existing = $room->gallery_urls;
-        }
-
-        // 2. Parse newly added URLs (comma or newline separated, or array)
-        $newUrls = [];
-        $rawUrls = $request->input('gallery_urls');
-        if (!empty($rawUrls)) {
-            $newUrls = $this->stringListToArray($rawUrls);
-        }
-
-        // 3. Process newly uploaded files
-        $uploaded = [];
-        if ($request->hasFile('gallery_files')) {
-            foreach ($request->file('gallery_files') as $file) {
-                if ($file && $file->isValid()) {
-                    $uploaded[] = $file->store('rooms/gallery', 'public');
-                }
-            }
-        }
-
-        // 4. Merge all sources
-        $all = array_merge($existing, $newUrls, $uploaded);
-
-        // 5. Sanitize, strip empty/broken entries, trim, and deduplicate
-        return collect($all)
-            ->map(function ($item) {
-                return is_string($item) ? trim($item) : '';
-            })
-            ->filter(function ($item) {
-                return !empty($item) && strlen($item) > 1;
-            })
-            ->unique()
-            ->values()
-            ->all();
-    }
-
     protected function validatedData(Request $request, ?int $roomId = null): array
     {
         $data = $request->validate([
@@ -166,36 +126,23 @@ class RoomController extends Controller
             'capacity' => ['nullable', 'integer', 'min:1', 'max:12'],
             'bed_type' => ['nullable', 'string', 'max:255'],
             'featured_image' => ['nullable', 'string'],
-            'featured_image_file' => ['nullable', 'image', 'max:5120'],
-            'gallery_urls' => ['nullable'],
-            'existing_gallery' => ['nullable', 'array'],
-            'existing_gallery.*' => ['nullable', 'string'],
-            'clear_gallery' => ['nullable'],
-            'gallery_management' => ['nullable'],
-            'gallery_files.*' => ['nullable', 'image', 'max:5120'],
+            'featured_image_file' => ['nullable', 'image', 'max:2048'],
+            'gallery_urls' => ['nullable', 'string'],
+            'gallery_files.*' => ['nullable', 'image', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
         $data['slug'] = Str::slug($data['slug'] ?? $data['title']);
         $data['is_active'] = $request->boolean('is_active', true);
         $data['amenities'] = $this->stringListToArray($data['amenities'] ?? '');
-
-        unset($data['existing_gallery'], $data['clear_gallery'], $data['gallery_management'], $data['featured_image_file'], $data['gallery_files']);
+        $data['gallery_urls'] = $this->stringListToArray($data['gallery_urls'] ?? '');
 
         return $data;
     }
 
-    protected function stringListToArray(string|array|null $value): array
+    protected function stringListToArray(?string $value): array
     {
-        if (is_array($value)) {
-            return collect($value)
-                ->map(fn ($item) => is_string($item) ? trim($item) : '')
-                ->filter()
-                ->values()
-                ->toArray();
-        }
-
-        return collect(preg_split('/[\r\n,]+/', (string) $value))
+        return collect(preg_split('/[\n,]+/', (string) $value))
             ->map(fn ($item) => trim($item))
             ->filter()
             ->values()

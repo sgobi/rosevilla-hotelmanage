@@ -335,7 +335,7 @@
                                                     @endif
                                                 @endif
 
-                                                <button type="button" @click.stop="editing = true" 
+                                                <button @click="editing = !editing" 
                                                         :class="editing ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'"
                                                         class="p-2 rounded-lg transition-all" title="Manage Details">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -344,11 +344,10 @@
                                                 {{-- Management Terminal Modal --}}
                                                 <template x-teleport="body">
                                                     <div x-show="editing" x-cloak
-                                                         @click.self="editing = false"
-                                                         @keydown.escape.window="editing = false"
                                                          class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
                                                         
-                                                        <div class="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                        <div @click.away="editing = false" 
+                                                             class="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
                                                             
                                                             <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
                                                                 <div class="flex items-center gap-4">
@@ -360,7 +359,7 @@
                                                                         <p class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Status, Financials & Lifecycle Control</p>
                                                                     </div>
                                                                 </div>
-                                                                <button type="button" @click="editing = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                <button @click="editing = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
                                                                     <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                                 </button>
                                                             </div>
@@ -531,17 +530,16 @@
                                                     </a>
 
                                                     <div x-data="{ openDelete: false }" class="relative">
-                                                        <button type="button" @click.stop="openDelete = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
+                                                        <button @click="openDelete = true" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Manage Record">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                         </button>
                                                         
                                                         <template x-teleport="body">
                                                             <div x-show="openDelete" x-cloak
-                                                                 @click.self="openDelete = false"
-                                                                 @keydown.escape.window="openDelete = false"
                                                                  class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-gray-900/90 backdrop-blur-sm">
                                                                 
-                                                                <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
+                                                                <div @click.away="openDelete = false" 
+                                                                     class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-gray-100 animate-fade-in-up">
                                                                     
                                                                     <div class="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
                                                                         <div class="flex items-center gap-4">
@@ -553,7 +551,7 @@
                                                                                 <p class="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] mt-1.5 leading-none">Administrative Event Control</p>
                                                                             </div>
                                                                         </div>
-                                                                        <button type="button" @click="openDelete = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                                                        <button @click="openDelete = false" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
                                                                             <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                                         </button>
                                                                     </div>

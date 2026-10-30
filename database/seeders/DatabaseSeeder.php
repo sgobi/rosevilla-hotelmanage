@@ -44,13 +44,14 @@ class DatabaseSeeder extends Seeder
                 'subtitle' => 'Handcrafted teak interiors overlooking the courtyard',
                 'description' => 'Soak in calm Jaffna mornings from a canopy bed, with brass fixtures, handwoven linens, and a private sit-out that spills onto the garden.',
                 'amenities' => [
+                    'King canopy bed',
                     'Ensuite rain shower',
                     'Private verandah with courtyard view',
                     'Breakfast with heritage recipes',
                 ],
                 'price_per_night' => 55500,
                 'capacity' => 3,
-                'bed_type' => 'Queen bed + daybed',
+                'bed_type' => 'King + daybed',
                 'featured_image' => 'https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/Things-to-do-Jaffna-Sri-lanka-nature-pool-648x810-1.jpg',
                 'gallery_urls' => [
                     'https://rosevillaheritagehomes.com/wp-content/uploads/2025/05/WhatsApp-Image-2024-08-31-at-4.16.49-PM.jpeg',

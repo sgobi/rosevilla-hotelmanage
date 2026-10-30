@@ -40,10 +40,8 @@ Route::get('lang/{locale}', function ($locale) {
 })->name('lang.switch');
 
 Route::get('currency/{currency}', function ($currency) {
-    $currency = strtoupper($currency);
-    if (in_array($currency, ['LKR', 'USD'])) {
+    if (in_array($currency, ['LKR', 'USD', 'EUR', 'CAD', 'INR'])) {
         session()->put('currency', $currency);
-        cookie()->queue(cookie('currency', $currency, 60 * 24 * 30));
     }
     return redirect()->back();
 })->name('currency.switch');
